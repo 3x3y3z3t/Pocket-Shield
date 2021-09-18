@@ -44,7 +44,7 @@
         <TypeId>BlueprintDefinition</TypeId>
         <SubtypeId>ShieldCapacityPluginItem</SubtypeId>
       </Id>
-      <DisplayName>PocketShield Advanced Emitter</DisplayName>
+      <DisplayName>PocketShield Capacity Plugin</DisplayName>
       <Icon>Textures\GUI\Icons\Items\MedKit.dds</Icon>
       <Prerequisites>
         <Item Amount="50" TypeId="Ingot" SubtypeId="Iron" />
@@ -62,7 +62,7 @@
         <TypeId>BlueprintDefinition</TypeId>
         <SubtypeId>ShieldDefensePluginItem</SubtypeId>
       </Id>
-      <DisplayName>PocketShield Advanced Emitter</DisplayName>
+      <DisplayName>PocketShield Defense Plugin</DisplayName>
       <Icon>Textures\GUI\Icons\Items\MedKit.dds</Icon>
       <Prerequisites>
         <Item Amount="50" TypeId="Ingot" SubtypeId="Iron" />
@@ -80,7 +80,7 @@
         <TypeId>BlueprintDefinition</TypeId>
         <SubtypeId>ShieldBulletResPluginItem</SubtypeId>
       </Id>
-      <DisplayName>PocketShield Advanced Emitter</DisplayName>
+      <DisplayName>PocketShield Kinetic Resist Plugin</DisplayName>
       <Icon>Textures\GUI\Icons\Items\MedKit.dds</Icon>
       <Prerequisites>
         <Item Amount="50" TypeId="Ingot" SubtypeId="Iron" />
@@ -98,7 +98,7 @@
         <TypeId>BlueprintDefinition</TypeId>
         <SubtypeId>ShieldExplosiveResPluginItem</SubtypeId>
       </Id>
-      <DisplayName>PocketShield Advanced Emitter</DisplayName>
+      <DisplayName>PocketShield Explosive Resist Plugin</DisplayName>
       <Icon>Textures\GUI\Icons\Items\MedKit.dds</Icon>
       <Prerequisites>
         <Item Amount="50" TypeId="Ingot" SubtypeId="Iron" />
