@@ -40,7 +40,7 @@ namespace PocketShield
 
         public override void LoadData()
         {
-            // amogst the earliest execution points, but not everything is available at this point.
+            // amongst the earliest execution points, but not everything is available at this point.
 
             // These can be used anywhere, not just in this method/class:
             // MyAPIGateway. - main entry point for the API
@@ -218,7 +218,7 @@ namespace PocketShield
         {
             IMyCharacter character = _entity as IMyCharacter;
 
-            if (character == null)
+            if ((character == null) || string.IsNullOrEmpty(character.DisplayName))
             {
                 return;
             }
