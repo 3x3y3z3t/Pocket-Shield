@@ -7,7 +7,10 @@ Characters.sbc
 *.csproj
 *.ruleset
 
+**/.vs
+**/raw
 **/unused
 **/TexturePacking
 **/bin
 **/obj
+**/Properties

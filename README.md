@@ -1,8 +1,25 @@
 # PocketShield
-This is the official repository for PocketShield mod for Keen Software House's "Space Engineers" game.
-Mod is made by SK (Steam).
+This is the official repository for PocketShield mod for Keen Software House's "Space Engineers" game.\
+This mod will be a part of my "Back to the reality" modpack? challenge?, in which the Engineer stays on Earthlike planet most of their time.
+
+# Mod Detail
+![Thumbnail](thumb.jpg)
+
+This mod add a personal shield generator, Pocket Shield, to character.\
+Any characters (Enginners, Wolves, Spiders, AI Enabled Bots, ...) can benefit from this shield if they have the Shield Emitter item in their inventory.
+
+Link to mod: [Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=2655275786)
+
+# Notes
+- **This mod may break your server**. I don't play MP so I can not test for bugs on MP/DS. Many thanks if you sacrifice your server and report me MP/DS bugs (I may not be able to fix them though).
 
 # Version
-Current version:
-- Singleplayer: v1.0
-- Multiplayer: v0.1
+Current version: v2.0.1 (**This version does not build**)
+- [ ] Session Component - Server side
+- [ ] Session Component - Client side
+- [ ] Shield Emitter
+- [ ] HUD Panel
+- [ ] Mods Setting integration
+- [ ] Save Data Manager
+- [x] Standarize Logger
+- [x] Standarize Config Manager
