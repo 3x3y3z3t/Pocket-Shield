@@ -5,12 +5,12 @@
 
     <Entry Class="Tools" BlueprintSubtypeId="BasicShieldEmitterItem" />
 
-    <Entry Class="EliteTools" BlueprintSubtypeId="BasicShieldEmitterItem" />
-    <Entry Class="EliteTools" BlueprintSubtypeId="AdvancedShieldEmitterItem" />
-    <Entry Class="EliteTools" BlueprintSubtypeId="ShieldCapacityPluginItem" />
-    <Entry Class="EliteTools" BlueprintSubtypeId="ShieldDefensePluginItem" />
-    <Entry Class="EliteTools" BlueprintSubtypeId="ShieldBulletResPluginItem" />
-    <Entry Class="EliteTools" BlueprintSubtypeId="ShieldExplosiveResPluginItem" />
+    <Entry Class="EliteTools" BlueprintSubtypeId="ShieldEmitterBasicItem" />
+    <Entry Class="EliteTools" BlueprintSubtypeId="ShieldEmitterAdvancedItem" />
+    <Entry Class="EliteTools" BlueprintSubtypeId="ShieldPluginCapItem" />
+    <Entry Class="EliteTools" BlueprintSubtypeId="ShieldPluginDefItem" />
+    <Entry Class="EliteTools" BlueprintSubtypeId="ShieldPluginResBulletItem" />
+    <Entry Class="EliteTools" BlueprintSubtypeId="ShieldPluginResExplosionItem" />
 
   </BlueprintClassEntries>
 

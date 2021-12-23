@@ -11,22 +11,23 @@ namespace ExShared
         public int LogLevel { get; set; }
 
         protected string m_ConfigFileName = "";
+        protected Logger m_Logger = null;
 
         internal bool Init()
         {
-            Logger.Log("Loading config file...");
+            m_Logger.Log("Loading config file...");
             if (LoadConfigFile())
             {
-                Logger.Log("  Init done");
+                m_Logger.Log("  Init done");
                 return true;
             }
 
-            Logger.Log("Failed to load config file, init with default values");
+            m_Logger.Log("Failed to load config file, init with default values");
             InitDefault();
-            Logger.Log("  Saving config...");
+            m_Logger.Log("  Saving config...");
             SaveConfigFile();
 
-            Logger.Log("Init done");
+            m_Logger.Log("Init done");
             return true;
         }
 
@@ -41,20 +42,20 @@ namespace ExShared
         {
             if (MyAPIGateway.Utilities.FileExistsInWorldStorage(m_ConfigFileName, GetType()))
             {
-                Logger.Log("  Config file found: " + m_ConfigFileName);
+                m_Logger.Log("  Config file found: " + m_ConfigFileName);
                 try
                 {
-                    Logger.Log("  Reading config file...");
+                    m_Logger.Log("  Reading config file...");
                     TextReader reader = MyAPIGateway.Utilities.ReadFileInWorldStorage(m_ConfigFileName, GetType());
                     string data = reader.ReadToEnd();
                     reader.Close();
-                    Logger.Log("    Read content: \n" + data, 5);
+                    m_Logger.Log("    Read content: \n" + data, 5);
 
                     return data;
                 }
                 catch (Exception _e)
                 {
-                    Logger.Log("  >>> Exception <<< " + _e.Message);
+                    m_Logger.Log("  >>> Exception <<< " + _e.Message);
                 }
             }
 
@@ -72,14 +73,14 @@ namespace ExShared
             Config config = null;
             try
             {
-                Logger.Log("  Deserializing data...");
+                m_Logger.Log("  Deserializing data...");
                 config = DeserializeData(data);
-                Logger.Log("  Invalidating data...");
+                m_Logger.Log("  Invalidating data...");
                 if (!InvalidateConfig(config))
                 {
-                    Logger.Log("    Invalidate failed, saving legacy data...");
+                    m_Logger.Log("    Invalidate failed, saving legacy data...");
                     SaveLegacyConfigFile(data);
-                    Logger.Log("    Saving new config...");
+                    m_Logger.Log("    Saving new config...");
                     SaveConfigFile();
                 }
 
@@ -87,8 +88,8 @@ namespace ExShared
             }
             catch (Exception _e)
             {
-                Logger.Log("  >>> Exception <<< " + _e.Message);
-                Logger.Log("    Parse failed, saving legacy data..");
+                m_Logger.Log("  >>> Exception <<< " + _e.Message);
+                m_Logger.Log("    Parse failed, saving legacy data..");
                 SaveLegacyConfigFile(data);
             }
 
@@ -110,8 +111,8 @@ namespace ExShared
             }
             catch (Exception _e)
             {
-                Logger.Log("    Failed to save config file");
-                Logger.Log(_e.Message);
+                m_Logger.Log("    Failed to save config file");
+                m_Logger.Log(_e.Message);
             }
 
             return false;
@@ -130,7 +131,7 @@ namespace ExShared
             }
             catch (Exception _e)
             {
-                Logger.Log("    Fallback method failed...");
+                m_Logger.Log("    Fallback method failed...");
             }
             return false;
         }

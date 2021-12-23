@@ -5,7 +5,7 @@
     <PhysicalItem>
       <Id>
         <TypeId>PhysicalObject</TypeId>
-        <SubtypeId>PocketShieldBasicEmitter</SubtypeId>
+        <SubtypeId>PocketShield_EmitterBasic</SubtypeId>
       </Id>
       <DisplayName>PocketShield Basic Emitter</DisplayName>
       <Description>A basic PocketShield Emitter that emit a shield with minimal protection. Good for protecting user against stray bullets. Stat: 1000 HP, 25% defense.</Description>
@@ -32,7 +32,7 @@
     <PhysicalItem>
       <Id>
         <TypeId>PhysicalObject</TypeId>
-        <SubtypeId>PocketShieldAdvancedEmitter</SubtypeId>
+        <SubtypeId>PocketShield_EmitterAdvanced</SubtypeId>
       </Id>
       <DisplayName>PocketShield Advanced Emitter</DisplayName>
       <Description>An advanced PocketShield Emitter that emit a shield for extra protection. Stat: 10000 HP, 75% defense, 8 plugin slots.</Description>
@@ -59,7 +59,7 @@
     <PhysicalItem>
       <Id>
         <TypeId>PhysicalObject</TypeId>
-        <SubtypeId>PocketShieldCapacityPlugin</SubtypeId>
+        <SubtypeId>PocketShield_PluginCap</SubtypeId>
       </Id>
       <DisplayName>PocketShield Capacity Plugin</DisplayName>
       <Description>A plugin for PocketShield Emitter that increases shield capacity (+10% Capacity).</Description>
@@ -86,7 +86,7 @@
     <PhysicalItem>
       <Id>
         <TypeId>PhysicalObject</TypeId>
-        <SubtypeId>PocketShieldDefensePlugin</SubtypeId>
+        <SubtypeId>PocketShield_PluginDef</SubtypeId>
       </Id>
       <DisplayName>PocketShield Defense Plugin</DisplayName>
       <Description>A plugin for PocketShield Emitter that increases shield strength for more protection against piercing (+50% Defense).</Description>
@@ -113,7 +113,7 @@
     <PhysicalItem>
       <Id>
         <TypeId>PhysicalObject</TypeId>
-        <SubtypeId>PocketShieldKIResPlugin</SubtypeId>
+        <SubtypeId>PocketShield_PluginResBullet</SubtypeId>
       </Id>
       <DisplayName>PocketShield Bullet Resistance Plugin</DisplayName>
       <Description>A plugin for PocketShield Emitter that increases shield strength against Bullet (+15% Bullet Resistance).</Description>
@@ -140,7 +140,7 @@
     <PhysicalItem>
       <Id>
         <TypeId>PhysicalObject</TypeId>
-        <SubtypeId>PocketShieldEXResPlugin</SubtypeId>
+        <SubtypeId>PocketShield_PluginResExplosion</SubtypeId>
       </Id>
       <DisplayName>PocketShield Explosive Resistance Plugin</DisplayName>
       <Description>A plugin for PocketShield Emitter that increases shield strength against Explosive (+15% Explosive Resistance).</Description>

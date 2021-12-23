@@ -1,19 +1,19 @@
 ﻿// ;
 using ExShared;
 using Sandbox.ModAPI;
-using System;
-using System.IO;
 using VRageMath;
 
 namespace PocketShield
 {
-    internal class Constants
+    internal static class Constants
     {
         public const ulong MOD_ID = 2656470280UL;
         public const string LOG_PREFIX = "PocketShield";
 
         #region Server/Client Default Config
-        public const string SERVER_CONFIG_VERSION = "1";
+        public const ushort MSG_HANDLER_ID_SYNC = 1351;
+
+        public const string SERVER_CONFIG_VERSION = "2";
         public const int SERVER_LOG_LEVEL = 1;
         public const int SERVER_UPDATE_INTERVAL = 6; // Server will update 10ups;
         public const int SHIELD_UPDATE_INTERVAL = 3; // Shield will update 20ups;
@@ -23,8 +23,51 @@ namespace PocketShield
         public const int CLIENT_UPDATE_INTERVAL = 6; // Client will update 10ups;
         #endregion
 
-        public const int MAX_PLUGINS = 8; // Max allowed Plugins count;
+        #region Shield Common Config
 
+        public const float SHIELD_QUICKCHARGE_POWER_THRESHOLD = 0.95f;
+
+        public const float PLUGIN_CAP_BONUS = 0.15f;
+        public const float PLUGIN_DEF_BONUS = 0.5f;
+        public const float PLUGIN_RES_BONUS = 0.5f;
+        public const float PLUGIN_POWER_BONUS = 0.0f;
+
+        public const int SHIELD_BAS_MAX_PLUGINS = 1; // Max allowed Plugins for Basic Emitter;
+        public const float SHIELD_BAS_MAX_ENERGY = 50.0f;
+        public const float SHIELD_BAS_DEF = 0.25f;
+        public const float SHIELD_BAS_RES = 0.0f;
+        public const float SHIELD_BAS_CHARGE_RATE = 50.0f;
+        public const float SHIELD_BAS_CHARGE_DELAY = 50.0f;
+        public const float SHIELD_BAS_OVERCHARGE_TIME = 50.0f;
+        public const float SHIELD_BAS_OVERCHARGE_DEF_BONUS = 50.0f;
+        public const float SHIELD_BAS_OVERCHARGE_RES_BONUS = 50.0f;
+        public const double SHIELD_BAS_POWER_CONSUMPTION = 0.001;
+
+        public const int SHIELD_ADV_MAX_PLUGINS = 8; // Max allowed Plugins for Advanced Emitter;
+        public const float SHIELD_ADV_MAX_ENERGY = 150.0f;
+        public const float SHIELD_ADV_DEF = 0.5f;
+        public const float SHIELD_ADV_RES = 0.25f;
+        public const float SHIELD_ADV_CHARGE_RATE = 50.0f;
+        public const float SHIELD_ADV_CHARGE_DELAY = 50.0f;
+        public const float SHIELD_ADV_OVERCHARGE_TIME = 50.0f;
+        public const float SHIELD_ADV_OVERCHARGE_DEF_BONUS = 50.0f;
+        public const float SHIELD_ADV_OVERCHARGE_RES_BONUS = 50.0f;
+        public const double SHIELD_ADV_POWER_CONSUMPTION = 0.005;
+
+        #endregion
+
+        public const bool SUPPRESS_ALL_SHIELD_LOG = false;
+
+        public const string DAMAGETYPE_KI = "Bullet";
+        public const string DAMAGETYPE_EX = "Explosion";
+        public const string SUBTYPEID_EMITTER_BAS = "PocketShield_EmitterBasic";
+        public const string SUBTYPEID_EMITTER_ADV = "PocketShield_EmitterAdvanced";
+        public const string SUBTYPEID_PLUGIN_CAP = "PocketShield_PluginCap";
+        public const string SUBTYPEID_PLUGIN_DEF_KI = "PocketShield_PluginDefBullet";
+        public const string SUBTYPEID_PLUGIN_DEF_EX = "PocketShield_PluginDefExplosion";
+        public const string SUBTYPEID_PLUGIN_RES_KI = "PocketShield_PluginResBullet";
+        public const string SUBTYPEID_PLUGIN_RES_EX = "PocketShield_PluginResExplosion";
+        
     }
 
     public static class ShieldConfig
@@ -88,13 +131,17 @@ namespace PocketShield
             }
         }
 
-        public static void ForceInit()
+        public static void ForceInitServer()
         {
             if (s_ServerConfig == null)
             {
                 s_ServerConfig = new ServerConfig();
                 s_ServerConfig.Init();
             }
+        }
+
+        public static void ForceInitClient()
+        {
             if (s_ClientConfig == null)
             {
                 s_ClientConfig = new ClientConfig();
@@ -111,52 +158,89 @@ namespace PocketShield
         public int ServerUpdateInterval { get; set; }
         public int ShieldUpdateInterval { get; set; }
 
-        #region ShieldEmitter Config
+        #region Shield Common Config
+
+        public float PluginCapacityBonus { get; set; }
+        public float PluginDefenseBonus { get; set; }
+        public float PluginResistanceBonus { get; set; }
+        public float PluginPowerConsumption { get; set; }
+
+        public int BasicMaxPluginsCount { get; set; }
         public float BasicShieldEnergy { get; set; }
         public float BasicDefense { get; set; }
-        public float BasicBulletResistance { get; set; }
-        public float BasicExplosionResistance { get; set; }
-        public float BasicPowerConsumption { get; set; }
+        public float BasicResistance { get; set; }
         public float BasicChargeRate { get; set; }
         public float BasicChargeDelay { get; set; }
         public float BasicOverchargeDuration { get; set; }
         public float BasicOverchargeDefBonus { get; set; }
         public float BasicOverchargeResBonus { get; set; }
-        public uint BasicMaxPluginsCount { get; set; }
+        public double BasicPowerConsumption { get; set; }
 
+        public int AdvancedMaxPluginsCount { get; set; }
         public float AdvancedShieldEnergy { get; set; }
         public float AdvancedDefense { get; set; }
-        public float AdvancedBulletResistance { get; set; }
-        public float AdvancedExplosionResistance { get; set; }
-        public float AdvancedPowerConsumption { get; set; }
+        public float AdvancedResistance { get; set; }
         public float AdvancedChargeRate { get; set; }
         public float AdvancedChargeDelay { get; set; }
         public float AdvancedOverchargeDuration { get; set; }
         public float AdvancedOverchargeDefBonus { get; set; }
         public float AdvancedOverchargeResBonus { get; set; }
-        public uint AdvancedMaxPluginsCount { get; set; }
+        public double AdvancedPowerConsumption { get; set; }
 
-        public float PluginCapacityBonus { get; set; }
-        public float PluginDefenseBonus { get; set; }
-        public float PluginBulletResBonus { get; set; }
-        public float PluginExplosionResBonus { get; set; }
-        public float PluginPowerConsumption { get; set; }
         #endregion
+
+
+        public bool SuppressAllShieldLog { get; set; }
 
         public ServerConfig()
         {
             m_ConfigFileName = "ServerConfig.xml";
+            m_Logger = ServerLogger.Instance;
             InitDefault();
         }
 
         protected override bool InitDefault()
         {
+
+            #region Server/Client Default Config
             ConfigVersion = Constants.SERVER_CONFIG_VERSION;
             LogLevel = Constants.SERVER_LOG_LEVEL;
             ServerUpdateInterval = Constants.SERVER_UPDATE_INTERVAL;
             ShieldUpdateInterval = Constants.SHIELD_UPDATE_INTERVAL;
+            #endregion
+
+            #region Shield Common Config
+            PluginCapacityBonus = Constants.PLUGIN_CAP_BONUS;
+            PluginDefenseBonus = Constants.PLUGIN_DEF_BONUS;
+            PluginResistanceBonus = Constants.PLUGIN_RES_BONUS;
+            PluginPowerConsumption = Constants.PLUGIN_POWER_BONUS;
+
+            BasicMaxPluginsCount = Constants.SHIELD_BAS_MAX_PLUGINS;
+            BasicShieldEnergy = Constants.SHIELD_ADV_CHARGE_RATE;
+            BasicDefense = Constants.SHIELD_BAS_DEF;
+            BasicResistance = Constants.SHIELD_BAS_RES;
+            BasicChargeRate = Constants.SHIELD_BAS_CHARGE_RATE;
+            BasicChargeDelay = Constants.SHIELD_BAS_CHARGE_DELAY;
+            BasicOverchargeDuration = Constants.SHIELD_BAS_OVERCHARGE_TIME;
+            BasicOverchargeDefBonus = Constants.SHIELD_BAS_OVERCHARGE_DEF_BONUS;
+            BasicOverchargeResBonus = Constants.SHIELD_BAS_OVERCHARGE_RES_BONUS;
+            BasicPowerConsumption = Constants.SHIELD_BAS_POWER_CONSUMPTION;
+
+            AdvancedMaxPluginsCount = Constants.SHIELD_ADV_MAX_PLUGINS;
+            AdvancedShieldEnergy = Constants.SHIELD_ADV_CHARGE_RATE;
+            AdvancedDefense = Constants.SHIELD_ADV_DEF;
+            AdvancedResistance = Constants.SHIELD_ADV_RES;
+            AdvancedChargeRate = Constants.SHIELD_ADV_CHARGE_RATE;
+            AdvancedChargeDelay = Constants.SHIELD_ADV_CHARGE_DELAY;
+            AdvancedOverchargeDuration = Constants.SHIELD_ADV_OVERCHARGE_TIME;
+            AdvancedOverchargeDefBonus = Constants.SHIELD_ADV_OVERCHARGE_DEF_BONUS;
+            AdvancedOverchargeResBonus = Constants.SHIELD_ADV_OVERCHARGE_RES_BONUS;
+            AdvancedPowerConsumption = Constants.SHIELD_ADV_POWER_CONSUMPTION;
+            #endregion
 
             // TODO: Init default (server);
+
+            SuppressAllShieldLog = Constants.SUPPRESS_ALL_SHIELD_LOG;
 
             return true;
         }
@@ -174,27 +258,53 @@ namespace PocketShield
             ServerConfig config = _config as ServerConfig;
             if (config == null)
             {
-                Logger.Log("  This Config is not ServerConfig (this should not happen)");
+                m_Logger.Log("  This Config is not ServerConfig (this should not happen)");
                 return false;
             }
 
+            #region Server/Client Default Config
             LogLevel = config.LogLevel;
-
             ServerUpdateInterval = config.ServerUpdateInterval;
+            ShieldUpdateInterval = config.ShieldUpdateInterval;
+            #endregion
 
-            if (PanelWidth < 0.0f)
-                PanelWidth = 0.0f;
-            if (DisplayItemsCount < 1)
-                DisplayItemsCount = 1;
-            if (DisplayItemsCount > 5)
-                DisplayItemsCount = 5;
-            if (ItemScale < 0.0f)
-                ItemScale = 0.0f;
+            #region Shield Common Config
+            PluginCapacityBonus = config.PluginCapacityBonus;
+            PluginDefenseBonus = config.PluginDefenseBonus;
+            PluginResistanceBonus = config.PluginResistanceBonus;
+            PluginPowerConsumption = config.PluginPowerConsumption;
 
+            BasicMaxPluginsCount = config.BasicMaxPluginsCount;
+            BasicShieldEnergy = config.BasicShieldEnergy;
+            BasicDefense = config.BasicDefense;
+            BasicResistance = config.BasicResistance;
+            BasicChargeRate = config.BasicChargeRate;
+            BasicChargeDelay = config.BasicChargeDelay;
+            BasicOverchargeDuration = config.BasicOverchargeDuration;
+            BasicOverchargeDefBonus = config.BasicOverchargeDefBonus;
+            BasicOverchargeResBonus = config.BasicOverchargeResBonus;
+            BasicPowerConsumption = config.BasicPowerConsumption;
+
+            AdvancedMaxPluginsCount = config.AdvancedMaxPluginsCount;
+            AdvancedShieldEnergy = config.AdvancedShieldEnergy;
+            AdvancedDefense = config.AdvancedDefense;
+            AdvancedResistance = config.AdvancedResistance;
+            AdvancedChargeRate = config.AdvancedChargeRate;
+            AdvancedChargeDelay = config.AdvancedChargeDelay;
+            AdvancedOverchargeDuration = config.AdvancedOverchargeDuration;
+            AdvancedOverchargeDefBonus = config.AdvancedOverchargeDefBonus;
+            AdvancedOverchargeResBonus = config.AdvancedOverchargeResBonus;
+            AdvancedPowerConsumption = config.AdvancedPowerConsumption;
+            #endregion
+
+            SuppressAllShieldLog = config.SuppressAllShieldLog;
+
+            // TODO: Copy config;
+            
             if (!versionMatch)
             {
                 // config version mismatch;
-                Logger.Log("    Config version mismatch: read " + _config.ConfigVersion + ", newest version " + Constants.SERVER_CONFIG_VERSION);
+                m_Logger.Log("    Config version mismatch: read " + _config.ConfigVersion + ", newest version " + Constants.SERVER_CONFIG_VERSION);
 
                 //Logger.Log("  Updating config...");
                 // TODO: Updating new config here;
@@ -230,6 +340,7 @@ namespace PocketShield
         public ClientConfig()
         {
             m_ConfigFileName = "ClientConfig.xml";
+            m_Logger = ClientLogger.Instance;
             InitDefault();
         }
 
@@ -241,21 +352,21 @@ namespace PocketShield
 
             ClientUpdateInterval = Constants.CLIENT_UPDATE_INTERVAL;
 
-            ShowPanel = Constants.SHOW_PANEL;
-            ShowPanelBackground = Constants.SHOW_PANEL_BG;
-            ShowMaxRangeIcon = Constants.SHOW_MAX_RANGE_ICON;
-            ShowSignalName = Constants.SHOW_SIGNAL_NAME;
+            //ShowPanel = Constants.SHOW_PANEL;
+            //ShowPanelBackground = Constants.SHOW_PANEL_BG;
+            //ShowMaxRangeIcon = Constants.SHOW_MAX_RANGE_ICON;
+            //ShowSignalName = Constants.SHOW_SIGNAL_NAME;
 
-            PanelPosition = new Vector2D(Constants.PANEL_POS_X, Constants.PANEL_POS_Y);
-            PanelWidth = Constants.PANEL_WIDTH;
-            Padding = Constants.PADDING;
-            Margin = Constants.MARGIN;
-            DisplayItemsCount = Constants.DISPLAY_ITEMS_COUNT;
-            ItemScale = Constants.ITEM_SCALE;
+            //PanelPosition = new Vector2D(Constants.PANEL_POS_X, Constants.PANEL_POS_Y);
+            //PanelWidth = Constants.PANEL_WIDTH;
+            //Padding = Constants.PADDING;
+            //Margin = Constants.MARGIN;
+            //DisplayItemsCount = Constants.DISPLAY_ITEMS_COUNT;
+            //ItemScale = Constants.ITEM_SCALE;
 
-            ModEnabled = Constants.ENABLE_MOD;
-            RadarMaxRange = Constants.RADAR_MAX_RANGE;
-            TrajectorySensitivity = Constants.TRAJECTORY_SENSITIVITY;
+            //ModEnabled = Constants.ENABLE_MOD;
+            //RadarMaxRange = Constants.RADAR_MAX_RANGE;
+            //TrajectorySensitivity = Constants.TRAJECTORY_SENSITIVITY;
 
             return true;
         }
@@ -273,7 +384,7 @@ namespace PocketShield
             ClientConfig config = _config as ClientConfig;
             if (config == null)
             {
-                Logger.Log("  This Config is not ClientConfig (this should not happen)");
+                m_Logger.Log("  This Config is not ClientConfig (this should not happen)");
                 return false;
             }
 
@@ -309,7 +420,7 @@ namespace PocketShield
             if (!versionMatch)
             {
                 // config version mismatch;
-                Logger.Log("    Config version mismatch: read " + _config.ConfigVersion + ", newest version " + Constants.CLIENT_CONFIG_VERSION);
+                m_Logger.Log("    Config version mismatch: read " + _config.ConfigVersion + ", newest version " + Constants.CLIENT_CONFIG_VERSION);
 
                 //Logger.Log("  Updating config...");
                 // TODO: Updating new config here;

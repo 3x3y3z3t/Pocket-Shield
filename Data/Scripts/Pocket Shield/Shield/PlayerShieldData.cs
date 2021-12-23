@@ -11,6 +11,10 @@ namespace PocketShield
 {
     public class SaveDataManager
     {
+        private const string c_SavedataFilename = "PocketShield_savedata.dat";
+        private const string c_SectionPlayerData = "PlayerData";
+        private const string c_SectionNpcData = "NpcData";
+
         private static SaveDataManager s_Instance = null;
 
         private Dictionary<long, float> m_PlayerData = null;
@@ -20,7 +24,7 @@ namespace PocketShield
         {
             if (s_Instance != null)
             {
-                Logger.Log("Cleaning up last SaveDataManager instance...", 2);
+                ServerLogger.Log("Cleaning up last SaveDataManager instance...", 2);
                 s_Instance = null;
             }
 
@@ -28,13 +32,19 @@ namespace PocketShield
             s_Instance.m_PlayerData = new Dictionary<long, float>();
             s_Instance.m_NpcData = new Dictionary<long, float>();
 
-            Logger.Log("Loading SaveData (shield)...", 2);
+            ServerLogger.Log("Loading SaveData (shield)...", 1);
+
+            if (!MyAPIGateway.Utilities.FileExistsInWorldStorage(c_SavedataFilename, typeof(PocketShield.SaveDataManager)))
+            {
+                ServerLogger.Log("  Couldn't find savedata file (" + c_SavedataFilename + ") in World Storage", 1);
+                //ServerLogger.Log("SaveDataManager LoadData done", 1);
+                return false;
+            }
 
             int errorCount = 0;
-            TextReader reader;
             try
             {
-                reader = MyAPIGateway.Utilities.ReadFileInWorldStorage("PocketShield_savedata.dat", typeof(PocketShield.SaveDataManager));
+                TextReader reader = MyAPIGateway.Utilities.ReadFileInWorldStorage(c_SavedataFilename, typeof(PocketShield.SaveDataManager));
                 string content = reader.ReadToEnd();
                 reader.Close();
 
@@ -42,21 +52,21 @@ namespace PocketShield
                 MyIniParseResult result;
                 if (!ini.TryParse(content, out result))
                 {
-                    Logger.Log("  Ini parse failed: " + result.ToString(), 2);
+                    ServerLogger.Log("  Ini parse failed: " + result.ToString(), 2);
                     return false;
                 }
 
-                errorCount += s_Instance.TryParseSection(ini, "PlayerData", s_Instance.m_PlayerData);
-                errorCount += s_Instance.TryParseSection(ini, "NpcData", s_Instance.m_PlayerData);
+                errorCount += s_Instance.TryParseSection(ini, c_SectionPlayerData, s_Instance.m_PlayerData);
+                errorCount += s_Instance.TryParseSection(ini, c_SectionNpcData, s_Instance.m_PlayerData);
             }
             catch (Exception _e)
             {
-                Logger.Log("  >> Exception << " + _e.Message, 1);
+                ServerLogger.Log("  >> Exception << " + _e.Message, 1);
                 return false;
             }
             
-            Logger.Log("  Loaded " + s_Instance.m_PlayerData.Keys.Count + " Player and " + s_Instance.m_NpcData.Keys.Count + "NPC shield data, got " + errorCount + " error(s)", 2);
-            Logger.Log("SaveDataManager LoadData done", 1);
+            ServerLogger.Log("  Loaded " + s_Instance.m_PlayerData.Keys.Count + " Player, " + s_Instance.m_NpcData.Keys.Count + " NPC shield data, got " + errorCount + " error(s)", 2);
+            //ServerLogger.Log("SaveDataManager LoadData done", 1);
             return true;
         }
 
@@ -64,14 +74,16 @@ namespace PocketShield
         {
             if (s_Instance == null)
                 return false;
-            
+
+            ServerLogger.Log("Unloading SaveData (shield)...", 1);
+
             s_Instance.m_PlayerData.Clear();
             s_Instance.m_PlayerData = null;
 
             s_Instance.m_NpcData.Clear();
             s_Instance.m_NpcData = null;
 
-            Logger.Log("SaveDataManager UnloadData done", 1);
+            //Logger.Log("SaveDataManager UnloadData done", 1);
             return true;
         }
 
@@ -80,18 +92,44 @@ namespace PocketShield
             if (s_Instance == null)
                 return false;
 
-            // TODO: save data;
+            ServerLogger.Log("Saving SaveData (shield)...", 1);
 
+            MyIni ini = new MyIni();
 
+            ini.AddSection(c_SectionPlayerData);
+            foreach (KeyValuePair<long, float> pair in s_Instance.m_PlayerData)
+            {
+                ini.Set(c_SectionPlayerData, pair.Key.ToString(), pair.Value);
+            }
 
-            Logger.Log("SaveData done", 1);
+            ini.AddSection(c_SectionNpcData);
+            foreach (KeyValuePair<long, float> pair in s_Instance.m_NpcData)
+            {
+                ini.Set(c_SectionNpcData, pair.Key.ToString(), pair.Value);
+            }
+
+            string data = ini.ToString();
+            try
+            {
+                TextWriter writer = MyAPIGateway.Utilities.WriteFileInWorldStorage(c_SavedataFilename, typeof(SaveDataManager));
+                writer.WriteLine(data);
+                writer.Flush();
+                writer.Close();
+            }
+            catch (Exception _e)
+            {
+                ServerLogger.Log("  >> Exception << " + _e.Message, 1);
+                return false;
+            }
+
+            ServerLogger.Log("SaveData done", 1);
             return true;
         }
 
         public static void UpdatePlayerData(long _playerUid, float _value)
         {
             if (s_Instance == null)
-                return;
+                LoadData();
 
             s_Instance.m_PlayerData[_playerUid] = _value;
         }
@@ -99,7 +137,7 @@ namespace PocketShield
         public static void UpdateNpcData(long _characterId, float _value)
         {
             if (s_Instance == null)
-                return;
+                LoadData();
 
             s_Instance.m_NpcData[_characterId] = _value;
         }
@@ -107,7 +145,8 @@ namespace PocketShield
         public static float GetPlayerData(long _playerUid)
         {
             if (s_Instance == null)
-                return 0.0f;
+                LoadData();
+
             if (!s_Instance.m_PlayerData.ContainsKey(_playerUid))
                 return 0.0f;
 
@@ -117,7 +156,8 @@ namespace PocketShield
         public static float GetNpcData(long _characterId)
         {
             if (s_Instance == null)
-                return 0.0f;
+                LoadData();
+
             if (!s_Instance.m_NpcData.ContainsKey(_characterId))
                 return 0.0f;
 
@@ -139,14 +179,14 @@ namespace PocketShield
                 long pid;
                 if (!long.TryParse(key.Name, out pid))
                 {
-                    Logger.Log("  Ignoring error key in section " + _section + ", key=" + key.Name, 2);
+                    ServerLogger.Log("  Ignoring error key in section " + _section + ", key=" + key.Name, 2);
                 }
 
                 double val;
                 MyIniValue value = _ini.Get(key);
                 if (!value.TryGetDouble(out val))
                 {
-                    Logger.Log("  Ignored error value in section " + _section + ", key=" + key.Name + "value=" + value, 2);
+                    ServerLogger.Log("  Ignored error value in section " + _section + ", key=" + key.Name + "value=" + value, 2);
                     ++errorCount;
                     continue;
                 }
@@ -160,16 +200,16 @@ namespace PocketShield
 
     public struct ShieldSyncData
     {
-        public long PlayerId { get; set; } // redundancy?;
+        public ulong PlayerSteamUserId { get; set; } // redundancy?;
 
         public float Energy { get; set; }
         public float MaxEnergy { get; set; }
 
 
 
-        public ShieldSyncData(long _pid)
+        public ShieldSyncData(ulong _playerSuid)
         {
-            PlayerId = _pid;
+            PlayerSteamUserId = _playerSuid;
 
             Energy = 0.0f;
             MaxEnergy = 0.0f;
