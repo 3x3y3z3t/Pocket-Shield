@@ -4,6 +4,7 @@ using Sandbox.Game;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using VRage;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.Utils;
@@ -23,8 +24,8 @@ namespace PocketShield
 
     public enum ShieldEmitterType
     {
-        BasicEmitter,
-        AdvancedEmitter
+        BasicEmitter = 1,
+        AdvancedEmitter = 2,
     }
 
     internal struct DamageDistribution
@@ -55,7 +56,9 @@ namespace PocketShield
     public abstract class ShieldEmitter
     {
         public bool RequireSync { get; set; }
-        public bool IsOverchargeActive { get; private set; }
+        public bool IsOverchargeActive { get { return m_OverchargeRemainingTicks > 0; } }
+        public float OverchargeRemainingPercent { get { return m_OverchargeRemainingTicks / (OverchargeDuration * 60.0f); } }
+
 
         public float Energy { get; set; }
 
@@ -67,14 +70,18 @@ namespace PocketShield
         public float OverchargeDefBonus { get; private set; }
         public float OverchargeResBonus { get; private set; }
         public double PowerConsumption { get; private set; } // unit: 0.01% per second;
-        protected Dictionary<MyStringHash, float> m_Def = null;
-        private Dictionary<MyStringHash, float> m_Res = null;
-
+        public List<MyTuple<MyStringHash, float>> DefList { get; private set; }
+        public List<MyTuple<MyStringHash, float>> ResList { get; private set; }
+        
         public IMyCharacter Character { get; private set; }
         public MyStringHash SubtypeId { get; protected set; }
 
         public float MaxEnergyBonusPercent { get; private set; }
 
+
+
+        private Dictionary<MyStringHash, float> m_Def = null;
+        private Dictionary<MyStringHash, float> m_Res = null;
 
         private bool m_IsFirstUpdate = true;
         private bool m_IsPluginsDirty = false;
@@ -94,8 +101,8 @@ namespace PocketShield
         protected double m_BasePowerConsumption;
         protected Dictionary<MyStringHash, float> m_BaseDef = null;
         protected Dictionary<MyStringHash, float> m_BaseRes = null;
-
         private List<MyStringHash> m_Plugins = null;
+        
         
         private Logger m_Logger = null;
 
@@ -109,6 +116,8 @@ namespace PocketShield
             m_BaseDef = new Dictionary<MyStringHash, float>();
             m_BaseRes = new Dictionary<MyStringHash, float>();
             m_Plugins = new List<MyStringHash>();
+            DefList = new List<MyTuple<MyStringHash, float>>();
+            ResList = new List<MyTuple<MyStringHash, float>>();
 
             m_Def = new Dictionary<MyStringHash, float>(MyStringHash.Comparer);
             m_Res = new Dictionary<MyStringHash, float>(MyStringHash.Comparer);
@@ -117,7 +126,6 @@ namespace PocketShield
             
             Character = _character;
             RequireSync = true;
-            IsOverchargeActive = false;
 
             Energy = 0.0f;
 
@@ -250,6 +258,18 @@ namespace PocketShield
                 if (IsOverchargeActive)
                     bypass *= OverchargeResBonus;
                 m_Res[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_KI)] = 1.0f - bypass;
+            }
+
+            // construct DefList, ResList;
+            {
+                DefList.Clear();
+                ResList.Clear();
+
+                foreach (var def in m_Def)
+                    DefList.Add(new MyTuple<MyStringHash, float>(def.Key, def.Value));
+
+                foreach (var def in m_Res)
+                    ResList.Add(new MyTuple<MyStringHash, float>(def.Key, def.Value));
             }
 
             RequireSync = true;

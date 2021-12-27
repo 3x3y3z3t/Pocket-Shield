@@ -4,8 +4,10 @@ using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using VRage;
 using VRage.Game.ModAPI;
 using VRage.Game.ModAPI.Ingame.Utilities;
+using VRage.Utils;
 
 namespace PocketShield
 {
@@ -203,8 +205,27 @@ namespace PocketShield
         public ulong PlayerSteamUserId { get; set; } // redundancy?;
 
         public float Energy { get; set; }
-        public float MaxEnergy { get; set; }
 
+        public int PluginsCount { get; set; }
+        public float MaxEnergy { get; set; }
+        //public float ChargeRate { get; set; }
+        //public float ChargeDelay { get; set; }
+        //public float OverchargeDuration { get; set; }
+        //public double PowerConsumption { get; set; }
+
+        public List<MyTuple<MyStringHash, float>> Def { get; set; }
+        public List<MyTuple<MyStringHash, float>> Res { get; set; }
+        
+        public MyStringHash SubtypeId { get; set; }
+        
+        //public float MaxEnergyBonusPercent { get; set; }
+
+        //public int OverchargeRemainingTicks { get; set; }
+        //public int ChargeDelayRemainingTicks { get; set; }
+
+
+
+        public float OverchargeRemainingPercent { get; set; }
 
 
         public ShieldSyncData(ulong _playerSuid)
@@ -212,7 +233,17 @@ namespace PocketShield
             PlayerSteamUserId = _playerSuid;
 
             Energy = 0.0f;
+
+            PluginsCount = 0;
             MaxEnergy = 0.0f;
+
+            Def = new List<MyTuple<MyStringHash, float>>();
+            Res = new List<MyTuple<MyStringHash, float>>();
+
+            SubtypeId = MyStringHash.NullOrEmpty;
+
+            OverchargeRemainingPercent = 0.0f;
+
 
         }
 

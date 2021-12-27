@@ -14,10 +14,10 @@ Link to mod: [Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=2655
 - **This mod may break your server**. I don't play MP so I can not test for bugs on MP/DS. Many thanks if you sacrifice your server and report me MP/DS bugs (I may not be able to fix them though).
 
 # Version
-Current version: v2.1.1 (**This version WORKS**)
-- [x] Session Component - Server side (1 update)
+Current version: v2.1.2 (**This version WORKS**)
+- [x] Session Component - Server side (2 update)
 - [ ] Session Component - Client side
-- [x] Shield Emitter (1 update)
+- [x] Shield Emitter (2 update)
 - [ ] HUD Panel
 - [ ] Mods Setting integration
 - [x] Save Data Manager

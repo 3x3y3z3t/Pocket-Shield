@@ -52,9 +52,6 @@ namespace PocketShield
             m_Plugins = new List<MyStringHash>();
             m_UnknownItems = new List<MyStringHash>();
 
-            //ShieldEmitter.s_GlobalPlayerShieldEmitters = m_PlayerShieldEmitters;
-            //ShieldEmitter.s_GlobalNpcShieldEmitters = m_NpcShieldEmitters;
-
             SaveDataManager.LoadData();
             
         }
@@ -110,7 +107,6 @@ namespace PocketShield
 
             // end of method;
             return;
-            
         }
 
         public override void SaveData()
@@ -177,15 +173,6 @@ namespace PocketShield
                     ServerLogger.Log("Character [" + _character.DisplayName + "] (Player <" + playerId + ">) died and their ShieldEmitter has been removed", 2);
                 }
             }
-        }
-
-        private void Inventory_InventoryContentChanged(MyInventoryBase _inventory, MyPhysicalInventoryItem _arg2, VRage.MyFixedPoint _arg3)
-        {
-            long characterEntityId = _inventory.Container.Entity.EntityId;
-            string characterDisplayName = _inventory.Container.Entity.DisplayName;
-            ServerLogger.Log("Inventory of character [" + characterDisplayName + "]'s content has changed", 5);
-
-            RefreshInventory(_inventory);
         }
         
         public void Setup()
@@ -295,15 +282,25 @@ namespace PocketShield
         private void SendSyncDataToPlayer(IMyPlayer _player)
         {
             ShieldEmitter emitter = m_PlayerShieldEmitters[(long)_player.SteamUserId];
+
+            // TODO: let ShieldEmiter generate this struct;
             ShieldSyncData data = new ShieldSyncData()
             {
                 PlayerSteamUserId = _player.SteamUserId,
 
                 Energy = emitter.Energy,
+
+                PluginsCount = emitter.PluginsCount,
                 MaxEnergy = emitter.MaxEnergy,
 
-                // TODO: more sync data;
+                Def = emitter.DefList,
+                Res = emitter.ResList,
+
+                SubtypeId = emitter.SubtypeId,
+
+                OverchargeRemainingPercent = emitter.OverchargeRemainingPercent
             };
+                // TODO: more sync data;
 
             string syncData = MyAPIGateway.Utilities.SerializeToXML(data);
             ServerLogger.Log("Sending sync data to player " + _player.SteamUserId, 5);

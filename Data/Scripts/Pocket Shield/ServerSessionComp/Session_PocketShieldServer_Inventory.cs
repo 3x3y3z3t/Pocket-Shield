@@ -13,6 +13,15 @@ namespace PocketShield
     {
         private List<MyStringHash> m_Plugins = null;
         private List<MyStringHash> m_UnknownItems = null;
+        
+        private void Inventory_InventoryContentChanged(MyInventoryBase _inventory, MyPhysicalInventoryItem _arg2, VRage.MyFixedPoint _arg3)
+        {
+            long characterEntityId = _inventory.Container.Entity.EntityId;
+            string characterDisplayName = _inventory.Container.Entity.DisplayName;
+            ServerLogger.Log("Inventory of character [" + characterDisplayName + "]'s content has changed", 5);
+
+            RefreshInventory(_inventory);
+        }
 
         private void RefreshInventory(MyInventoryBase _inventory)
         {

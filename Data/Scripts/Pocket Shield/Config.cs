@@ -24,7 +24,6 @@ namespace PocketShield
         #endregion
 
         #region Shield Common Config
-
         public const float SHIELD_QUICKCHARGE_POWER_THRESHOLD = 0.95f;
 
         public const float PLUGIN_CAP_BONUS = 0.15f;
@@ -53,8 +52,39 @@ namespace PocketShield
         public const float SHIELD_ADV_OVERCHARGE_DEF_BONUS = 50.0f;
         public const float SHIELD_ADV_OVERCHARGE_RES_BONUS = 50.0f;
         public const double SHIELD_ADV_POWER_CONSUMPTION = 0.005;
-
         #endregion
+
+
+
+        #region Hud Config
+        public const bool SHOW_PANEL = true;
+        public const bool SHOW_PANEL_BG = true;
+
+        public const float PANEL_POS_X = 1475.0f;
+        public const float PANEL_POS_Y = 590.0f;
+        public const float PANEL_WIDTH = 420.0f;
+        //public const float PANEL_HEIGHT = 240.0f;
+        //public const float PADDING = 6.0f;
+        //public const float MARGIN = 2.0f;
+        //public const int DISPLAY_ITEMS_COUNT = 5;
+        //public const float ITEM_SCALE = 1.0f;
+
+        //public const int TEXTURE_BLANK = 0;
+        //public const int TEXTURE_CHARCTER = 1;
+        //public const int TEXTURE_SMALL_SHIP = 2;
+        //public const int TEXTURE_LARGE_SHIP = 3;
+        //public const int TEXTURE_GO_AWAY = 4;
+        //public const int TEXTURE_APPROACH = 5;
+        //public const int TEXTURE_STAY = 6;
+        //public const int TEXTURE_ANTENNA = 7;
+
+        /* 
+        BG: 80 92 103
+        FG: 187 233 246
+        AnimatedSegment: 212 251 254 0.7
+        */
+        #endregion
+
 
         public const bool SUPPRESS_ALL_SHIELD_LOG = false;
 
@@ -159,7 +189,6 @@ namespace PocketShield
         public int ShieldUpdateInterval { get; set; }
 
         #region Shield Common Config
-
         public float PluginCapacityBonus { get; set; }
         public float PluginDefenseBonus { get; set; }
         public float PluginResistanceBonus { get; set; }
@@ -186,7 +215,6 @@ namespace PocketShield
         public float AdvancedOverchargeDefBonus { get; set; }
         public float AdvancedOverchargeResBonus { get; set; }
         public double AdvancedPowerConsumption { get; set; }
-
         #endregion
 
 
@@ -237,9 +265,7 @@ namespace PocketShield
             AdvancedOverchargeResBonus = Constants.SHIELD_ADV_OVERCHARGE_RES_BONUS;
             AdvancedPowerConsumption = Constants.SHIELD_ADV_POWER_CONSUMPTION;
             #endregion
-
-            // TODO: Init default (server);
-
+            
             SuppressAllShieldLog = Constants.SUPPRESS_ALL_SHIELD_LOG;
 
             return true;
@@ -298,8 +324,6 @@ namespace PocketShield
             #endregion
 
             SuppressAllShieldLog = config.SuppressAllShieldLog;
-
-            // TODO: Copy config;
             
             if (!versionMatch)
             {
@@ -323,19 +347,17 @@ namespace PocketShield
         
         public bool ShowPanel { get; set; }
         public bool ShowPanelBackground { get; set; }
-        public bool ShowMaxRangeIcon { get; set; }
-        public bool ShowSignalName { get; set; }
 
         public Vector2D PanelPosition { get; set; }
         public float PanelWidth { get; set; }
-        public float Padding { get; set; }
-        public float Margin { get; set; }
-        public int DisplayItemsCount { get; set; }
-        public float ItemScale { get; set; }
+        //public float Padding { get; set; }
+        //public float Margin { get; set; }
+        //public int DisplayItemsCount { get; set; }
+        //public float ItemScale { get; set; }
         
-        public bool ModEnabled { get; set; }
-        public float RadarMaxRange { get; set; }
-        public float TrajectorySensitivity { get; set; }
+        //public bool ModEnabled { get; set; }
+        //public float RadarMaxRange { get; set; }
+        //public float TrajectorySensitivity { get; set; }
 
         public ClientConfig()
         {
@@ -352,13 +374,11 @@ namespace PocketShield
 
             ClientUpdateInterval = Constants.CLIENT_UPDATE_INTERVAL;
 
-            //ShowPanel = Constants.SHOW_PANEL;
-            //ShowPanelBackground = Constants.SHOW_PANEL_BG;
-            //ShowMaxRangeIcon = Constants.SHOW_MAX_RANGE_ICON;
-            //ShowSignalName = Constants.SHOW_SIGNAL_NAME;
+            ShowPanel = Constants.SHOW_PANEL;
+            ShowPanelBackground = Constants.SHOW_PANEL_BG;
 
-            //PanelPosition = new Vector2D(Constants.PANEL_POS_X, Constants.PANEL_POS_Y);
-            //PanelWidth = Constants.PANEL_WIDTH;
+            PanelPosition = new Vector2D(Constants.PANEL_POS_X, Constants.PANEL_POS_Y);
+            PanelWidth = Constants.PANEL_WIDTH;
             //Padding = Constants.PADDING;
             //Margin = Constants.MARGIN;
             //DisplayItemsCount = Constants.DISPLAY_ITEMS_COUNT;
@@ -394,28 +414,20 @@ namespace PocketShield
 
             ShowPanel = config.ShowPanel;
             ShowPanelBackground = config.ShowPanelBackground;
-            ShowMaxRangeIcon = config.ShowMaxRangeIcon;
-            ShowSignalName = config.ShowSignalName;
 
             PanelPosition = config.PanelPosition;
             PanelWidth = config.PanelWidth;
-            Padding = config.Padding;
-            Margin = config.Margin;
-            DisplayItemsCount = config.DisplayItemsCount;
-            ItemScale = config.ItemScale;
+            //Padding = config.Padding;
+            //Margin = config.Margin;
+            //DisplayItemsCount = config.DisplayItemsCount;
+            //ItemScale = config.ItemScale;
 
-            ModEnabled = config.ModEnabled;
-            RadarMaxRange = config.RadarMaxRange;
-            TrajectorySensitivity = config.TrajectorySensitivity;
+            //ModEnabled = config.ModEnabled;
+            //RadarMaxRange = config.RadarMaxRange;
+            //TrajectorySensitivity = config.TrajectorySensitivity;
 
             if (PanelWidth < 0.0f)
                 PanelWidth = 0.0f;
-            if (DisplayItemsCount < 1)
-                DisplayItemsCount = 1;
-            if (DisplayItemsCount > 5)
-                DisplayItemsCount = 5;
-            if (ItemScale < 0.0f)
-                ItemScale = 0.0f;
 
             if (!versionMatch)
             {
