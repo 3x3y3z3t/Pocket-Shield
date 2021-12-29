@@ -174,6 +174,7 @@ namespace PocketShield
                     }
                     else
                     {
+                        Energy = MaxEnergy;
                         powerCost *= 0.01;
                         m_Logger.BreakLine();
                     }
@@ -257,7 +258,7 @@ namespace PocketShield
                 bypass = (1.0f - m_BaseRes[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_EX)]) * resEXMod;
                 if (IsOverchargeActive)
                     bypass *= OverchargeResBonus;
-                m_Res[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_KI)] = 1.0f - bypass;
+                m_Res[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_EX)] = 1.0f - bypass;
             }
 
             // construct DefList, ResList;
@@ -268,8 +269,8 @@ namespace PocketShield
                 foreach (var def in m_Def)
                     DefList.Add(new MyTuple<MyStringHash, float>(def.Key, def.Value));
 
-                foreach (var def in m_Res)
-                    ResList.Add(new MyTuple<MyStringHash, float>(def.Key, def.Value));
+                foreach (var res in m_Res)
+                    ResList.Add(new MyTuple<MyStringHash, float>(res.Key, res.Value));
             }
 
             RequireSync = true;

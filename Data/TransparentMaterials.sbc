@@ -19,7 +19,7 @@
         <TypeId>TransparentMaterialDefinition</TypeId>
         <SubtypeId>PocketShield_ShieldBar</SubtypeId>
       </Id>
-      <Texture>Textures\Icons\ShieldBarIcon1.dds</Texture>
+      <Texture>Textures\Icons\ShieldBar.dds</Texture>
       <CanBeAffectedByOtherLights>false</CanBeAffectedByOtherLights>
       <SoftParticleDistanceScale>0</SoftParticleDistanceScale>
       <AlphaMistingEnable>false</AlphaMistingEnable>
@@ -29,62 +29,14 @@
     <TransparentMaterial>
       <Id>
         <TypeId>TransparentMaterialDefinition</TypeId>
-        <SubtypeId>PocketShield_ShieldMainIcon</SubtypeId>
+        <SubtypeId>PocketShield_ShieldIcons</SubtypeId>
       </Id>
-      <Texture>Textures\Icons\ShieldMainIcon0.dds</Texture>
+      <Texture>Textures\Icons\ShieldIcons.dds</Texture>
       <CanBeAffectedByOtherLights>false</CanBeAffectedByOtherLights>
       <SoftParticleDistanceScale>0</SoftParticleDistanceScale>
       <AlphaMistingEnable>false</AlphaMistingEnable>
       <AlphaSaturation>1</AlphaSaturation>
     </TransparentMaterial>
 
-    <TransparentMaterial>
-      <Id>
-        <TypeId>TransparentMaterialDefinition</TypeId>
-        <SubtypeId>PocketShield_ShieldBonusIcon0</SubtypeId>
-      </Id>
-      <Texture>Textures\Icons\ShieldBonusIcon0.dds</Texture>
-      <CanBeAffectedByOtherLights>false</CanBeAffectedByOtherLights>
-      <SoftParticleDistanceScale>0</SoftParticleDistanceScale>
-      <AlphaMistingEnable>false</AlphaMistingEnable>
-      <AlphaSaturation>1</AlphaSaturation>
-    </TransparentMaterial>
-
-    <TransparentMaterial>
-      <Id>
-        <TypeId>TransparentMaterialDefinition</TypeId>
-        <SubtypeId>PocketShield_ShieldBonusIcon1</SubtypeId>
-      </Id>
-      <Texture>Textures\Icons\ShieldBonusIcon1.dds</Texture>
-      <CanBeAffectedByOtherLights>false</CanBeAffectedByOtherLights>
-      <SoftParticleDistanceScale>0</SoftParticleDistanceScale>
-      <AlphaMistingEnable>false</AlphaMistingEnable>
-      <AlphaSaturation>1</AlphaSaturation>
-    </TransparentMaterial>
-
-    <TransparentMaterial>
-      <Id>
-        <TypeId>TransparentMaterialDefinition</TypeId>
-        <SubtypeId>PocketShield_ShieldBonusIcon2</SubtypeId>
-      </Id>
-      <Texture>Textures\Icons\ShieldBonusIcon2_3.dds</Texture>
-      <CanBeAffectedByOtherLights>false</CanBeAffectedByOtherLights>
-      <SoftParticleDistanceScale>0</SoftParticleDistanceScale>
-      <AlphaMistingEnable>false</AlphaMistingEnable>
-      <AlphaSaturation>1</AlphaSaturation>
-    </TransparentMaterial>
-
-    <TransparentMaterial>
-      <Id>
-        <TypeId>TransparentMaterialDefinition</TypeId>
-        <SubtypeId>PocketShield_ShieldBonusIcon3</SubtypeId>
-      </Id>
-      <Texture>Textures\Icons\ShieldBonusIcon3_1.dds</Texture>
-      <CanBeAffectedByOtherLights>false</CanBeAffectedByOtherLights>
-      <SoftParticleDistanceScale>0</SoftParticleDistanceScale>
-      <AlphaMistingEnable>false</AlphaMistingEnable>
-      <AlphaSaturation>1</AlphaSaturation>
-    </TransparentMaterial>
-    
   </TransparentMaterials>
 </Definitions>

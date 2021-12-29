@@ -13,7 +13,7 @@ namespace PocketShield
         #region Server/Client Default Config
         public const ushort MSG_HANDLER_ID_SYNC = 1351;
 
-        public const string SERVER_CONFIG_VERSION = "2";
+        public const string SERVER_CONFIG_VERSION = "1";
         public const int SERVER_LOG_LEVEL = 1;
         public const int SERVER_UPDATE_INTERVAL = 6; // Server will update 10ups;
         public const int SHIELD_UPDATE_INTERVAL = 3; // Shield will update 20ups;
@@ -60,16 +60,15 @@ namespace PocketShield
         public const bool SHOW_PANEL = true;
         public const bool SHOW_PANEL_BG = true;
 
-        public const float PANEL_POS_X = 1475.0f;
-        public const float PANEL_POS_Y = 590.0f;
-        public const float PANEL_WIDTH = 420.0f;
+        public const float PANEL_POS_X = 20.0f;
+        public const float PANEL_POS_Y = 735.0f;
+        public const float PANEL_WIDTH = 265.0f;
         //public const float PANEL_HEIGHT = 240.0f;
         //public const float PADDING = 6.0f;
-        //public const float MARGIN = 2.0f;
+        public const float MARGIN = 5.0f;
         //public const int DISPLAY_ITEMS_COUNT = 5;
-        //public const float ITEM_SCALE = 1.0f;
+        public const float ITEM_SCALE = 1.0f;
 
-        //public const int TEXTURE_BLANK = 0;
         //public const int TEXTURE_CHARCTER = 1;
         //public const int TEXTURE_SMALL_SHIP = 2;
         //public const int TEXTURE_LARGE_SHIP = 3;
@@ -87,6 +86,18 @@ namespace PocketShield
 
 
         public const bool SUPPRESS_ALL_SHIELD_LOG = false;
+
+        public const int TEXTURE_W = 4;
+        public const int TEXTURE_H = 4;
+        public const float TEXTURE_UV_SIZE_X = 1.0f / TEXTURE_W;
+        public const float TEXTURE_UV_SIZE_Y = 1.0f / TEXTURE_H;
+        public const int TEXTURE_BLANK = 0;
+        public const int TEXTURE_SHIELD_BAS = 1;
+        public const int TEXTURE_SHIELD_ADV = 5;
+        public const int TEXTURE_ICON_DEF_KI = 2;
+        public const int TEXTURE_ICON_RES_KI = 3;
+        public const int TEXTURE_ICON_DEF_EX = 6;
+        public const int TEXTURE_ICON_RES_EX = 7;
 
         public const string DAMAGETYPE_KI = "Bullet";
         public const string DAMAGETYPE_EX = "Explosion";
@@ -349,11 +360,10 @@ namespace PocketShield
         public bool ShowPanelBackground { get; set; }
 
         public Vector2D PanelPosition { get; set; }
-        public float PanelWidth { get; set; }
         //public float Padding { get; set; }
         //public float Margin { get; set; }
         //public int DisplayItemsCount { get; set; }
-        //public float ItemScale { get; set; }
+        public float ItemScale { get; set; }
         
         //public bool ModEnabled { get; set; }
         //public float RadarMaxRange { get; set; }
@@ -378,11 +388,10 @@ namespace PocketShield
             ShowPanelBackground = Constants.SHOW_PANEL_BG;
 
             PanelPosition = new Vector2D(Constants.PANEL_POS_X, Constants.PANEL_POS_Y);
-            PanelWidth = Constants.PANEL_WIDTH;
             //Padding = Constants.PADDING;
             //Margin = Constants.MARGIN;
             //DisplayItemsCount = Constants.DISPLAY_ITEMS_COUNT;
-            //ItemScale = Constants.ITEM_SCALE;
+            ItemScale = Constants.ITEM_SCALE;
 
             //ModEnabled = Constants.ENABLE_MOD;
             //RadarMaxRange = Constants.RADAR_MAX_RANGE;
@@ -416,18 +425,15 @@ namespace PocketShield
             ShowPanelBackground = config.ShowPanelBackground;
 
             PanelPosition = config.PanelPosition;
-            PanelWidth = config.PanelWidth;
             //Padding = config.Padding;
             //Margin = config.Margin;
             //DisplayItemsCount = config.DisplayItemsCount;
-            //ItemScale = config.ItemScale;
+            ItemScale = config.ItemScale;
 
             //ModEnabled = config.ModEnabled;
             //RadarMaxRange = config.RadarMaxRange;
             //TrajectorySensitivity = config.TrajectorySensitivity;
-
-            if (PanelWidth < 0.0f)
-                PanelWidth = 0.0f;
+            
 
             if (!versionMatch)
             {

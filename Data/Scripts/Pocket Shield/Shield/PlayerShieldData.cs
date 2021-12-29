@@ -4,10 +4,12 @@ using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml.Serialization;
 using VRage;
 using VRage.Game.ModAPI;
 using VRage.Game.ModAPI.Ingame.Utilities;
 using VRage.Utils;
+using VRageMath;
 
 namespace PocketShield
 {
@@ -202,6 +204,11 @@ namespace PocketShield
 
     public struct ShieldSyncData
     {
+        [XmlIgnore]
+        public float EnergyRemainingPercent { get { return Energy / MaxEnergy; } }
+        [XmlIgnore]
+        public int MaxDefOrResCount { get { return Math.Max(Def.Count, Res.Count); } }
+
         public ulong PlayerSteamUserId { get; set; } // redundancy?;
 
         public float Energy { get; set; }

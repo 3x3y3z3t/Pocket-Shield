@@ -8,17 +8,17 @@ This mod will be a part of my "Back to the reality" modpack? challenge?, in whic
 This mod add a personal shield generator, Pocket Shield, to character.\
 Any characters (Enginners, Wolves, Spiders, AI Enabled Bots, ...) can benefit from this shield if they have the Shield Emitter item in their inventory.
 
-Link to mod: [Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=2655275786)
+Link to mod: [Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=2656470280)
 
 # Notes
 - **This mod may break your server**. I don't play MP so I can not test for bugs on MP/DS. Many thanks if you sacrifice your server and report me MP/DS bugs (I may not be able to fix them though).
 
 # Version
-Current version: v2.1.2 (**This version WORKS**)
+Current version: v2.2.0 (**This version WORKS**)
 - [x] Session Component - Server side (2 update)
-- [ ] Session Component - Client side
+- [x] Session Component - Client side
 - [x] Shield Emitter (2 update)
-- [ ] HUD Panel
+- [x] HUD Panel
 - [ ] Mods Setting integration
 - [x] Save Data Manager
 - [x] Standarize Logger (1 update)
