@@ -10,7 +10,8 @@ using VRage.Utils;
 using VRage.Game;
 using System.Text;
 using ExShared;
-
+using System.Diagnostics;
+using Sandbox.Game.Entities.Character;
 
 namespace PocketShield
 {
@@ -25,10 +26,11 @@ namespace PocketShield
 
         private List<IMyPlayer> m_Players = null;
 
-        private Dictionary<long, ShieldEmitter> m_PlayerShieldEmitters = null;
+        private Dictionary<long, ShieldEmitter> m_PlayerShieldEmitters = null; // TODO: maybe use ulong;
         private Dictionary<long, ShieldEmitter> m_NpcShieldEmitters = null;
 
         private List<ulong> m_ForceSyncPlayers = null;
+        private List<int> m_DamageQueue;
 
 
         public override void LoadData()
@@ -58,6 +60,7 @@ namespace PocketShield
             m_NpcShieldEmitters = new Dictionary<long, ShieldEmitter>();
 
             m_ForceSyncPlayers = new List<ulong>();
+            m_DamageQueue = new List<int>();
 
             m_Plugins = new List<MyStringHash>();
             m_UnknownItems = new List<MyStringHash>();
@@ -171,13 +174,16 @@ namespace PocketShield
 
         private void Character_CharacterDied(IMyCharacter _character)
         {
-            long playerId = _character.ControllerInfo.ControllingIdentityId;
             ReplaceShieldEmitter(_character, null);
 
-            if (playerId == 0)
+            IMyPlayer player = GetPlayer(_character);
+            if (player != null)
+                m_ForceSyncPlayers.Add(player.SteamUserId);
+
+            if (player.SteamUserId == 0)
                 ServerLogger.Log("Character [" + _character.DisplayName + "] died and their ShieldEmitter has been removed", 2);
             else
-                ServerLogger.Log("Character [" + _character.DisplayName + "] (Player <" + playerId + ">) died and their ShieldEmitter has been removed", 2);
+                ServerLogger.Log("Character [" + _character.DisplayName + "] (Player <" + player.SteamUserId + ">) died and their ShieldEmitter has been removed", 2);
         }
         
         public void Setup()
@@ -190,7 +196,6 @@ namespace PocketShield
                 return;
 
             MyAPIGateway.Session.DamageSystem.RegisterBeforeDamageHandler(50, BeforeDamageHandler);
-            //MyAPIGateway.Multiplayer.RegisterSecureMessageHandler(Constants.MSG_HANDLER_ID_INITIAL_SYNC, HandleInitialSyncRequest);
 
             UpdatePlayerCharacterInventoryOnceBeforeSim();
             UpdateShieldEmittersOnceBeforeSim();
@@ -206,7 +211,7 @@ namespace PocketShield
         {
             try
             {
-                //MyAPIGateway.Multiplayer.UnregisterSecureMessageHandler(Constants.MSG_HANDLER_ID_INITIAL_SYNC, HandleInitialSyncRequest);
+
             }
             catch (Exception _e)
             { }
@@ -214,13 +219,17 @@ namespace PocketShield
 
         public void BeforeDamageHandler(object _target, ref MyDamageInformation _damageInfo)
         {
-            
+            if (m_DamageQueue.Contains(_damageInfo.GetHashCode()))
+                return;
+
             IMyCharacter character = _target as IMyCharacter;
             if (character == null)
                 return;
             
             if (_damageInfo.IsDeformation)
+            {
                 return;
+            }
             
             ServerLogger.Log("Damage captured: " + _damageInfo.Amount + " " + _damageInfo.Type.String + " damage", 4);
             ShieldEmitter emitter = GetShieldEmitter(character);
@@ -228,7 +237,17 @@ namespace PocketShield
                 return;
 
             ServerLogger.Log("  Trying passing damage through Shield Emitter..", 4);
-            emitter.TakeDamage(ref _damageInfo);
+            float beforeDamageHealth = MyVisualScriptLogicProvider.GetPlayersHealth(character.ControllerInfo.ControllingIdentityId);
+            if (emitter.TakeDamage(ref _damageInfo))
+            {
+                // TODO: animation;
+            }
+
+            m_DamageQueue.Add(_damageInfo.GetHashCode());
+            bool shouldSync = _damageInfo.Amount > 0.0f;
+            character.DoDamage(_damageInfo.Amount, _damageInfo.Type, shouldSync, attackerId: _damageInfo.AttackerId);
+            _damageInfo.Amount = 0;
+            m_DamageQueue.Remove(_damageInfo.GetHashCode());
         }
         
         private void UpdatePlayerList()

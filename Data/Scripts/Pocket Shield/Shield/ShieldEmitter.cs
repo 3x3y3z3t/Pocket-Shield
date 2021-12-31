@@ -93,16 +93,12 @@ namespace PocketShield
         protected Dictionary<MyStringHash, float> m_BaseRes = null;
         private List<MyStringHash> m_Plugins = null;
         
-        
         private Logger m_Logger = null;
-
-
+        
         protected static VRage.Game.MyDefinitionId s_PoweKitDefinitionID;
+        
 
-        //public static Dictionary<long, ShieldEmitter> s_GlobalPlayerShieldEmitters = null;
-        //public static Dictionary<long, ShieldEmitter> s_GlobalNpcShieldEmitters = null;
-
-            static ShieldEmitter()
+        static ShieldEmitter()
         {
             bool flag = VRage.Game.MyDefinitionId.TryParse("MyObjectBuilder_ConsumableItem/Powerkit", out s_PoweKitDefinitionID);
             //ShieldLogger.Log("  TryParse returns " + flag);
@@ -120,6 +116,11 @@ namespace PocketShield
             m_Res = new Dictionary<MyStringHash, float>(MyStringHash.Comparer);
 
             m_Logger = CustomLogger.Get((ulong)_character.EntityId);
+
+            string logString = ">> Character [" + _character.DisplayName + "] <" + _character.EntityId + ">";
+            if (!_character.IsPlayer)
+                logString += " (Npc)";
+            m_Logger.Log(logString);
             
             Character = _character;
             RequireSync = true;
@@ -127,6 +128,11 @@ namespace PocketShield
             Energy = 0.0f;
 
             MaxEnergyBonusPercent = 0.0f;
+        }
+
+        ~ShieldEmitter()
+        {
+            CustomLogger.Remove(m_Logger);
         }
 
         public void Update(int _ticks)
@@ -283,12 +289,13 @@ namespace PocketShield
             m_IsPluginsDirty = false;
         }
         
-        public void TakeDamage(ref MyDamageInformation _damageInfo)
+        public bool TakeDamage(ref MyDamageInformation _damageInfo)
         {
             m_Logger.Log("Shield is taking " + _damageInfo.Amount + " " + _damageInfo.Type.String + " damage", 1);
             if (Character == null)
             {
                 m_Logger.Log("  There is no Character to take damage (this should not happen)", 1);
+                return false;
             }
 
             m_ChargeDelayRemainingTicks = (int)(ChargeDelay * 60.0f); // 60 ticks per second;
@@ -296,7 +303,7 @@ namespace PocketShield
             if (Energy <= 0.0f)
             {
                 m_Logger.Log("  Shield depleted", 2);
-                return;
+                return false;
             }
 
             // TODO: process damage;
@@ -330,6 +337,7 @@ namespace PocketShield
 
             m_Logger.Log(string.Format("  Shield damage: {0:0.##} ({1:0.##}%) (res {2:0.##}%), health damage: {3:0.##}", totalShieldDamage, defRate * 100.0f, resRate * 100.0f, totalHealthDamage), 2);
             m_Logger.Log(string.Format("  Shield energy: {0:0.##} -> {1:0.##}", beforeDamageEnergy, Energy), 1);
+            return true;
         }
 
         private void DeactiveOvercharge()
