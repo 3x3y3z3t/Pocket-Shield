@@ -28,25 +28,15 @@ namespace PocketShield
         AdvancedEmitter = 2,
     }
 
-    internal struct DamageDistribution
-    {
-        public float RawDamage;
-        public string DamageType;
-
-        public float HealthDamage;
-        public float ShieldDamage;
-        public float ResistedDamage;
-    }
-
-    internal struct DamageResistance
+    internal struct DamageMod
     {
         public MyStringHash DamagtType { get; private set; }
-        public float ResAmount { get; private set; }
+        public float Amount { get; private set; }
 
-        DamageResistance(MyStringHash _damageType, float _resistanceAmount)
+        DamageMod(MyStringHash _damageType, float _amount)
         {
             DamagtType = _damageType;
-            ResAmount = _resistanceAmount;
+            Amount = _amount;
         }
     }
 
@@ -69,7 +59,7 @@ namespace PocketShield
         public float OverchargeDuration { get; private set; } // unit: seconds;
         public float OverchargeDefBonus { get; private set; }
         public float OverchargeResBonus { get; private set; }
-        public double PowerConsumption { get; private set; } // unit: 0.01% per second;
+        public double PowerConsumption { get; private set; } // unit: 100% per second;
         public List<MyTuple<MyStringHash, float>> DefList { get; private set; }
         public List<MyTuple<MyStringHash, float>> ResList { get; private set; }
         
@@ -106,10 +96,17 @@ namespace PocketShield
         
         private Logger m_Logger = null;
 
+
+        protected static VRage.Game.MyDefinitionId s_PoweKitDefinitionID;
+
         //public static Dictionary<long, ShieldEmitter> s_GlobalPlayerShieldEmitters = null;
         //public static Dictionary<long, ShieldEmitter> s_GlobalNpcShieldEmitters = null;
 
-            
+            static ShieldEmitter()
+        {
+            bool flag = VRage.Game.MyDefinitionId.TryParse("MyObjectBuilder_ConsumableItem/Powerkit", out s_PoweKitDefinitionID);
+            //ShieldLogger.Log("  TryParse returns " + flag);
+        }
 
         protected ShieldEmitter(IMyCharacter _character)
         {
@@ -143,15 +140,17 @@ namespace PocketShield
 
             UpdatePlugins();
 
-            m_Logger.Log("Updating shield (skip " + _ticks + " ticks) (internal ticks: " + m_Ticks + ")", 4);
-            m_Logger.LogNoBreak(string.Format("  Energy: {0:0}/{1:0}", (int)Energy, (int)MaxEnergy), 4);
+            m_Logger.Log("Updating shield (skip " + _ticks + " ticks) (internal ticks: " + m_Ticks + ")", 5);
+            m_Logger.LogNoBreak(string.Format("  Energy: {0:0}/{1:0}", (int)Energy, (int)MaxEnergy), 5);
 
             // recharge shield;
+            if (IsOverchargeActive)
+                m_ChargeDelayRemainingTicks = 0;
             int chargeTicks = _ticks - m_ChargeDelayRemainingTicks;
             if (chargeTicks <= 0)
             {
                 m_ChargeDelayRemainingTicks -= _ticks;
-                m_Logger.Inline(string.Format(" (delay {0:0.##}s)", m_ChargeDelayRemainingTicks / 60.0f), _breakNow: true);
+                m_Logger.Inline(string.Format(" (delay {0:0.##}s)", m_ChargeDelayRemainingTicks / 60.0f), 5, true);
             }
             else
             {
@@ -166,7 +165,7 @@ namespace PocketShield
                             chargeAmount *= 2.0f;
 
                         Energy += chargeAmount;
-                        m_Logger.Inline(string.Format(" (+{0:0.##})", chargeAmount), _breakNow: true);
+                        m_Logger.Inline(string.Format(" (+{0:0.##})", chargeAmount), 5, true);
                         if (Energy > MaxEnergy)
                             Energy = MaxEnergy;
 
@@ -176,14 +175,14 @@ namespace PocketShield
                     {
                         Energy = MaxEnergy;
                         powerCost *= 0.01;
-                        m_Logger.BreakLine();
+                        m_Logger.BreakLine(5);
                     }
 
                     MyVisualScriptLogicProvider.SetPlayersEnergyLevel(Character.ControllerInfo.ControllingIdentityId, Character.SuitEnergyLevel - (float)powerCost);
                 }
                 else
                 {
-                    m_Logger.Inline(" (no power)", _breakNow: true);
+                    m_Logger.Inline(" (no power)", 5, true);
                 }
             }
 
@@ -211,29 +210,35 @@ namespace PocketShield
 
             ServerConfig config = ConfigManager.ServerConfig;
 
+            m_Logger.Log("Plugin List: ");
+            foreach (var plugin in m_Plugins)
+            {
+                m_Logger.Log("  " + plugin.String, 4);
+            }
+            
             float capMod = 1.0f;
             float defKIMod = 1.0f;
             float defEXMod = 1.0f;
             float resKIMod = 1.0f;
             float resEXMod = 1.0f;
-            
+
             foreach (MyStringHash subtypeId in m_Plugins)
             {
-                if (subtypeId.String == Constants.SUBTYPEID_PLUGIN_CAP)
+                if (subtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_CAP))
                     capMod *= (1.0f + config.PluginCapacityBonus);
-                else if (subtypeId.String == Constants.SUBTYPEID_PLUGIN_DEF_KI)
-                    defKIMod *= (1.0f + config.PluginDefenseBonus);
-                else if (subtypeId.String == Constants.SUBTYPEID_PLUGIN_DEF_EX)
-                    defEXMod *= (1.0f + config.PluginDefenseBonus);
-                else if (subtypeId.String == Constants.SUBTYPEID_PLUGIN_RES_KI)
-                    resKIMod *= (1.0f + config.PluginResistanceBonus);
-                else if (subtypeId.String == Constants.SUBTYPEID_PLUGIN_RES_EX)
-                    resEXMod *= (1.0f + config.PluginResistanceBonus);
+                else if (subtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_DEF_KI))
+                    defKIMod *= (1.0f - config.PluginDefenseBonus);
+                else if (subtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_DEF_EX))
+                    defEXMod *= (1.0f - config.PluginDefenseBonus);
+                else if (subtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_RES_KI))
+                    resKIMod *= (1.0f - config.PluginResistanceBonus);
+                else if (subtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_RES_EX))
+                    resEXMod *= (1.0f - config.PluginResistanceBonus);
             }
-
+            
             MaxEnergy = m_BaseMaxEnergy * capMod;
             MaxEnergyBonusPercent = 1.0f - capMod;
-
+            
             {
                 float bypass;
                 // defKI
@@ -303,7 +308,7 @@ namespace PocketShield
             float resRate = GetResistanceAgainst(_damageInfo.Type);
             float shieldDamage = _damageInfo.Amount * defRate;
             float healthDamge = _damageInfo.Amount - shieldDamage;
-
+            shieldDamage *= (1.0f - resRate);
 
 
             // TODO: process shield Resistance;
@@ -327,14 +332,6 @@ namespace PocketShield
             m_Logger.Log(string.Format("  Shield energy: {0:0.##} -> {1:0.##}", beforeDamageEnergy, Energy), 1);
         }
 
-        private void ProcessDamageTaken(ref DamageDistribution _damage)
-        {
-            // TODO: process damage;
-
-
-
-        }
-
         private void DeactiveOvercharge()
         {
             // TODO: deactive overcharge;
@@ -342,9 +339,30 @@ namespace PocketShield
 
         }
 
+        private bool TryActiveOvercharge()
+        {
+            MyInventory inventory = Character.GetInventory() as MyInventory;
+            if (inventory == null)
+                return false;
+
+            var item = inventory.FindItem(s_PoweKitDefinitionID);
+            if (item.HasValue)
+            {
+                inventory.RemoveItems(item.Value.ItemId, 1, false);
+
+                Energy = MaxEnergy;
+                m_OverchargeRemainingTicks = (int)(OverchargeDuration * 60.0f);
+                RequireSync = true;
+
+                return true;
+            }
+
+            return false;
+        }
+
         private void FirstUpdate()
         {
-            m_Logger.Log("First Update called");
+            m_Logger.Log("First Update called", 1);
             MaxEnergy = m_BaseMaxEnergy;
             ChargeRate = m_BaseChargeRate;
             ChargeDelay = m_BaseChargeDelay;
@@ -392,275 +410,7 @@ namespace PocketShield
             return 0.0f;
         }
 
-        void dummy()
-        {
-
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#if false
-        public float MaxHealth { get; protected set; }
-        public float Health { get; set; }
-        public float ChargeRate { get; protected set; }
-        public float Defense { get; protected set; }
-        public float BulletDamageResistance { get; protected set; }
-        public float ExplosiveDamageResistance { get; protected set; }
-        public float OverchargeDefenseBonus { get; protected set; }
-        public float OverchargeResistanceBonus { get; protected set; }
-
-        public bool IsOvercharge { get; protected set; }
-
-        public uint CapacityPluginsCount { get; set; }
-        public uint DefensePluginsCount { get; set; }
-        public uint BulletResPluginsCount { get; set; }
-        public uint ExplosiveResPluginsCount { get; set; }
-        public uint MaxPlugins { get; protected set; }
-
-        public IMyPlayer Player { get; set; }
-
-        protected float m_BaseMaxHealth = 0.0f;
-        protected float m_BaseChargeRate = 0.0f;
-        protected float m_BaseBulletResistance = 0.0f;
-        protected float m_BaseExplosionResistance = 0.0f;
-        protected float m_BasePowerConsumption = 0.0f;
-
-        protected bool m_IsDirty = true;
-        protected int m_RemainingOverchargeTick = 0;
-
-        protected VRage.Game.MyDefinitionId s_PoweKitDefinitionID;
-
-        public ShieldEmitter()
-        {
-            MaxHealth = 0.0f;
-            Health = 0.0f;
-            ChargeRate = 0.0f;
-            Defense = 0.0f;
-            BulletDamageResistance = 0.0f;
-            ExplosiveDamageResistance = 0.0f;
-            PowerConsumption = 0.0f;
-            OverchargeDuration = 0.0f;
-            OverchargeDefenseBonus = 0.0f;
-            OverchargeResistanceBonus = 0.0f;
-
-            CapacityPluginsCount = 0;
-            DefensePluginsCount = 0;
-            BulletResPluginsCount = 0;
-            ExplosiveResPluginsCount = 0;
-
-            Character = null;
-            Player = null;
-
-
-            bool flag = VRage.Game.MyDefinitionId.TryParse("MyObjectBuilder_ConsumableItem/Powerkit", out s_PoweKitDefinitionID);
-            //ShieldLogger.Log("  TryParse returns " + flag);
-        }
         
-
-        public void TakeDamage(ref MyDamageInformation _damageInfo)
-        {
-            ShieldLogger.Log("Shield taking damage...");
-            if (Character == null)
-            {
-                ShieldLogger.Log("  Just kidding, there is no character to take damage.");
-                return;
-            }
-            
-            if (_damageInfo.Type == MyStringHash.GetOrCompute("Bullet"))
-            {
-                ShieldLogger.Log("  Taking " + _damageInfo.Amount + " bullet damage:");
-                _damageInfo.Amount = CalculateDamageToHealth(_damageInfo.Amount, BulletDamageResistance);
-            }
-            else if (_damageInfo.Type == MyStringHash.GetOrCompute("Explosion"))
-            {
-                ShieldLogger.Log("  Taking " + _damageInfo.Amount + " explosion damage:");
-                _damageInfo.Amount = CalculateDamageToHealth(_damageInfo.Amount, ExplosiveDamageResistance);
-            }
-            else if (_damageInfo.Type == MyStringHash.GetOrCompute("Fall") || _damageInfo.Type == MyStringHash.GetOrCompute("Environment"))
-            {
-                ShieldLogger.Log("  Taking " + _damageInfo.Amount + " fall/environment damage:");
-                _damageInfo.Amount = CalculateDamageToHealth(_damageInfo.Amount, 0.0f);
-            }
-
-            ShieldLogger.Log("  Taking " + _damageInfo.Amount + " [other damge type] damage (shield won't take damage).");
-        }
-
-        private float CalculateDamageToHealth(float _damageAmount, float _resist)
-        {
-            ShieldLogger.Log(string.Format("    Damage info: {0:0} (bypass {1:F1}%, resist {2:F1}%)", _damageAmount, (1.0f - Defense) * 100.0f, _resist * 100.0f));
-            float dmgToShield = _damageAmount * Defense;
-            float dmgToHealth = _damageAmount - dmgToShield;
-
-            float dmgShieldWillTake = dmgToShield * (1.0f - _resist);
-            //ShieldLogger.Log("    Damage to shield: " + dmgToShield + " -> " + dmgShieldWillTake + ", damage to health: " + dmgToHealth);
-            //ShieldLogger.Log("    Remaining Shield health: " + Health);
-            
-            while(dmgShieldWillTake >= Health)
-            {
-                // damage is greater than shield health
-                dmgShieldWillTake -= Health; // shield takes a portion of damage;
-                //ShieldLogger.Log("      Shield took " + Health + "dmg. Remaining damage: " + dmgShieldWillTake + ", remaining shield: 0");
-                
-                if (TryActiveOvercharge())
-                {
-                    // overcharge active succesfully;
-                    // now health is full;
-                    continue;
-                }
-                
-                Health = 0.0f;
-
-                dmgShieldWillTake /= (1.0f - _resist); // damage amount is revert back to before-resistance;
-                //ShieldLogger.Log("      " + dmgShieldWillTake + "dmg will be added back to dmgToHealth.");
-                dmgToHealth += dmgShieldWillTake; // that amount is added to health damage;
-                break;
-            }
-            
-            if (dmgShieldWillTake < Health)
-            {
-                // damage is less than shield health
-                Health -= dmgShieldWillTake; // shield takes a portion of damage (full);
-                ShieldLogger.Log("      Shield took " + dmgShieldWillTake + "dmg. Remaining damage: 0, remaining shield: " + Health);
-                //dmgToShield = 0.0f;
-            }
-
-            //ShieldLogger.Log("    Damage to health: " + dmgToHealth);
-            return dmgToHealth;
-        }
-
-        private bool TryActiveOvercharge()
-        {
-            if (Character == null)
-                return false;
-
-            MyInventory inventory = Character.GetInventory() as MyInventory;
-            if (inventory == null)
-                return false;
-
-            if (inventory.GetItemAmount(s_PoweKitDefinitionID) >= 1)
-            {
-                MyPhysicalInventoryItem item = inventory.FindItem(s_PoweKitDefinitionID).Value;
-                inventory.RemoveItems(item.ItemId, 1);
-                Health = MaxHealth;
-                IsOvercharge = true;
-                m_RemainingOverchargeTick = (int)(OverchargeDuration * 60.0f);
-                m_IsDirty = true;
-                //ShieldLogger.Log("Overcharge Activated!!! Duration = " + m_RemainingOverchargeTick);
-                return true;
-            }
-
-            return false;
-        }
-
-    }
-
-    public class BasicShieldEmitter : ShieldEmitter
-    {
-        public BasicShieldEmitter() : base()
-        {
-            m_BaseMaxHealth = Config.BasicMaxHealth;
-            m_BaseChargeRate = Config.BasicChargeRate;
-            m_BaseDefense = Config.BasicDefense;
-            m_BaseBulletResistance = Config.BasicBulletResistance;
-            m_BaseExplosionResistance = Config.BasicExplosionResistance;
-            m_BasePowerConsumption = Config.BasicPowerConsumption;
-
-            OverchargeDuration = Config.BasicOverchargeDuration;
-            OverchargeDefenseBonus = Config.BasicOverchargeDefenseBonus;
-            OverchargeResistanceBonus = Config.BasicOverchargeResistanceBonus;
-            MaxPlugins = Config.BasicShieldMaxPlugins;
-
-            MaxHealth = m_BaseMaxHealth;
-            ChargeRate = m_BaseChargeRate;
-            Defense = m_BaseDefense;
-            BulletDamageResistance = m_BaseBulletResistance;
-            ExplosiveDamageResistance = m_BaseExplosionResistance;
-            PowerConsumption = m_BasePowerConsumption;
-
-        }
-
-        public override void UpdatePlugins(uint _capacityPluginsCount, uint _defensePluginsCount, uint _bulletResPluginsCount, uint _explosiveResPluginsCount)
-        {
-            return;
-        }
-    }
-
-    public class AdvancedShieldEmitter : ShieldEmitter
-    {
-        public AdvancedShieldEmitter() : base()
-        {
-            m_BaseMaxHealth = Config.AdvancedMaxHealth;
-            m_BaseChargeRate = Config.AdvancedChargeRate;
-            m_BaseDefense = Config.AdvancedDefense;
-            m_BaseBulletResistance = Config.AdvancedBulletResistance;
-            m_BaseExplosionResistance = Config.AdvancedExplosionResistance;
-            m_BasePowerConsumption = Config.AdvancedPowerConsumption;
-
-            OverchargeDuration = Config.AdvancedOverchargeDuration;
-            OverchargeDefenseBonus = Config.AdvancedOverchargeDefenseBonus;
-            OverchargeResistanceBonus = Config.AdvancedOverchargeResistanceBonus;
-            MaxPlugins = Config.AdvancedShieldMaxPlugins;
-
-            MaxHealth = m_BaseMaxHealth;
-            ChargeRate = m_BaseChargeRate;
-            Defense = m_BaseDefense;
-            BulletDamageResistance = m_BaseBulletResistance;
-            ExplosiveDamageResistance = m_BaseExplosionResistance;
-            PowerConsumption = m_BasePowerConsumption;
-
-        }
-
-    }
-#endif
-
-
     }
 
 

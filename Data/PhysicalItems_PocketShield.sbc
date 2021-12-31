@@ -111,7 +111,7 @@
         <TypeId>PhysicalObject</TypeId>
         <SubtypeId>PocketShield_PluginDefExplosion</SubtypeId>
       </Id>
-      <DisplayName>PocketShield_PluginDefExplosion_Displayname</DisplayName>
+      <DisplayName>PocketShield_PluginDefExplosion_DisplaNname</DisplayName>
       <ExtraInventoryTooltipLine>PocketShield_PluginDefExplosion_Stat</ExtraInventoryTooltipLine>
       <Icon>Textures\GUI\Icons\Items\PowerKit.dds</Icon>
       <Size>
@@ -163,7 +163,7 @@
         <TypeId>PhysicalObject</TypeId>
         <SubtypeId>PocketShield_PluginResExplosion</SubtypeId>
       </Id>
-      <DisplayName>PocketShield_PluginResExplosion_Displayname</DisplayName>
+      <DisplayName>PocketShield_PluginResExplosion_DisplayName</DisplayName>
       <ExtraInventoryTooltipLine>PocketShield_PluginResExplosion_Stat</ExtraInventoryTooltipLine>
       <Icon>Textures\GUI\Icons\Items\PowerKit.dds</Icon>
       <Size>
