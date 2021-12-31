@@ -13,7 +13,6 @@ namespace PocketShield
     [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
     public partial class Session_PocketShieldClient : MySessionComponentBase
     {
-        internal const string c_ChatCommandPrefix = "/PS";
         private static Vector2 s_ViewportSize = Vector2.Zero;
 
         public bool IsServer { get; private set; }
@@ -81,11 +80,7 @@ namespace PocketShield
                 }
 
                 // TODO: doing main job?;
-
-
-
-                m_IsHudDirty = true;
-
+                UpdateFakeShieldStat();
 
 
             }
@@ -191,14 +186,15 @@ namespace PocketShield
                 ShieldSyncData data = MyAPIGateway.Utilities.SerializeFromXML<ShieldSyncData>(decodedPackage);
                 if (MyAPIGateway.Session != null)
                 {
-                    if (data.PlayerSteamUserId != MyAPIGateway.Session.Player.SteamUserId)
-                    {
-                        ClientLogger.Log("  Data is for player <" + m_ShieldData.PlayerSteamUserId + ">, not me", 4);
-                    }
-                    else
+                    if (data.PlayerSteamUserId == 0U || data.PlayerSteamUserId == MyAPIGateway.Session.Player.SteamUserId)
                     {
                         ClientLogger.Log("  Shield Data updated", 5);
                         m_ShieldData = data;
+                        m_IsHudDirty = true;
+                    }
+                    else
+                    {
+                        ClientLogger.Log("  Data is for player <" + m_ShieldData.PlayerSteamUserId + ">, not me", 4);
                     }
                 }
 
@@ -258,6 +254,19 @@ namespace PocketShield
             ClientLogger.Log("UpdateTextHud() done", 5);
         }
 
+        private void UpdateFakeShieldStat()
+        {
+            if (m_ShieldData.PlayerSteamUserId == 0U)
+                return;
+
+
+
+
+
+            m_IsHudDirty = true;
+
+
+        }
 
     }
 }

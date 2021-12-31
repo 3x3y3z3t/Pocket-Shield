@@ -15,7 +15,9 @@ namespace PocketShield
             if (MyAPIGateway.Session.Player == null)
                 return;
 
-            if (!_messageText.StartsWith(c_ChatCommandPrefix))
+            if (!_messageText.StartsWith(c_ChatCmdPrefix))
+                return;
+            if (_messageText.Contains("Server"))
                 return;
 
             ClientLogger.Log("  Chat Command captured: " + _messageText, 1);

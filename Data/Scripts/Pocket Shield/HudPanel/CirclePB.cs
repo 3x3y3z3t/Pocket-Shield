@@ -213,7 +213,7 @@ namespace PocketShield
 
 
 
-            ClientLogger.Log("TriParts Pos = " + Position.ToString());
+            //ClientLogger.Log("TriParts Pos = " + Position.ToString());
 
 
             UpdateItemCard();

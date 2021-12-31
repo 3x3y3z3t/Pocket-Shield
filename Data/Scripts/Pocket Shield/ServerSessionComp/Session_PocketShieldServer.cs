@@ -28,6 +28,8 @@ namespace PocketShield
         private Dictionary<long, ShieldEmitter> m_PlayerShieldEmitters = null;
         private Dictionary<long, ShieldEmitter> m_NpcShieldEmitters = null;
 
+        private List<ulong> m_ForceSyncPlayers = null;
+
 
         public override void LoadData()
         {
@@ -35,8 +37,11 @@ namespace PocketShield
             
             ConfigManager.ForceInitServer();
             ServerLogger.Instance.LogLevel = ConfigManager.ServerConfig.LogLevel;
-            CustomLogger.SuppressAll(ConfigManager.ServerConfig.SuppressAllShieldLog);
-            
+            CustomLogger.Suppressed = ConfigManager.ServerConfig.SuppressAllShieldLog;
+            CustomLogger.LogLevel = ConfigManager.ServerConfig.LogLevel;
+
+            MyAPIGateway.Utilities.MessageEntered += Utilities_MessageEntered;
+
             MyAPIGateway.Entities.OnEntityAdd += Entities_OnEntityAdd;
             MyAPIGateway.Entities.OnEntityRemove += Entities_OnEntityRemove;
 
@@ -49,6 +54,8 @@ namespace PocketShield
             m_PlayerShieldEmitters = new Dictionary<long, ShieldEmitter>();
             m_NpcShieldEmitters = new Dictionary<long, ShieldEmitter>();
 
+            m_ForceSyncPlayers = new List<ulong>();
+
             m_Plugins = new List<MyStringHash>();
             m_UnknownItems = new List<MyStringHash>();
 
@@ -59,6 +66,8 @@ namespace PocketShield
         protected override void UnloadData()
         {
             Shutdown();
+            MyAPIGateway.Utilities.MessageEntered -= Utilities_MessageEntered;
+
             MyAPIGateway.Entities.OnEntityAdd -= Entities_OnEntityAdd;
             MyAPIGateway.Entities.OnEntityRemove -= Entities_OnEntityRemove;
 
@@ -134,6 +143,7 @@ namespace PocketShield
 
             ServerLogger.Log("  Character [" + character.DisplayName + "]: Hooking inventory.InventoryContentChanged..", 5);
             inventory.InventoryContentChanged += Inventory_InventoryContentChanged;
+            inventory.ContentsChanged += Inventory_ContentsChanged;
             //RefreshInventory(inventory);
         }
 
@@ -159,20 +169,12 @@ namespace PocketShield
         private void Character_CharacterDied(IMyCharacter _character)
         {
             long playerId = _character.ControllerInfo.ControllingIdentityId;
+            ReplaceShieldEmitter(_character, null);
+
             if (playerId == 0)
-            {
-                if (m_NpcShieldEmitters.Remove(_character.EntityId))
-                {
-                    ServerLogger.Log("Character [" + _character.DisplayName + "] died and their ShieldEmitter has been removed", 2);
-                }
-            }
+                ServerLogger.Log("Character [" + _character.DisplayName + "] died and their ShieldEmitter has been removed", 2);
             else
-            {
-                if (m_PlayerShieldEmitters.Remove(playerId))
-                {
-                    ServerLogger.Log("Character [" + _character.DisplayName + "] (Player <" + playerId + ">) died and their ShieldEmitter has been removed", 2);
-                }
-            }
+                ServerLogger.Log("Character [" + _character.DisplayName + "] (Player <" + playerId + ">) died and their ShieldEmitter has been removed", 2);
         }
         
         public void Setup()
@@ -256,13 +258,14 @@ namespace PocketShield
         {
             foreach (IMyPlayer player in m_Players)
             {
-                if (!m_PlayerShieldEmitters.ContainsKey((long)player.SteamUserId))
-                    continue;
-                
-                if (!m_PlayerShieldEmitters[(long)player.SteamUserId].RequireSync)
-                    continue;
+                if (m_ForceSyncPlayers.Contains(player.SteamUserId))
+                {
+                    m_ForceSyncPlayers.Remove(player.SteamUserId);
+                    SendSyncDataToPlayer(player);
+                }
+                else if (m_PlayerShieldEmitters.ContainsKey((long)player.SteamUserId) && m_PlayerShieldEmitters[(long)player.SteamUserId].RequireSync)
+                    SendSyncDataToPlayer(player);
 
-                SendSyncDataToPlayer(player);
             }
         }
 
@@ -278,29 +281,26 @@ namespace PocketShield
                 SaveDataManager.UpdateNpcData(key, m_NpcShieldEmitters[key].Energy);
             }
         }
-        
+
         private void SendSyncDataToPlayer(IMyPlayer _player)
         {
-            ShieldEmitter emitter = m_PlayerShieldEmitters[(long)_player.SteamUserId];
+            ShieldSyncData data = new ShieldSyncData(0U);
 
-            // TODO: let ShieldEmiter generate this struct;
-            ShieldSyncData data = new ShieldSyncData()
+            if (m_PlayerShieldEmitters.ContainsKey((long)_player.SteamUserId))
             {
-                PlayerSteamUserId = _player.SteamUserId,
-
-                Energy = emitter.Energy,
-
-                PluginsCount = emitter.PluginsCount,
-                MaxEnergy = emitter.MaxEnergy,
-
-                Def = emitter.DefList,
-                Res = emitter.ResList,
-
-                SubtypeId = emitter.SubtypeId,
-
-                OverchargeRemainingPercent = emitter.OverchargeRemainingPercent
-            };
-                // TODO: more sync data;
+                ShieldEmitter emitter = m_PlayerShieldEmitters[(long)_player.SteamUserId];
+                if (emitter != null)
+                {
+                    data.PlayerSteamUserId = _player.SteamUserId;
+                    data.Energy = emitter.Energy;
+                    data.PluginsCount = emitter.PluginsCount;
+                    data.MaxEnergy = emitter.MaxEnergy;
+                    data.Def = emitter.DefList;
+                    data.Res = emitter.ResList;
+                    data.SubtypeId = emitter.SubtypeId;
+                    data.OverchargeRemainingPercent = emitter.OverchargeRemainingPercent;
+                }
+            }
 
             string syncData = MyAPIGateway.Utilities.SerializeToXML(data);
             ServerLogger.Log("Sending sync data to player " + _player.SteamUserId, 5);

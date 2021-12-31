@@ -14,13 +14,17 @@ namespace PocketShield
         private List<MyStringHash> m_Plugins = null;
         private List<MyStringHash> m_UnknownItems = null;
         
-        private void Inventory_InventoryContentChanged(MyInventoryBase _inventory, MyPhysicalInventoryItem _arg2, VRage.MyFixedPoint _arg3)
+        private void Inventory_ContentsChanged(MyInventoryBase _inventory)
         {
             long characterEntityId = _inventory.Container.Entity.EntityId;
             string characterDisplayName = _inventory.Container.Entity.DisplayName;
             ServerLogger.Log("Inventory of character [" + characterDisplayName + "]'s content has changed", 5);
 
             RefreshInventory(_inventory);
+        }
+        
+        private void Inventory_InventoryContentChanged(MyInventoryBase _inventory, MyPhysicalInventoryItem _arg2, VRage.MyFixedPoint _arg3)
+        {
         }
 
         private void RefreshInventory(MyInventoryBase _inventory)
@@ -44,35 +48,75 @@ namespace PocketShield
                 if (!subtypeId.String.Contains("PocketShield_"))
                     continue;
 
-                ServerLogger.Log("    Try creating Emitter..", 4);
-                if (FirstEmitterFound == null)
+                if (subtypeId.String.Contains("Emitter"))
                 {
-                    // if no emitter is found in inventory, look for emitter;
-                    if (subtypeId.String.Contains("Emitter"))
+                    // if another emitter item has been processed before, ignore this emitter item;
+                    if (FirstEmitterFound != null)
+                        continue;
+
+                    if (oldEmitter == null)
                     {
-                        if (oldEmitter == null || oldEmitter.SubtypeId != subtypeId)
+                        ServerLogger.Log("    Old Emitter is null, try creating Emitter..", 4);
+                        ShieldFactory_TryCreateEmitter(subtypeId, character);
+                        if (FirstEmitterFound != null)
                         {
+                            ReplaceShieldEmitter(character, FirstEmitterFound);
+                            oldEmitter = FirstEmitterFound;
+                            ServerLogger.Log("    Emitter Created: " + FirstEmitterFound.SubtypeId.String, 4);
+                            ServerLogger.Log("    Old Emitter:     " + oldEmitter.SubtypeId.String, 4);
+                            ServerLogger.Log("    Emitter count: " + m_PlayerShieldEmitters.Count + " Player's, " + m_NpcShieldEmitters.Count + " Npc's", 1);
+                        }
+                    }
+                    else
+                    {
+                        ServerLogger.Log("    Old Emitter: " + oldEmitter.SubtypeId.String);
+                        if (oldEmitter.SubtypeId != subtypeId)
+                        {
+                            ServerLogger.Log("    Try creating new Emitter..", 4);
                             ShieldFactory_TryCreateEmitter(subtypeId, character);
                             if (FirstEmitterFound != null)
                             {
                                 ReplaceShieldEmitter(character, FirstEmitterFound);
                                 oldEmitter = FirstEmitterFound;
-                                ServerLogger.Log(">> Emitter count: " + m_PlayerShieldEmitters.Count + " Player's, " + m_NpcShieldEmitters.Count + " Npc's", 1);
+                                ServerLogger.Log("    Emitter Created: " + FirstEmitterFound.SubtypeId.String, 4);
+                                ServerLogger.Log("    Old Emitter:     " + oldEmitter.SubtypeId.String, 4);
+                                ServerLogger.Log("    Emitter count: " + m_PlayerShieldEmitters.Count + " Player's, " + m_NpcShieldEmitters.Count + " Npc's", 1);
                             }
                         }
-                        continue;
+                        else
+                        {
+                            FirstEmitterFound = oldEmitter;
+                        }
                     }
+                    
+                    continue;
                 }
-                
-                ServerLogger.Log("    Try creating Plugin..", 4);
+
                 if (subtypeId.String.Contains("Plugin"))
                 {
+                    ServerLogger.Log("    Adding Plugin..", 4);
                     m_Plugins.Add(subtypeId);
                     continue;
                 }
 
-                ServerLogger.Log("    Hmm, unknown item..", 4);
+                ServerLogger.Log("    Hmm, unknown PocketShield item..", 4);
                 m_UnknownItems.Add(subtypeId);
+            }
+
+            ServerLogger.Log("  Found " + m_UnknownItems.Count + " unknown PocketShield items", 4);
+            foreach (MyStringHash subtypeid in m_UnknownItems)
+            {
+                ServerLogger.Log("    " + subtypeid.String, 4);
+            }
+
+            if (oldEmitter != null && FirstEmitterFound == null)
+            {
+                ServerLogger.Log("  Emitter dropped: " + oldEmitter.SubtypeId);
+                ReplaceShieldEmitter(character, null);
+
+                IMyPlayer player = GetPlayer(character);
+                if (player != null)
+                    m_ForceSyncPlayers.Add(player.SteamUserId);
             }
 
             if (oldEmitter != null)
@@ -81,11 +125,6 @@ namespace PocketShield
                 oldEmitter.AddPlugins(m_Plugins);
             }
             
-            ServerLogger.Log("  Found " + m_UnknownItems.Count + " unknown items", 4);
-            foreach (MyStringHash subtypeid in m_UnknownItems)
-            {
-                ServerLogger.Log("    " + subtypeid.String, 4);
-            }
 
             FirstEmitterFound = null;
             m_Plugins.Clear();

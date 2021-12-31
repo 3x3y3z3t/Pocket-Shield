@@ -35,22 +35,22 @@ namespace PocketShield
         public const float SHIELD_BAS_MAX_ENERGY = 50.0f;
         public const float SHIELD_BAS_DEF = 0.25f;
         public const float SHIELD_BAS_RES = 0.0f;
-        public const float SHIELD_BAS_CHARGE_RATE = 50.0f;
-        public const float SHIELD_BAS_CHARGE_DELAY = 50.0f;
-        public const float SHIELD_BAS_OVERCHARGE_TIME = 50.0f;
-        public const float SHIELD_BAS_OVERCHARGE_DEF_BONUS = 50.0f;
-        public const float SHIELD_BAS_OVERCHARGE_RES_BONUS = 50.0f;
+        public const float SHIELD_BAS_CHARGE_RATE = 2.0f;
+        public const float SHIELD_BAS_CHARGE_DELAY = 3.0f;
+        public const float SHIELD_BAS_OVERCHARGE_TIME = 7.0f;
+        public const float SHIELD_BAS_OVERCHARGE_DEF_BONUS = 1.0f;
+        public const float SHIELD_BAS_OVERCHARGE_RES_BONUS = 0.5f;
         public const double SHIELD_BAS_POWER_CONSUMPTION = 0.001;
 
         public const int SHIELD_ADV_MAX_PLUGINS = 8; // Max allowed Plugins for Advanced Emitter;
-        public const float SHIELD_ADV_MAX_ENERGY = 150.0f;
-        public const float SHIELD_ADV_DEF = 0.5f;
-        public const float SHIELD_ADV_RES = 0.25f;
-        public const float SHIELD_ADV_CHARGE_RATE = 50.0f;
-        public const float SHIELD_ADV_CHARGE_DELAY = 50.0f;
-        public const float SHIELD_ADV_OVERCHARGE_TIME = 50.0f;
-        public const float SHIELD_ADV_OVERCHARGE_DEF_BONUS = 50.0f;
-        public const float SHIELD_ADV_OVERCHARGE_RES_BONUS = 50.0f;
+        public const float SHIELD_ADV_MAX_ENERGY = 250.0f;
+        public const float SHIELD_ADV_DEF = 0.65f;
+        public const float SHIELD_ADV_RES = 0.15f;
+        public const float SHIELD_ADV_CHARGE_RATE = 10.0f;
+        public const float SHIELD_ADV_CHARGE_DELAY = 5.0f;
+        public const float SHIELD_ADV_OVERCHARGE_TIME = 3.0f;
+        public const float SHIELD_ADV_OVERCHARGE_DEF_BONUS = 0.5f;
+        public const float SHIELD_ADV_OVERCHARGE_RES_BONUS = 0.75f;
         public const double SHIELD_ADV_POWER_CONSUMPTION = 0.005;
         #endregion
 
@@ -255,7 +255,7 @@ namespace PocketShield
             PluginPowerConsumption = Constants.PLUGIN_POWER_BONUS;
 
             BasicMaxPluginsCount = Constants.SHIELD_BAS_MAX_PLUGINS;
-            BasicShieldEnergy = Constants.SHIELD_ADV_CHARGE_RATE;
+            BasicShieldEnergy = Constants.SHIELD_BAS_MAX_ENERGY;
             BasicDefense = Constants.SHIELD_BAS_DEF;
             BasicResistance = Constants.SHIELD_BAS_RES;
             BasicChargeRate = Constants.SHIELD_BAS_CHARGE_RATE;
@@ -266,7 +266,7 @@ namespace PocketShield
             BasicPowerConsumption = Constants.SHIELD_BAS_POWER_CONSUMPTION;
 
             AdvancedMaxPluginsCount = Constants.SHIELD_ADV_MAX_PLUGINS;
-            AdvancedShieldEnergy = Constants.SHIELD_ADV_CHARGE_RATE;
+            AdvancedShieldEnergy = Constants.SHIELD_ADV_MAX_ENERGY;
             AdvancedDefense = Constants.SHIELD_ADV_DEF;
             AdvancedResistance = Constants.SHIELD_ADV_RES;
             AdvancedChargeRate = Constants.SHIELD_ADV_CHARGE_RATE;

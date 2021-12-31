@@ -21,11 +21,11 @@ namespace PocketShield
         private const float c_TextScale = 12.0f;
 
         private static float Width { get { return Constants.PANEL_WIDTH * 0.5f * ConfigManager.ClientConfig.ItemScale; } }
-        public static float Height { get { return 48.0f * ConfigManager.ClientConfig.ItemScale; } }
+        public static float Height { get { return 46.0f * ConfigManager.ClientConfig.ItemScale; } }
 
         public bool Visible { get; set; }
         public Vector2D Origin { get; set; } /* Position is Top-Left. */
-        private Vector2D Offset { get { return new Vector2D((m_Slot % 2) * Width, (m_Slot / 2) * Height); } }
+        private Vector2D Offset { get { return new Vector2D((m_Slot % 2) * Width, (m_Slot / 2) * (Height + Constants.MARGIN * ConfigManager.ClientConfig.ItemScale)); } }
 
         public float Def { get; set; }
         public float Res { get; set; }

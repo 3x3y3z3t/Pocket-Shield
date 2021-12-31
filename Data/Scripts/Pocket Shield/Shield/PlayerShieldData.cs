@@ -235,9 +235,9 @@ namespace PocketShield
         public float OverchargeRemainingPercent { get; set; }
 
 
-        public ShieldSyncData(ulong _playerSuid)
+        public ShieldSyncData(ulong _playerUid)
         {
-            PlayerSteamUserId = _playerSuid;
+            PlayerSteamUserId = _playerUid;
 
             Energy = 0.0f;
 

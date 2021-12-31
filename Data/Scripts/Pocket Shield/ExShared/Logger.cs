@@ -68,7 +68,35 @@ namespace ExShared
     public class CustomLogger
     {
         public static string Prefix = "custom";
-        
+        public static int LogLevel
+        {
+            set
+            {
+                s_LogLevel = value;
+
+                if (m_Loggers == null)
+                    m_Loggers = new Dictionary<ulong, Logger>();
+
+                foreach (Logger logger in m_Loggers.Values)
+                    logger.LogLevel = value;
+            }
+        }
+        public static bool Suppressed
+        {
+            set
+            {
+                s_Suppressed = value;
+
+                if (m_Loggers == null)
+                    m_Loggers = new Dictionary<ulong, Logger>();
+
+                foreach (Logger logger in m_Loggers.Values)
+                    logger.Suppressed = value;
+            }
+        }
+
+
+        private static int s_LogLevel = 5;
         private static bool s_Suppressed = false;
         private static Dictionary<ulong, Logger> m_Loggers = null;
 
@@ -89,21 +117,13 @@ namespace ExShared
                 m_Loggers = new Dictionary<ulong, Logger>();
 
             if (!m_Loggers.ContainsKey(_id))
-                m_Loggers[_id] = new Logger(Prefix + "_" + _id.ToString());
+                m_Loggers[_id] = new Logger(Prefix + "_" + _id.ToString())
+                {
+                    LogLevel = s_LogLevel,
+                    Suppressed = s_Suppressed
+                };
 
-            m_Loggers[_id].Suppressed = s_Suppressed;
             return m_Loggers[_id];
-        }
-
-        public static void SuppressAll(bool _suppress)
-        {
-            s_Suppressed = _suppress;
-
-            if (m_Loggers == null)
-                m_Loggers = new Dictionary<ulong, Logger>();
-
-            foreach (Logger logger in m_Loggers.Values)
-                logger.Suppressed = _suppress;
         }
     }
 

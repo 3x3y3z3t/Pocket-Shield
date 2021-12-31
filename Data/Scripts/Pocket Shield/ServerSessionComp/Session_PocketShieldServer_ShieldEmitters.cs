@@ -11,7 +11,6 @@ namespace PocketShield
     public partial class Session_PocketShieldServer
     {
         public static event Action<MyStringHash, IMyCharacter> ShieldFactory_TryCreateEmitter;
-        //public static event Action<ShieldEmitter, MyStringHash> ShieldFactory_PlugPlugin;
         
         private ShieldEmitter FirstEmitterFound = null;
 
@@ -19,29 +18,27 @@ namespace PocketShield
         {
             if (FirstEmitterFound != null)
                 return;
+
+            ServerLogger.Log("      Creating Basic Emitter", 4);
             if (_subtypeId.String.EndsWith("Basic"))
-                FirstEmitterFound = new ShieldEmitterAdvanced(_character);
-            
+            {
+                FirstEmitterFound = new ShieldEmitterBasic(_character);
+                ServerLogger.Log("        Basic Emitter created", 4);
+            }
         }
 
         private void CreateEmitterAdv(MyStringHash _subtypeId, IMyCharacter _character)
         {
             if (FirstEmitterFound != null)
                 return;
+
+            ServerLogger.Log("      Creating Advanced Emitter", 4);
             if (_subtypeId.String.EndsWith("Advanced"))
+            {
                 FirstEmitterFound = new ShieldEmitterAdvanced(_character);
-            
+                ServerLogger.Log("        Advanced Emitter created", 4);
+            }
         }
-
-        private void PlugPlugin0(ShieldEmitter _emitter, MyStringHash _subtypeId)
-        {
-            if (_emitter == null)
-                return;
-
-
-
-        }
-
 
 
         private void UpdateShieldEmittersOnceBeforeSim()
