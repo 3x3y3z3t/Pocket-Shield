@@ -14,12 +14,12 @@ Link to mod: [Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=2656
 - **This mod may break your server**. I don't play MP so I can not test for bugs on MP/DS. Many thanks if you sacrifice your server and report me MP/DS bugs (I may not be able to fix them though).
 
 # Version
-Current version: v2.4.0
-- [x] Session Component - Server side (3 update)
+Current version: v2.5.0
+- [x] Session Component - Server side (4 update)
 - [x] Session Component - Client side
 - [x] Shield Emitter (3 update)
 - [x] HUD Panel
 - [ ] Mods Setting integration
 - [x] Save Data Manager
-- [x] Standarize Logger (2 update)
+- [x] Standarize Logger (3 update)
 - [x] Standarize Config Manager
