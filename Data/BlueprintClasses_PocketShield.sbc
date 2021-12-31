@@ -3,14 +3,18 @@
 
   <BlueprintClassEntries>
 
-    <Entry Class="Tools" BlueprintSubtypeId="BasicShieldEmitterItem" />
+    <Entry Class="Tools" BlueprintSubtypeId="PocketShield_EmitterBasic_Item" />
+    <Entry Class="Tools" BlueprintSubtypeId="PocketShield_PluginCap_Item" />
+    <Entry Class="Tools" BlueprintSubtypeId="PocketShield_PluginResBullet_Item" />
+    <Entry Class="Tools" BlueprintSubtypeId="PocketShield_PluginResExplosion_Item" />
 
-    <Entry Class="EliteTools" BlueprintSubtypeId="ShieldEmitterBasicItem" />
-    <Entry Class="EliteTools" BlueprintSubtypeId="ShieldEmitterAdvancedItem" />
-    <Entry Class="EliteTools" BlueprintSubtypeId="ShieldPluginCapItem" />
-    <Entry Class="EliteTools" BlueprintSubtypeId="ShieldPluginDefItem" />
-    <Entry Class="EliteTools" BlueprintSubtypeId="ShieldPluginResBulletItem" />
-    <Entry Class="EliteTools" BlueprintSubtypeId="ShieldPluginResExplosionItem" />
+    <Entry Class="EliteTools" BlueprintSubtypeId="PocketShield_EmitterBasic_Item" />
+    <Entry Class="EliteTools" BlueprintSubtypeId="PocketShield_EmitterAdvanced_Item" />
+    <Entry Class="EliteTools" BlueprintSubtypeId="PocketShield_PluginCap_Item" />
+    <Entry Class="EliteTools" BlueprintSubtypeId="PocketShield_PluginDefBullet_Item" />
+    <Entry Class="EliteTools" BlueprintSubtypeId="PocketShield_PluginDefExplosion_Item" />
+    <Entry Class="EliteTools" BlueprintSubtypeId="PocketShield_PluginResBullet_Item" />
+    <Entry Class="EliteTools" BlueprintSubtypeId="PocketShield_PluginResExplosion_Item" />
 
   </BlueprintClassEntries>
 

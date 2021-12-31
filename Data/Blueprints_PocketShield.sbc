@@ -5,9 +5,9 @@
     <Blueprint>
       <Id>
         <TypeId>BlueprintDefinition</TypeId>
-        <SubtypeId>ShieldEmitterBasicItem</SubtypeId>
+        <SubtypeId>PocketShield_EmitterBasic_Item</SubtypeId>
       </Id>
-      <DisplayName>PocketShield Basic Emitter</DisplayName>
+      <DisplayName>PocketShield_EmitterBasic_DisplayName</DisplayName>
       <Icon>Textures\GUI\Icons\Items\MedKit.dds</Icon>
       <Prerequisites>
         <Item Amount="100" TypeId="Ingot" SubtypeId="Iron" />
@@ -17,14 +17,15 @@
       </Prerequisites>
       <Result Amount="1" TypeId="PhysicalObject" SubtypeId="PocketShield_EmitterBasic" />
       <BaseProductionTimeInSeconds>30</BaseProductionTimeInSeconds>
+      <IconSymbol>T1</IconSymbol>
     </Blueprint>
 
     <Blueprint>
       <Id>
         <TypeId>BlueprintDefinition</TypeId>
-        <SubtypeId>ShieldEmitterAdvancedItem</SubtypeId>
+        <SubtypeId>PocketShield_EmitterAdvanced_Item</SubtypeId>
       </Id>
-      <DisplayName>PocketShield Advanced Emitter</DisplayName>
+      <DisplayName>PocketShield_EmitterAdvanced_DisplayName</DisplayName>
       <Icon>Textures\GUI\Icons\Items\MedKit.dds</Icon>
       <Prerequisites>
         <Item Amount="100" TypeId="Ingot" SubtypeId="Iron" />
@@ -37,15 +38,16 @@
       </Prerequisites>
       <Result Amount="1" TypeId="PhysicalObject" SubtypeId="PocketShield_EmitterAdvanced" />
       <BaseProductionTimeInSeconds>90</BaseProductionTimeInSeconds>
+      <IconSymbol>T2</IconSymbol>
     </Blueprint>
 
     <Blueprint>
       <Id>
         <TypeId>BlueprintDefinition</TypeId>
-        <SubtypeId>ShieldPluginCapItem</SubtypeId>
+        <SubtypeId>PocketShield_PluginCap_Item</SubtypeId>
       </Id>
-      <DisplayName>PocketShield Advanced Emitter</DisplayName>
-      <Icon>Textures\GUI\Icons\Items\MedKit.dds</Icon>
+      <DisplayName>PocketShield_PluginCap_DisplayName</DisplayName>
+      <Icon>Textures\GUI\Icons\Items\PowerKit.dds</Icon>
       <Prerequisites>
         <Item Amount="50" TypeId="Ingot" SubtypeId="Iron" />
         <Item Amount="10" TypeId="Ingot" SubtypeId="Nickel" />
@@ -55,15 +57,16 @@
       </Prerequisites>
       <Result Amount="1" TypeId="PhysicalObject" SubtypeId="PocketShield_PluginCap" />
       <BaseProductionTimeInSeconds>60</BaseProductionTimeInSeconds>
+      <IconSymbol>CAP</IconSymbol>
     </Blueprint>
 
     <Blueprint>
       <Id>
         <TypeId>BlueprintDefinition</TypeId>
-        <SubtypeId>ShieldPluginDeftItem</SubtypeId>
+        <SubtypeId>PocketShield_PluginDefBullet_Item</SubtypeId>
       </Id>
-      <DisplayName>PocketShield Advanced Emitter</DisplayName>
-      <Icon>Textures\GUI\Icons\Items\MedKit.dds</Icon>
+      <DisplayName>PocketShield_PluginDefBullet_DisplayName</DisplayName>
+      <Icon>Textures\GUI\Icons\Items\PowerKit.dds</Icon>
       <Prerequisites>
         <Item Amount="50" TypeId="Ingot" SubtypeId="Iron" />
         <Item Amount="10" TypeId="Ingot" SubtypeId="Nickel" />
@@ -71,17 +74,37 @@
         <Item Amount="10" TypeId="Ingot" SubtypeId="Gold" />
         <Item Amount="5" TypeId="Ingot" SubtypeId="Platinum" />
       </Prerequisites>
-      <Result Amount="1" TypeId="PhysicalObject" SubtypeId="PocketShield_PluginDef" />
+      <Result Amount="1" TypeId="PhysicalObject" SubtypeId="PocketShield_PluginDefBullet" />
       <BaseProductionTimeInSeconds>60</BaseProductionTimeInSeconds>
+      <IconSymbol>DEF_KI</IconSymbol>
     </Blueprint>
 
     <Blueprint>
       <Id>
         <TypeId>BlueprintDefinition</TypeId>
-        <SubtypeId>ShieldPluginResBulletItem</SubtypeId>
+        <SubtypeId>PocketShield_PluginDefExplosion_Item</SubtypeId>
       </Id>
-      <DisplayName>PocketShield Advanced Emitter</DisplayName>
-      <Icon>Textures\GUI\Icons\Items\MedKit.dds</Icon>
+      <DisplayName>PocketShield_PluginDefExplosion_DisplayName</DisplayName>
+      <Icon>Textures\GUI\Icons\Items\PowerKit.dds</Icon>
+      <Prerequisites>
+        <Item Amount="50" TypeId="Ingot" SubtypeId="Iron" />
+        <Item Amount="10" TypeId="Ingot" SubtypeId="Nickel" />
+        <Item Amount="50" TypeId="Ingot" SubtypeId="Silicon" />
+        <Item Amount="10" TypeId="Ingot" SubtypeId="Gold" />
+        <Item Amount="5" TypeId="Ingot" SubtypeId="Platinum" />
+      </Prerequisites>
+      <Result Amount="1" TypeId="PhysicalObject" SubtypeId="PocketShield_PluginDefExplosion" />
+      <BaseProductionTimeInSeconds>60</BaseProductionTimeInSeconds>
+      <IconSymbol>DEF_EX</IconSymbol>
+    </Blueprint>
+
+    <Blueprint>
+      <Id>
+        <TypeId>BlueprintDefinition</TypeId>
+        <SubtypeId>PocketShield_PluginResBullet_Item</SubtypeId>
+      </Id>
+      <DisplayName>PocketShield_PluginResBullet_DisplayName</DisplayName>
+      <Icon>Textures\GUI\Icons\Items\PowerKit.dds</Icon>
       <Prerequisites>
         <Item Amount="50" TypeId="Ingot" SubtypeId="Iron" />
         <Item Amount="10" TypeId="Ingot" SubtypeId="Nickel" />
@@ -91,15 +114,16 @@
       </Prerequisites>
       <Result Amount="1" TypeId="PhysicalObject" SubtypeId="PocketShield_PluginResBullet" />
       <BaseProductionTimeInSeconds>60</BaseProductionTimeInSeconds>
+      <IconSymbol>RES_KI</IconSymbol>
     </Blueprint>
 
     <Blueprint>
       <Id>
         <TypeId>BlueprintDefinition</TypeId>
-        <SubtypeId>ShieldPluginResExplosionItem</SubtypeId>
+        <SubtypeId>PocketShield_PluginResExplosion_Item</SubtypeId>
       </Id>
-      <DisplayName>PocketShield Advanced Emitter</DisplayName>
-      <Icon>Textures\GUI\Icons\Items\MedKit.dds</Icon>
+      <DisplayName>PocketShield_PluginResExplosion_DisplayName</DisplayName>
+      <Icon>Textures\GUI\Icons\Items\PowerKit.dds</Icon>
       <Prerequisites>
         <Item Amount="50" TypeId="Ingot" SubtypeId="Iron" />
         <Item Amount="10" TypeId="Ingot" SubtypeId="Nickel" />
@@ -109,6 +133,7 @@
       </Prerequisites>
       <Result Amount="1" TypeId="PhysicalObject" SubtypeId="PocketShield_PluginResExplosion" />
       <BaseProductionTimeInSeconds>60</BaseProductionTimeInSeconds>
+      <IconSymbol>RES_EX</IconSymbol>
     </Blueprint>
 
   </Blueprints>

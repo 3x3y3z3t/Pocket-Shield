@@ -1,6 +1,8 @@
 
 Characters.sbc
+Stats.sbc
 
+*.lnk
 *.psd
 *.bat
 *.sln

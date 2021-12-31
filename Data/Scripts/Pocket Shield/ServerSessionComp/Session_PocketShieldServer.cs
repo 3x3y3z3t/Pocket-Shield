@@ -40,6 +40,9 @@ namespace PocketShield
             CustomLogger.Suppressed = ConfigManager.ServerConfig.SuppressAllShieldLog;
             CustomLogger.LogLevel = ConfigManager.ServerConfig.LogLevel;
 
+            UpdateItemsDescription();
+
+
             MyAPIGateway.Utilities.MessageEntered += Utilities_MessageEntered;
 
             MyAPIGateway.Entities.OnEntityAdd += Entities_OnEntityAdd;

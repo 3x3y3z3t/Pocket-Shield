@@ -7,10 +7,9 @@
         <TypeId>PhysicalObject</TypeId>
         <SubtypeId>PocketShield_EmitterBasic</SubtypeId>
       </Id>
-      <DisplayName>PocketShield Basic Emitter</DisplayName>
-      <Description>A basic PocketShield Emitter that emit a shield with minimal protection. Good for protecting user against stray bullets. Stat: 1000 HP, 25% defense.</Description>
+      <DisplayName>PocketShield_EmitterBasic_DisplayName</DisplayName>
+      <ExtraInventoryTooltipLine>PocketShield_EmitterBasic_Stat</ExtraInventoryTooltipLine>
       <Icon>Textures\GUI\Icons\Items\MedKit.dds</Icon>
-      <!--<Icon>Textures\Icons\ShieldMainIcon0.dds</Icon>-->
       <Size>
         <X>0.24</X>
         <Y>0.24</Y>
@@ -34,10 +33,9 @@
         <TypeId>PhysicalObject</TypeId>
         <SubtypeId>PocketShield_EmitterAdvanced</SubtypeId>
       </Id>
-      <DisplayName>PocketShield Advanced Emitter</DisplayName>
-      <Description>An advanced PocketShield Emitter that emit a shield for extra protection. Stat: 10000 HP, 75% defense, 8 plugin slots.</Description>
+      <DisplayName>PocketShield_EmitterAdvanced_DisplayName</DisplayName>
+      <ExtraInventoryTooltipLine>PocketShield_EmitterAdvanced_Stat</ExtraInventoryTooltipLine>
       <Icon>Textures\GUI\Icons\Items\MedKit.dds</Icon>
-      <!--<Icon>Textures\Icons\ShieldMainIcon0.dds</Icon>-->
       <Size>
         <X>0.5</X>
         <Y>0.5</Y>
@@ -61,10 +59,9 @@
         <TypeId>PhysicalObject</TypeId>
         <SubtypeId>PocketShield_PluginCap</SubtypeId>
       </Id>
-      <DisplayName>PocketShield Capacity Plugin</DisplayName>
-      <Description>A plugin for PocketShield Emitter that increases shield capacity (+10% Capacity).</Description>
+      <DisplayName>PocketShield_PluginCap_DisplayName</DisplayName>
+      <ExtraInventoryTooltipLine>PocketShield_PluginCap_Stat</ExtraInventoryTooltipLine>
       <Icon>Textures\GUI\Icons\Items\PowerKit.dds</Icon>
-      <!--<Icon>Textures\Icons\ShieldBonusIcon0.dds</Icon>-->
       <Size>
         <X>0.1</X>
         <Y>0.2</Y>
@@ -86,12 +83,11 @@
     <PhysicalItem>
       <Id>
         <TypeId>PhysicalObject</TypeId>
-        <SubtypeId>PocketShield_PluginDef</SubtypeId>
+        <SubtypeId>PocketShield_PluginDefBullet</SubtypeId>
       </Id>
-      <DisplayName>PocketShield Defense Plugin</DisplayName>
-      <Description>A plugin for PocketShield Emitter that increases shield strength for more protection against piercing (+50% Defense).</Description>
+      <DisplayName>PocketShield_PluginDefBullet_DisplayName</DisplayName>
+      <ExtraInventoryTooltipLine>PocketShield_PluginDefBullet_Stat</ExtraInventoryTooltipLine>
       <Icon>Textures\GUI\Icons\Items\PowerKit.dds</Icon>
-      <!--<Icon>Textures\Icons\ShieldBonusIcon1.dds</Icon>-->
       <Size>
         <X>0.1</X>
         <Y>0.2</Y>
@@ -106,7 +102,33 @@
       <MinimumOfferAmount>1</MinimumOfferAmount>
       <MaximumOfferAmount>3</MaximumOfferAmount>
 
-      <IconSymbol>DEF</IconSymbol>
+      <IconSymbol>DEF_KI</IconSymbol>
+      <MaxStackAmount>1</MaxStackAmount>
+    </PhysicalItem>
+
+    <PhysicalItem>
+      <Id>
+        <TypeId>PhysicalObject</TypeId>
+        <SubtypeId>PocketShield_PluginDefExplosion</SubtypeId>
+      </Id>
+      <DisplayName>PocketShield_PluginDefExplosion_Displayname</DisplayName>
+      <ExtraInventoryTooltipLine>PocketShield_PluginDefExplosion_Stat</ExtraInventoryTooltipLine>
+      <Icon>Textures\GUI\Icons\Items\PowerKit.dds</Icon>
+      <Size>
+        <X>0.1</X>
+        <Y>0.2</Y>
+        <Z>0.1</Z>
+      </Size>
+      <Mass>0.75</Mass>
+      <Volume>1</Volume>
+      <Model>Models\Items\PowerKit.mwm</Model>
+      <PhysicalMaterial>Metal</PhysicalMaterial>
+
+      <MinimalPricePerUnit>15000</MinimalPricePerUnit>
+      <MinimumOfferAmount>1</MinimumOfferAmount>
+      <MaximumOfferAmount>3</MaximumOfferAmount>
+
+      <IconSymbol>DEF_EX</IconSymbol>
       <MaxStackAmount>1</MaxStackAmount>
     </PhysicalItem>
 
@@ -115,10 +137,9 @@
         <TypeId>PhysicalObject</TypeId>
         <SubtypeId>PocketShield_PluginResBullet</SubtypeId>
       </Id>
-      <DisplayName>PocketShield Bullet Resistance Plugin</DisplayName>
-      <Description>A plugin for PocketShield Emitter that increases shield strength against Bullet (+15% Bullet Resistance).</Description>
+      <DisplayName>PocketShield_PluginResBullet_DisplayName</DisplayName>
+      <ExtraInventoryTooltipLine>PocketShield_PluginResBullet_Stat</ExtraInventoryTooltipLine>
       <Icon>Textures\GUI\Icons\Items\PowerKit.dds</Icon>
-      <!--<Icon>Textures\Icons\ShieldBonusIcon2_3.dds</Icon>-->
       <Size>
         <X>0.1</X>
         <Y>0.2</Y>
@@ -133,7 +154,7 @@
       <MinimumOfferAmount>1</MinimumOfferAmount>
       <MaximumOfferAmount>3</MaximumOfferAmount>
 
-      <IconSymbol>KI</IconSymbol>
+      <IconSymbol>RES_KI</IconSymbol>
       <MaxStackAmount>1</MaxStackAmount>
     </PhysicalItem>
 
@@ -142,10 +163,9 @@
         <TypeId>PhysicalObject</TypeId>
         <SubtypeId>PocketShield_PluginResExplosion</SubtypeId>
       </Id>
-      <DisplayName>PocketShield Explosive Resistance Plugin</DisplayName>
-      <Description>A plugin for PocketShield Emitter that increases shield strength against Explosive (+15% Explosive Resistance).</Description>
+      <DisplayName>PocketShield_PluginResExplosion_Displayname</DisplayName>
+      <ExtraInventoryTooltipLine>PocketShield_PluginResExplosion_Stat</ExtraInventoryTooltipLine>
       <Icon>Textures\GUI\Icons\Items\PowerKit.dds</Icon>
-      <!--<Icon>Textures\Icons\ShieldBonusIcon3_1.dds</Icon>-->
       <Size>
         <X>0.1</X>
         <Y>0.2</Y>
@@ -160,10 +180,9 @@
       <MinimumOfferAmount>1</MinimumOfferAmount>
       <MaximumOfferAmount>3</MaximumOfferAmount>
 
-      <IconSymbol>EX</IconSymbol>
+      <IconSymbol>RES_EX</IconSymbol>
       <MaxStackAmount>1</MaxStackAmount>
     </PhysicalItem>
-
 
   </PhysicalItems>
 </Definitions>
