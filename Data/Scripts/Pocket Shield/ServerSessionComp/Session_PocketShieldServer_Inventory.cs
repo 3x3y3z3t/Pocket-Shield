@@ -1,5 +1,6 @@
 ﻿// ;
 using ExShared;
+using Sandbox.Game;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -131,5 +132,28 @@ namespace PocketShield
             m_UnknownItems.Clear();
             return;
         }
+
+        private void UpdatePlayerCharacterInventoryOnceBeforeSim()
+        {
+            ServerLogger.Log(">> UpdatePlayerCharacterInventoryOnceBeforeSim()..", 4);
+            UpdatePlayerList();
+            foreach (IMyPlayer player in m_Players)
+            {
+                ServerLogger.Log(">>   Updating player " + player.SteamUserId, 4);
+                if (player.Character == null)
+                    continue;
+                if (!player.Character.HasInventory)
+                    continue;
+                var inventory = player.Character.GetInventory() as MyInventory;
+                if (inventory == null)
+                    continue;
+
+                RefreshInventory(inventory);
+                ServerLogger.Log(">>     Player Character Inventory updated", 4);
+            }
+        }
+
+
+
     }
 }

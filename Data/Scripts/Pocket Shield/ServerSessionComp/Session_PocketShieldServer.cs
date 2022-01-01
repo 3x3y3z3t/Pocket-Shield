@@ -4,14 +4,10 @@ using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using VRage.Game.Components;
-using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.Utils;
 using VRage.Game;
-using System.Text;
 using ExShared;
-using System.Diagnostics;
-using Sandbox.Game.Entities.Character;
 
 namespace PocketShield
 {
@@ -28,10 +24,11 @@ namespace PocketShield
 
         private Dictionary<long, ShieldEmitter> m_PlayerShieldEmitters = null; // TODO: maybe use ulong;
         private Dictionary<long, ShieldEmitter> m_NpcShieldEmitters = null;
+        private Dictionary<long, OtherCharacterShieldData> m_ShieldDamageEffects = new Dictionary<long, OtherCharacterShieldData>();
 
-        private List<ulong> m_ForceSyncPlayers = null;
-        private List<int> m_DamageQueue;
-
+        private List<ulong> m_ForceSyncPlayers = new List<ulong>();
+        private List<int> m_DamageQueue = new List<int>();
+        private List<long> m_IdToRemove = new List<long>();
 
         public override void LoadData()
         {
@@ -58,9 +55,7 @@ namespace PocketShield
 
             m_PlayerShieldEmitters = new Dictionary<long, ShieldEmitter>();
             m_NpcShieldEmitters = new Dictionary<long, ShieldEmitter>();
-
-            m_ForceSyncPlayers = new List<ulong>();
-            m_DamageQueue = new List<int>();
+            
 
             m_Plugins = new List<MyStringHash>();
             m_UnknownItems = new List<MyStringHash>();
@@ -240,7 +235,21 @@ namespace PocketShield
             float beforeDamageHealth = MyVisualScriptLogicProvider.GetPlayersHealth(character.ControllerInfo.ControllingIdentityId);
             if (emitter.TakeDamage(ref _damageInfo))
             {
-                // TODO: animation;
+                if (m_ShieldDamageEffects.ContainsKey(character.EntityId))
+                {
+                    m_ShieldDamageEffects[character.EntityId].Ticks = m_Ticks;
+                    m_ShieldDamageEffects[character.EntityId].ShieldAmountPercent = emitter.ShieldEnergyPercent;
+                }
+                else
+                {
+                    m_ShieldDamageEffects[character.EntityId] = new OtherCharacterShieldData()
+                    {
+                        Entity = character,
+                        EntityId = character.EntityId,
+                        Ticks = m_Ticks,
+                        ShieldAmountPercent = emitter.ShieldEnergyPercent
+                    };
+                }
             }
 
             m_DamageQueue.Add(_damageInfo.GetHashCode());
@@ -249,31 +258,11 @@ namespace PocketShield
             _damageInfo.Amount = 0;
             m_DamageQueue.Remove(_damageInfo.GetHashCode());
         }
-        
+
         private void UpdatePlayerList()
         {
             m_Players.Clear();
             MyAPIGateway.Players.GetPlayers(m_Players);
-        }
-
-        private void UpdatePlayerCharacterInventoryOnceBeforeSim()
-        {
-            ServerLogger.Log(">> UpdatePlayerCharacterInventoryOnceBeforeSim()..", 4);
-            UpdatePlayerList();
-            foreach (IMyPlayer player in m_Players)
-            {
-                ServerLogger.Log(">>   Updating player " + player.SteamUserId, 4);
-                if (player.Character == null)
-                    continue;
-                if (!player.Character.HasInventory)
-                    continue;
-                var inventory = player.Character.GetInventory() as MyInventory;
-                if (inventory == null)
-                    continue;
-
-                RefreshInventory(inventory);
-                ServerLogger.Log(">>     Player Character Inventory updated", 4);
-            }
         }
 
         private void SyncShieldDataToPlayers()
@@ -286,8 +275,13 @@ namespace PocketShield
                     SendSyncDataToPlayer(player);
                 }
                 else if (m_PlayerShieldEmitters.ContainsKey((long)player.SteamUserId) && m_PlayerShieldEmitters[(long)player.SteamUserId].RequireSync)
+                {
                     SendSyncDataToPlayer(player);
-
+                }
+                else if (m_ShieldDamageEffects.Count > 0)
+                {
+                    SendSyncDataToPlayer(player);
+                }
             }
         }
 
@@ -302,31 +296,6 @@ namespace PocketShield
             {
                 SaveDataManager.UpdateNpcData(key, m_NpcShieldEmitters[key].Energy);
             }
-        }
-
-        private void SendSyncDataToPlayer(IMyPlayer _player)
-        {
-            ShieldSyncData data = new ShieldSyncData(0U);
-
-            if (m_PlayerShieldEmitters.ContainsKey((long)_player.SteamUserId))
-            {
-                ShieldEmitter emitter = m_PlayerShieldEmitters[(long)_player.SteamUserId];
-                if (emitter != null)
-                {
-                    data.PlayerSteamUserId = _player.SteamUserId;
-                    data.Energy = emitter.Energy;
-                    data.PluginsCount = emitter.PluginsCount;
-                    data.MaxEnergy = emitter.MaxEnergy;
-                    data.Def = emitter.DefList;
-                    data.Res = emitter.ResList;
-                    data.SubtypeId = emitter.SubtypeId;
-                    data.OverchargeRemainingPercent = emitter.OverchargeRemainingPercent;
-                }
-            }
-
-            string syncData = MyAPIGateway.Utilities.SerializeToXML(data);
-            ServerLogger.Log("Sending sync data to player " + _player.SteamUserId, 5);
-            MyAPIGateway.Multiplayer.SendMessageTo(Constants.MSG_HANDLER_ID_SYNC, Encoding.Unicode.GetBytes(syncData), _player.SteamUserId);
         }
 
         private IMyPlayer GetPlayer(IMyCharacter _character)

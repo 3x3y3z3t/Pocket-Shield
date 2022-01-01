@@ -87,6 +87,8 @@ namespace PocketShield
 
         public const bool SUPPRESS_ALL_SHIELD_LOG = false;
 
+        public const int HIT_EFFECT_TICKS = 20;
+        public const double HIT_EFFECT_SYNC_DISTANCE = 2000.0;
         public const int TEXTURE_W = 4;
         public const int TEXTURE_H = 4;
         public const float TEXTURE_UV_SIZE_X = 1.0f / TEXTURE_W;
@@ -108,7 +110,14 @@ namespace PocketShield
         public const string SUBTYPEID_PLUGIN_DEF_EX = "PocketShield_PluginDefExplosion";
         public const string SUBTYPEID_PLUGIN_RES_KI = "PocketShield_PluginResBullet";
         public const string SUBTYPEID_PLUGIN_RES_EX = "PocketShield_PluginResExplosion";
-        
+
+
+        public const string COLOR_TAG_DEFAULT_VALUE = "<color=128,128,128,72>";
+        public const string COLOR_TAG_READONLY_VALUE= "<color=32,223,223,200>";
+        public const string COLOR_TAG_NUMBER= "<color=223,223,32>";
+        public const string COLOR_TAG_BOOL_TRUE= "<color=32,223,32>";
+        public const string COLOR_TAG_BOOL_FALSE = "<color=223,32,32>";
+
     }
 
     public static class ShieldConfig

@@ -46,6 +46,7 @@ namespace PocketShield
     public abstract class ShieldEmitter
     {
         public bool RequireSync { get; set; }
+        public float ShieldEnergyPercent { get { return Energy / MaxEnergy; } }
         public bool IsOverchargeActive { get { return m_OverchargeRemainingTicks > 0; } }
         public float OverchargeRemainingPercent { get { return m_OverchargeRemainingTicks / (OverchargeDuration * 60.0f); } }
 

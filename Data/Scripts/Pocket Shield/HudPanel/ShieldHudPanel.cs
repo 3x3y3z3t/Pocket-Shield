@@ -304,7 +304,7 @@ namespace PocketShield
 
         }
 
-        public void UpdatePanel(ref ShieldSyncData _data)
+        public void UpdatePanel(ref MyShieldData _data)
         {
             if (_data.PlayerSteamUserId == 0U)
             {

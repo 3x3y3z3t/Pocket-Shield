@@ -30,7 +30,7 @@ namespace PocketShield
         private ShieldHudPanel m_ShieldHudPanel = null;
         private HudAPIv2 m_TextHudAPI = null;
 
-        private ShieldSyncData m_ShieldData;
+        private MyShieldData m_ShieldData;
         
         public override void LoadData()
         {
@@ -49,8 +49,7 @@ namespace PocketShield
 
             ClientLogger.DeInit();
         }
-
-        float percent = 0.0f;
+        
         public override void UpdateAfterSimulation()
         {
             ++m_Ticks;
@@ -82,10 +81,20 @@ namespace PocketShield
                 // TODO: doing main job?;
                 UpdateFakeShieldStat();
 
-
             }
 
-            
+                UpdateHitEffectDuration(1);
+
+            //if (m_Ticks % 6 == 0)
+            //{
+            //    percent -= 0.01f;
+            //    if (percent <= 0)
+            //        percent += 1;
+            //}
+
+            //timer -= 1;
+            //if (timer < 0)
+            //    timer = Constants.HIT_EFFECT_TICKS;
 
             // Attempt to steal from https://github.com/THDigi/BuildInfo/blob/master/Data/Scripts/BuildInfo/Systems/GameConfig.cs#L52...
             // Stealing In Progress...
@@ -172,40 +181,7 @@ namespace PocketShield
             catch (Exception _e)
             { }
         }
-
-        public void HandleSyncShieldData(ushort _handlerId, byte[] _package, ulong _senderPlayerId, bool _sentMsg)
-        {
-            ClientLogger.Log("Starting HandleSyncShieldData()", 5);
-
-            try
-            {
-                string decodedPackage = Encoding.Unicode.GetString(_package);
-                //ClientLogger.Log("  _handlerId = " + _handlerId + ", _package = " + decodedPackage + ", _senderPlayerId = " + _senderPlayerId + ", _sentMsg = " + _sentMsg, 5);
-                ClientLogger.Log("  Recieved message from <" + _senderPlayerId + ">: " + decodedPackage, 5);
-                
-                ShieldSyncData data = MyAPIGateway.Utilities.SerializeFromXML<ShieldSyncData>(decodedPackage);
-                if (MyAPIGateway.Session != null)
-                {
-                    if (data.PlayerSteamUserId == 0U || data.PlayerSteamUserId == MyAPIGateway.Session.Player.SteamUserId)
-                    {
-                        ClientLogger.Log("  Shield Data updated", 5);
-                        m_ShieldData = data;
-                        m_IsHudDirty = true;
-                    }
-                    else
-                    {
-                        ClientLogger.Log("  Data is for player <" + m_ShieldData.PlayerSteamUserId + ">, not me", 4);
-                    }
-                }
-
-            }
-            catch (Exception _e)
-            {
-                ClientLogger.Log("  > Exception < Error during parsing sync data from <" + _senderPlayerId + ">: " + _e.Message, 0);
-                return;
-            }
-        }
-
+        
         private void UpdateHudConfigs()
         {
             if (MyAPIGateway.Session.Config != null)
@@ -252,6 +228,16 @@ namespace PocketShield
 
             m_IsHudDirty = false;
             ClientLogger.Log("UpdateTextHud() done", 5);
+        }
+
+        private void UpdateHitEffectDuration(int _ticks)
+        {
+            foreach (var data in m_DrawList)
+            {
+                data.Ticks -= _ticks;
+            }
+
+            int removed = m_DrawList.RemoveAll((OtherCharacterShieldData _data) => { return _data.Ticks <= 0; });
         }
 
         private void UpdateFakeShieldStat()
