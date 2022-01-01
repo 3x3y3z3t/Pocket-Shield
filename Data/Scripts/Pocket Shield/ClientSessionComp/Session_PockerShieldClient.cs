@@ -30,7 +30,7 @@ namespace PocketShield
         private ShieldHudPanel m_ShieldHudPanel = null;
         private HudAPIv2 m_TextHudAPI = null;
 
-        private MyShieldData m_ShieldData;
+        private MyShieldData m_ShieldData = new MyShieldData();
         
         public override void LoadData()
         {
@@ -224,7 +224,10 @@ namespace PocketShield
 
             ClientLogger.Log("Starting UpdateTextHud()", 5);
 
-            m_ShieldHudPanel.UpdatePanel(ref m_ShieldData);
+            if (m_ShieldData != null)
+            {
+                m_ShieldHudPanel.UpdatePanel(ref m_ShieldData);
+            }
 
             m_IsHudDirty = false;
             ClientLogger.Log("UpdateTextHud() done", 5);
@@ -242,6 +245,8 @@ namespace PocketShield
 
         private void UpdateFakeShieldStat()
         {
+            if (m_ShieldData == null)
+                return;
             if (m_ShieldData.PlayerSteamUserId == 0U)
                 return;
 

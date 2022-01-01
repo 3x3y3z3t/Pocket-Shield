@@ -170,15 +170,17 @@ namespace PocketShield
         private void Character_CharacterDied(IMyCharacter _character)
         {
             ReplaceShieldEmitter(_character, null);
-
+            
             IMyPlayer player = GetPlayer(_character);
-            if (player != null)
-                m_ForceSyncPlayers.Add(player.SteamUserId);
-
-            if (player.SteamUserId == 0)
+            if (player == null || player.SteamUserId == 0)
+            {
                 ServerLogger.Log("Character [" + _character.DisplayName + "] died and their ShieldEmitter has been removed", 2);
-            else
+            }
+            else if (player != null)
+            {
+                m_ForceSyncPlayers.Add(player.SteamUserId);
                 ServerLogger.Log("Character [" + _character.DisplayName + "] (Player <" + player.SteamUserId + ">) died and their ShieldEmitter has been removed", 2);
+            }
         }
         
         public void Setup()
