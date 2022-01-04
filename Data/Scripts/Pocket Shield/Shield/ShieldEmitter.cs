@@ -118,7 +118,7 @@ namespace PocketShield
 
             m_Logger = CustomLogger.Get((ulong)_character.EntityId);
 
-            string logString = ">> Character [" + _character.DisplayName + "] <" + _character.EntityId + ">";
+            string logString = ">> Character [" + Utils.LogCharacterName(_character) + "] <" + _character.EntityId + ">";
             if (!_character.IsPlayer)
                 logString += " (Npc)";
             m_Logger.Log(logString);
@@ -292,7 +292,7 @@ namespace PocketShield
         
         public bool TakeDamage(ref MyDamageInformation _damageInfo)
         {
-            m_Logger.Log("Shield is taking " + _damageInfo.Amount + " " + _damageInfo.Type.String + " damage", 1);
+            m_Logger.Log("Incoming " + _damageInfo.Amount + " " + _damageInfo.Type.String + " damage", 1);
             if (Character == null)
             {
                 m_Logger.Log("  There is no Character to take damage (this should not happen)", 1);
@@ -310,35 +310,37 @@ namespace PocketShield
             // TODO: process damage;
             float beforeDamageEnergy = Energy;
             float totalShieldDamage = 0.0f;
-            float totalHealthDamage = 0.0f;
+            //float totalHealthDamage = 0.0f;
 
             float defRate = GetDefenseAgainst(_damageInfo.Type);
             float resRate = GetResistanceAgainst(_damageInfo.Type);
             float shieldDamage = _damageInfo.Amount * defRate;
-            float healthDamge = _damageInfo.Amount - shieldDamage;
+            float healthDamage = _damageInfo.Amount - shieldDamage;
             shieldDamage *= (1.0f - resRate);
-
-
-            // TODO: process shield Resistance;
-            if (Energy >= shieldDamage)
+            
+            if (shieldDamage > 0.0f)
             {
-                Energy -= shieldDamage;
-                totalShieldDamage = shieldDamage;
-                totalHealthDamage = healthDamge;
-            }
-            else
-            {
-                healthDamge += (shieldDamage - Energy);
-                totalShieldDamage = Energy;
-                totalHealthDamage = healthDamge;
-                Energy = 0.0f;
+                if (Energy >= shieldDamage)
+                {
+                    Energy -= shieldDamage;
+                    totalShieldDamage = shieldDamage;
+                    //totalHealthDamage = healthDamge;
+                }
+                else
+                {
+                    healthDamage += (shieldDamage - Energy);
+                    totalShieldDamage = Energy;
+                    //totalHealthDamage = healthDamge;
+                    Energy = 0.0f;
+                }
             }
 
-            _damageInfo.Amount = totalHealthDamage;
+            _damageInfo.Amount = healthDamage;
 
-            m_Logger.Log(string.Format("  Shield damage: {0:0.##} ({1:0.##}%) (res {2:0.##}%), health damage: {3:0.##}", totalShieldDamage, defRate * 100.0f, resRate * 100.0f, totalHealthDamage), 2);
-            m_Logger.Log(string.Format("  Shield energy: {0:0.##} -> {1:0.##}", beforeDamageEnergy, Energy), 1);
-            return true;
+            m_Logger.Log(string.Format("  Shield damage: {0:0.##} ({1:0.##}%) (res {2:0.##}%), health damage: {3:0.##}", totalShieldDamage, defRate * 100.0f, resRate * 100.0f, healthDamage), 2);
+            m_Logger.Log(string.Format("  Shield energy: {0:0.##} -> {1:0.##}", beforeDamageEnergy, Energy), 2);
+
+            return totalShieldDamage != 0.0f;
         }
 
         private void DeactiveOvercharge()

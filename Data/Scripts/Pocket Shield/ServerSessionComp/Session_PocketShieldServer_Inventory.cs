@@ -14,19 +14,20 @@ namespace PocketShield
     {
         private List<MyStringHash> m_Plugins = null;
         private List<MyStringHash> m_UnknownItems = null;
-        
+
         private void Inventory_ContentsChanged(MyInventoryBase _inventory)
         {
-            long characterEntityId = _inventory.Container.Entity.EntityId;
-            string characterDisplayName = _inventory.Container.Entity.DisplayName;
-            ServerLogger.Log("Inventory of character [" + characterDisplayName + "]'s content has changed", 5);
+            IMyCharacter character = _inventory.Container.Entity as IMyCharacter;
+            if (character == null)
+                return;
+
+            ServerLogger.Log("Inventory of character [" + Utils.LogCharacterName(character) + "]'s content has changed", 5);
 
             RefreshInventory(_inventory);
         }
         
         private void Inventory_InventoryContentChanged(MyInventoryBase _inventory, MyPhysicalInventoryItem _arg2, VRage.MyFixedPoint _arg3)
-        {
-        }
+        { }
 
         private void RefreshInventory(MyInventoryBase _inventory)
         {
@@ -37,7 +38,7 @@ namespace PocketShield
                 return;
             
             List<MyPhysicalInventoryItem> InventoryItems = _inventory.GetItems();
-            ServerLogger.Log("  [" + character.DisplayName + "]'s inventory now contains " + InventoryItems.Count + " items.", 4);
+            ServerLogger.Log("  [" + Utils.LogCharacterName(character) + "]'s inventory now contains " + InventoryItems.Count + " items.", 4);
 
             ShieldEmitter oldEmitter = GetShieldEmitter(character);
 

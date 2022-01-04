@@ -131,8 +131,8 @@ namespace PocketShield
             if (character == null)
                 return;
 
-            ServerLogger.Log("  Entity is Character [" + character.DisplayName + "]", 5);
-            ServerLogger.Log("  Character [" + character.DisplayName + "]: Hooking character.CharacterDied..", 5);
+            ServerLogger.Log("  Entity is Character [" + Utils.LogCharacterName(character) + "]", 5);
+            ServerLogger.Log("  Character [" + Utils.LogCharacterName(character) + "]: Hooking character.CharacterDied..", 5);
             character.CharacterDied += Character_CharacterDied;
 
             MyInventory inventory = character.GetInventory() as MyInventory;
@@ -142,7 +142,7 @@ namespace PocketShield
                 return;
             }
 
-            ServerLogger.Log("  Character [" + character.DisplayName + "]: Hooking inventory.InventoryContentChanged..", 5);
+            ServerLogger.Log("  Character [" + Utils.LogCharacterName(character) + "]: Hooking inventory.InventoryContentChanged..", 5);
             inventory.InventoryContentChanged += Inventory_InventoryContentChanged;
             inventory.ContentsChanged += Inventory_ContentsChanged;
             //RefreshInventory(inventory);
@@ -155,15 +155,15 @@ namespace PocketShield
             if (character == null)
                 return;
 
-            ServerLogger.Log("  Entity is Character [" + character.DisplayName + "]", 5);
-            ServerLogger.Log("  Character [" + character.DisplayName + "]: UnHooking character.CharacterDied..", 5);
+            ServerLogger.Log("  Entity is Character [" + Utils.LogCharacterName(character) + "]", 5);
+            ServerLogger.Log("  Character [" + Utils.LogCharacterName(character) + "]: UnHooking character.CharacterDied..", 5);
             character.CharacterDied -= Character_CharacterDied;
 
             MyInventory inventory = character.GetInventory() as MyInventory;
             if (inventory == null)
                 return;
 
-            ServerLogger.Log("  Character [" + character.DisplayName + "]: UnHooking inventory.InventoryContentChanged..", 5);
+            ServerLogger.Log("  Character [" + Utils.LogCharacterName(character) + "]: UnHooking inventory.InventoryContentChanged..", 5);
             inventory.InventoryContentChanged -= Inventory_InventoryContentChanged;
         }
 
@@ -174,12 +174,12 @@ namespace PocketShield
             IMyPlayer player = GetPlayer(_character);
             if (player == null || player.SteamUserId == 0)
             {
-                ServerLogger.Log("Character [" + _character.DisplayName + "] died and their ShieldEmitter has been removed", 2);
+                ServerLogger.Log("Character [" + Utils.LogCharacterName(_character) + "] died and their ShieldEmitter has been removed", 2);
             }
             else if (player != null)
             {
                 m_ForceSyncPlayers.Add(player.SteamUserId);
-                ServerLogger.Log("Character [" + _character.DisplayName + "] (Player <" + player.SteamUserId + ">) died and their ShieldEmitter has been removed", 2);
+                ServerLogger.Log("Character [" + Utils.LogCharacterName(_character) + "] (Player <" + player.SteamUserId + ">) died and their ShieldEmitter has been removed", 2);
             }
         }
         
