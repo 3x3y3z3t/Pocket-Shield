@@ -45,10 +45,10 @@ namespace PocketShield
             return _color;
         }
 
-        public static string LogCharacterName(IMyCharacter _character)
+        public static string GetCharacterName(IMyCharacter _character)
         {
             if (_character == null)
-                return "";
+                return "null";
             if (_character.DisplayName != string.Empty)
                 return _character.DisplayName;
             return _character.Name;

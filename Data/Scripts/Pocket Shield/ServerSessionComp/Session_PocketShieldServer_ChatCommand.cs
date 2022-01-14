@@ -92,6 +92,17 @@ namespace PocketShield
             }
 
             #region Debug
+            if (_command == "EmitterCount")
+            {
+                ServerLogger.Log("      Executing EmitterCount command", 1);
+
+                MyAPIGateway.Utilities.ShowNotification("[" + Constants.LOG_PREFIX + "] [Server] Emitter Cunt: "
+                    + m_PlayerShieldEmitters.Count + " Player's, " + m_NpcShieldEmitters.Count + " Npc's", 5000);
+                ServerLogger.Log("    Emitter count: " + m_PlayerShieldEmitters.Count + " Player's, " + m_NpcShieldEmitters.Count + " Npc's", 1);
+
+                return true;
+            }
+
             if (_command == "LoadedCfg")
             {
                 ServerLogger.Log("  Executing LoadedCfg command");

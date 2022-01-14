@@ -54,15 +54,17 @@ namespace PocketShield
                 m_CachedDescs[Constants.SUBTYPEID_PLUGIN_RES_KI] = "PocketShield plugin that increase Resistance against Bullet damage.";
                 m_CachedDescs[Constants.SUBTYPEID_PLUGIN_RES_EX] = "PocketShield plugin that increase Resistance against Explosion damage.";
             }
+            
         }
 
         private void UpdateItemsDescription()
         {
-            ServerLogger.Log("MethodCalled");
+            //ServerLogger.Log("MethodCalled");
             InitCache();
 
             UpdateInventoryTooltip();
             UpdateAssemblerDescription();
+            
         }
         
         private void UpdateInventoryTooltip()

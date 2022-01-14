@@ -21,7 +21,7 @@ namespace PocketShield
             if (character == null)
                 return;
 
-            ServerLogger.Log("Inventory of character [" + Utils.LogCharacterName(character) + "]'s content has changed", 5);
+            ServerLogger.Log("Inventory of character [" + Utils.GetCharacterName(character) + "]'s content has changed", 5);
 
             RefreshInventory(_inventory);
         }
@@ -38,7 +38,7 @@ namespace PocketShield
                 return;
             
             List<MyPhysicalInventoryItem> InventoryItems = _inventory.GetItems();
-            ServerLogger.Log("  [" + Utils.LogCharacterName(character) + "]'s inventory now contains " + InventoryItems.Count + " items.", 4);
+            ServerLogger.Log("  [" + Utils.GetCharacterName(character) + "]'s inventory now contains " + InventoryItems.Count + " items.", 4);
 
             ShieldEmitter oldEmitter = GetShieldEmitter(character);
 
@@ -71,7 +71,7 @@ namespace PocketShield
                     }
                     else
                     {
-                        ServerLogger.Log("    Old Emitter: " + oldEmitter.SubtypeId.String);
+                        ServerLogger.Log("    Old Emitter: " + oldEmitter.SubtypeId.String, 4);
                         if (oldEmitter.SubtypeId != subtypeId)
                         {
                             ServerLogger.Log("    Try creating new Emitter..", 4);
@@ -116,9 +116,8 @@ namespace PocketShield
                 ServerLogger.Log("  Emitter dropped: " + oldEmitter.SubtypeId);
                 ReplaceShieldEmitter(character, null);
 
-                IMyPlayer player = GetPlayer(character);
-                if (player != null)
-                    m_ForceSyncPlayers.Add(player.SteamUserId);
+                if (GetPlayerSteamUid(character) != 0U)
+                    m_ForceSyncPlayers.Add(GetPlayerSteamUid(character));
             }
 
             if (oldEmitter != null)

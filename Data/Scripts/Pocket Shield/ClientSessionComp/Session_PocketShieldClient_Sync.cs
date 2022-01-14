@@ -38,11 +38,18 @@ namespace PocketShield
 
                 if (obj.m_MyShieldData != null)
                 {
-                    if (obj.m_MyShieldData.PlayerSteamUserId == 0U || obj.m_MyShieldData.PlayerSteamUserId == MyAPIGateway.Session.Player.SteamUserId)
+                    if (obj.m_MyShieldData.PlayerSteamUserId == MyAPIGateway.Session.Player.SteamUserId)
                     {
-                        ClientLogger.Log("  Shield Data updated", 5);
-                        m_ShieldData = obj.m_MyShieldData;
+                        if (obj.HasShield)
+                        {
+                            m_ShieldData = obj.m_MyShieldData;
+                        }
+                        else
+                        {
+                            m_ShieldData.PlayerSteamUserId = 0U;
+                        }
                         m_IsHudDirty = true;
+                        ClientLogger.Log("  Shield Data updated", 4);
                     }
                     else
                     {

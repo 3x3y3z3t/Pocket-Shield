@@ -16,6 +16,29 @@ namespace PocketShield
     public partial class Session_PocketShieldServer
     {
         private SyncObject m_SyncObject = new SyncObject();
+        
+        private void SyncShieldDataToPlayers()
+        {
+            foreach (IMyPlayer player in m_Players)
+            {
+                if (m_ForceSyncPlayers.Contains(player.SteamUserId))
+                {
+                    m_ForceSyncPlayers.Remove(player.SteamUserId);
+                    ServerLogger.Log("Request Sync due to: Force Sync <" + player.SteamUserId + ">", 3);
+                    SendSyncDataToPlayer(player);
+                }
+                else if (m_PlayerShieldEmitters.ContainsKey((long)player.SteamUserId) && m_PlayerShieldEmitters[(long)player.SteamUserId].RequireSync)
+                {
+                    ServerLogger.Log("Request Sync due to: Shield Updated <" + player.SteamUserId + ">", 3);
+                    SendSyncDataToPlayer(player);
+                }
+                else if (m_ShieldDamageEffects.Count > 0)
+                {
+                    ServerLogger.Log("Request Sync due to: Shield Effect Updated <" + player.SteamUserId + ">", 3);
+                    SendSyncDataToPlayer(player);
+                }
+            }
+        }
 
         /// <summary>
         /// Defined in Session_PocketShieldServer_Sync.cs.
@@ -54,6 +77,9 @@ namespace PocketShield
                     m_SyncObject.m_MyShieldData.Res = emitter.ResList;
                     m_SyncObject.m_MyShieldData.SubtypeId = emitter.SubtypeId;
                     m_SyncObject.m_MyShieldData.OverchargeRemainingPercent = emitter.OverchargeRemainingPercent;
+                    m_SyncObject.HasShield = true;
+
+                    emitter.RequireSync = false;
                 }
             }
 
@@ -102,18 +128,19 @@ namespace PocketShield
 
         public void Clear()
         {
-            //Def.Clear();
-            //Res.Clear();
+
         }
     }
 
     public class SyncObject
     {
+        public bool HasShield = false;
         public List<OtherCharacterShieldData> m_OthersShieldData = new List<OtherCharacterShieldData>();
         public MyShieldData m_MyShieldData = new MyShieldData();
         
         public void Clear()
         {
+            HasShield = false;
             m_OthersShieldData.Clear();
             m_MyShieldData.Clear();
         }

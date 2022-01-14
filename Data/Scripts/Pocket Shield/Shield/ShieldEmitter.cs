@@ -118,8 +118,8 @@ namespace PocketShield
 
             m_Logger = CustomLogger.Get((ulong)_character.EntityId);
 
-            string logString = ">> Character [" + Utils.LogCharacterName(_character) + "] <" + _character.EntityId + ">";
-            if (!_character.IsPlayer)
+            string logString = ">> Character [" + Utils.GetCharacterName(_character) + "] <" + _character.EntityId + ">";
+            if (string.IsNullOrEmpty(_character.DisplayName))
                 logString += " (Npc)";
             m_Logger.Log(logString);
             

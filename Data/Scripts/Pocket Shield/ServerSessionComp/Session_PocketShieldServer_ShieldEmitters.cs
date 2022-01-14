@@ -1,8 +1,6 @@
 ﻿// ;
 using ExShared;
 using System;
-using System.Collections.Generic;
-using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.Utils;
 
@@ -72,16 +70,16 @@ namespace PocketShield
 
         private ShieldEmitter GetShieldEmitter(IMyCharacter _character)
         {
-            if (_character.IsPlayer)
+            if (GetPlayerSteamUid(_character) == 0U)
+            {
+                if (m_NpcShieldEmitters.ContainsKey(_character.EntityId))
+                    return m_NpcShieldEmitters[_character.EntityId];
+            }
+            else
             {
                 long playerId = (long)GetPlayerSteamUid(_character);
                 if (m_PlayerShieldEmitters.ContainsKey(playerId))
                     return m_PlayerShieldEmitters[playerId];
-            }
-            else
-            {
-                if (m_NpcShieldEmitters.ContainsKey(_character.EntityId))
-                    return m_NpcShieldEmitters[_character.EntityId];
             }
 
             return null;
@@ -92,20 +90,20 @@ namespace PocketShield
             if (_character == null)
                 return;
             
-            if (_character.IsPlayer)
+            if (GetPlayerSteamUid(_character) == 0U)
+            {
+                if (_newEmitter == null)
+                    m_NpcShieldEmitters.Remove(_character.EntityId);
+                else
+                    m_NpcShieldEmitters[_character.EntityId] = _newEmitter;
+            }
+            else
             {
                 long playerId = (long)GetPlayerSteamUid(_character);
                 if (_newEmitter == null)
                     m_PlayerShieldEmitters.Remove(playerId);
                 else 
                     m_PlayerShieldEmitters[playerId] = _newEmitter;
-            }
-            else
-            {
-                if (_newEmitter == null)
-                    m_NpcShieldEmitters.Remove(_character.EntityId);
-                else
-                    m_NpcShieldEmitters[_character.EntityId] = _newEmitter;
             }
         }
     }

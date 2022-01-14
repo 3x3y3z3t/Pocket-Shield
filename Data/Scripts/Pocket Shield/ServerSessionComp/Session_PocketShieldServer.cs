@@ -8,6 +8,7 @@ using VRage.Game.ModAPI;
 using VRage.Utils;
 using VRage.Game;
 using ExShared;
+using VRage.Game.Entity;
 
 namespace PocketShield
 {
@@ -131,8 +132,8 @@ namespace PocketShield
             if (character == null)
                 return;
 
-            ServerLogger.Log("  Entity is Character [" + Utils.LogCharacterName(character) + "]", 5);
-            ServerLogger.Log("  Character [" + Utils.LogCharacterName(character) + "]: Hooking character.CharacterDied..", 5);
+            ServerLogger.Log("  Added Character [" + Utils.GetCharacterName(character) + "] (EntitId = " + character.EntityId + ")", 1);
+            ServerLogger.Log("  Character [" + Utils.GetCharacterName(character) + "]: Hooking character.CharacterDied..", 5);
             character.CharacterDied += Character_CharacterDied;
 
             MyInventory inventory = character.GetInventory() as MyInventory;
@@ -142,7 +143,7 @@ namespace PocketShield
                 return;
             }
 
-            ServerLogger.Log("  Character [" + Utils.LogCharacterName(character) + "]: Hooking inventory.InventoryContentChanged..", 5);
+            ServerLogger.Log("  Character [" + Utils.GetCharacterName(character) + "]: Hooking inventory.InventoryContentChanged..", 5);
             inventory.InventoryContentChanged += Inventory_InventoryContentChanged;
             inventory.ContentsChanged += Inventory_ContentsChanged;
             //RefreshInventory(inventory);
@@ -155,31 +156,55 @@ namespace PocketShield
             if (character == null)
                 return;
 
-            ServerLogger.Log("  Entity is Character [" + Utils.LogCharacterName(character) + "]", 5);
-            ServerLogger.Log("  Character [" + Utils.LogCharacterName(character) + "]: UnHooking character.CharacterDied..", 5);
+            ServerLogger.Log("  Entity is Character [" + Utils.GetCharacterName(character) + "]", 5);
+            ServerLogger.Log("  Character [" + Utils.GetCharacterName(character) + "]: UnHooking character.CharacterDied..", 5);
             character.CharacterDied -= Character_CharacterDied;
 
             MyInventory inventory = character.GetInventory() as MyInventory;
             if (inventory == null)
                 return;
 
-            ServerLogger.Log("  Character [" + Utils.LogCharacterName(character) + "]: UnHooking inventory.InventoryContentChanged..", 5);
+            ServerLogger.Log("  Character [" + Utils.GetCharacterName(character) + "]: UnHooking inventory.InventoryContentChanged..", 5);
             inventory.InventoryContentChanged -= Inventory_InventoryContentChanged;
         }
 
         private void Character_CharacterDied(IMyCharacter _character)
         {
             ReplaceShieldEmitter(_character, null);
-            
-            IMyPlayer player = GetPlayer(_character);
-            if (player == null || player.SteamUserId == 0)
+
+            ulong playerUid = GetPlayerSteamUid(_character);
+            if (playerUid == 0U)
             {
-                ServerLogger.Log("Character [" + Utils.LogCharacterName(_character) + "] died and their ShieldEmitter has been removed", 2);
+                ServerLogger.Log("Character [" + Utils.GetCharacterName(_character) + "] died and their ShieldEmitter has been removed", 2);
+
+                //if (!Constants.NPC_DROPS_SHIELD_ON_DEATH)
+                //{
+                //    MyInventory inventory = _character.GetInventory() as MyInventory;
+                //    if (inventory != null)
+                //    {
+                //        List<MyPhysicalInventoryItem> items = inventory.GetItems();
+                //        for (int i = items.Count - 1; i >= 0; --i)
+                //        {
+                //            if (items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_EMITTER_BAS) ||
+                //                items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_EMITTER_ADV) ||
+                //                items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_CAP) ||
+                //                items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_DEF_KI) ||
+                //                items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_DEF_EX) ||
+                //                items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_RES_KI) ||
+                //                items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_RES_EX))
+                //            {
+                //                inventory.RemoveItemsAt(i, 1, false);
+                //            }
+                //        }
+
+                //        ServerLogger.Log("  Also all their Shield Emitters/Plugins have been removed", 2);
+                //    }
+                //}
             }
-            else if (player != null)
+            else
             {
-                m_ForceSyncPlayers.Add(player.SteamUserId);
-                ServerLogger.Log("Character [" + Utils.LogCharacterName(_character) + "] (Player <" + player.SteamUserId + ">) died and their ShieldEmitter has been removed", 2);
+                m_ForceSyncPlayers.Add(playerUid);
+                ServerLogger.Log("Character [" + Utils.GetCharacterName(_character) + "] (Player <" + playerUid + ">) died and their ShieldEmitter has been removed", 2);
             }
         }
         
@@ -227,8 +252,18 @@ namespace PocketShield
             {
                 return;
             }
-            
-            ServerLogger.Log("Damage captured: " + _damageInfo.Amount + " " + _damageInfo.Type.String + " damage", 4);
+
+            if (GetPlayerSteamUid(character) == 0U)
+            {
+                ServerLogger.Log("Damage captured: " + _damageInfo.Amount + " " + _damageInfo.Type.String + " damage" +
+                    " - Character [" + Utils.GetCharacterName(character) + "] (EntityId = " + character.EntityId + ")", 4);
+            }
+            else
+            {
+                ServerLogger.Log("Damage captured: " + _damageInfo.Amount + " " + _damageInfo.Type.String + " damage" +
+                    " - Character [" + Utils.GetCharacterName(character) + "] (EntityId = " + character.EntityId + ") (Player <" + GetPlayerSteamUid(character) + ">)", 4);
+            }
+
             ShieldEmitter emitter = GetShieldEmitter(character);
             if (emitter == null)
                 return;
@@ -267,26 +302,6 @@ namespace PocketShield
             MyAPIGateway.Players.GetPlayers(m_Players);
         }
 
-        private void SyncShieldDataToPlayers()
-        {
-            foreach (IMyPlayer player in m_Players)
-            {
-                if (m_ForceSyncPlayers.Contains(player.SteamUserId))
-                {
-                    m_ForceSyncPlayers.Remove(player.SteamUserId);
-                    SendSyncDataToPlayer(player);
-                }
-                else if (m_PlayerShieldEmitters.ContainsKey((long)player.SteamUserId) && m_PlayerShieldEmitters[(long)player.SteamUserId].RequireSync)
-                {
-                    SendSyncDataToPlayer(player);
-                }
-                else if (m_ShieldDamageEffects.Count > 0)
-                {
-                    SendSyncDataToPlayer(player);
-                }
-            }
-        }
-
         private void UpdateSaveData()
         {
             foreach (long key in m_PlayerShieldEmitters.Keys)
@@ -307,8 +322,6 @@ namespace PocketShield
 
             if (m_Players.Count == 0)
                 UpdatePlayerList();
-            if (m_Players.Count == 0) // if there is still no player;
-                return null;
 
             foreach (IMyPlayer player in m_Players)
             {

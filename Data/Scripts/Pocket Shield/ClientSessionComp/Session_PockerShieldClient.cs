@@ -143,7 +143,7 @@ namespace PocketShield
             //m_ShieldHudPanel.UpdatePanelConfig();
             UpdateHudConfigs();
             
-            //InitModSettingsMenu();
+            InitModSettingsMenu();
 
             ClientLogger.Log("InitTextHudCallback() done", 5);
         }
@@ -161,6 +161,8 @@ namespace PocketShield
             m_TextHudAPI = new HudAPIv2(InitTextHudCallback);
 
             //UpdateHudConfigs();
+
+            //MyAPIGateway.Utilities.SendMessage("[PocketShield v2.7] Client-side Chat Command is deprecated and will be removed soon. Use Mod Settings menu instead.");
 
             ClientLogger.Log("  IsServer = " + IsServer);
             ClientLogger.Log("  IsDedicated = " + IsDedicated);
