@@ -4,8 +4,10 @@ using Sandbox.Game;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using VRage.Game;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
+using VRage.ObjectBuilders;
 using VRage.Utils;
 
 namespace PocketShield
@@ -21,13 +23,16 @@ namespace PocketShield
             if (character == null)
                 return;
 
+            if (character.IsDead)
+            {
+                ServerLogger.Log("Character [" + Utils.GetCharacterName(character) + "] is dead");
+                return;
+            }
+
             ServerLogger.Log("Inventory of character [" + Utils.GetCharacterName(character) + "]'s content has changed", 5);
 
             RefreshInventory(_inventory);
         }
-        
-        private void Inventory_InventoryContentChanged(MyInventoryBase _inventory, MyPhysicalInventoryItem _arg2, VRage.MyFixedPoint _arg3)
-        { }
 
         private void RefreshInventory(MyInventoryBase _inventory)
         {
@@ -131,6 +136,50 @@ namespace PocketShield
             m_Plugins.Clear();
             m_UnknownItems.Clear();
             return;
+        }
+
+        private void ManipulateDeadCharacterInventory(MyInventory _inventory)
+        {
+            NpcInventoryOperation flag = ConfigManager.ServerConfig.NpcInventoryOperationOnDeath;
+            float ratio = ConfigManager.ServerConfig.NpcShieldItemToCreditRatio;
+            float refundAmount = 0.0f;
+
+            List<MyPhysicalInventoryItem> items = _inventory.GetItems();
+            for (int i = items.Count - 1; i >= 0; --i)
+            {
+                if ((items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_EMITTER_BAS) ||
+                     items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_EMITTER_ADV)) &&
+                    (flag & NpcInventoryOperation.RemoveEmitterOnly) != 0)
+                {
+                    if (ratio > 0.0f)
+                    {
+                        refundAmount += m_CachedPrice[items[i].Content.SubtypeId.String] * ratio;
+                        ServerLogger.Log("Item " + items[i].Content.SubtypeId.String + ": " + m_CachedPrice[items[i].Content.SubtypeId.String] + " -> " + refundAmount, 4);
+                    }
+                    _inventory.RemoveItemsAt(i, 1, false);
+                }
+                else if ((items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_CAP) ||
+                          items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_DEF_KI) ||
+                          items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_DEF_EX) ||
+                          items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_RES_KI) ||
+                          items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_RES_EX)) &&
+                         (flag & NpcInventoryOperation.RemovePluginOnly) != 0)
+                {
+                    if (ratio > 0.0f)
+                    {
+                        refundAmount += m_CachedPrice[items[i].Content.SubtypeId.String] * ratio;
+                        ServerLogger.Log("Item " + items[i].Content.SubtypeId.String + ": " + m_CachedPrice[items[i].Content.SubtypeId.String] + " -> " + refundAmount, 4);
+                    }
+                    _inventory.RemoveItemsAt(i, 1, false);
+                }
+            }
+
+            if (refundAmount > 0.0f)
+            {
+                _inventory.AddItems((int)refundAmount, MyObjectBuilderSerializer.CreateNewObject<MyObjectBuilder_PhysicalObject>("SpaceCredit"));
+                ServerLogger.Log("Refunded: " + refundAmount, 4);
+            }
+            
         }
 
         private void UpdatePlayerCharacterInventoryOnceBeforeSim()

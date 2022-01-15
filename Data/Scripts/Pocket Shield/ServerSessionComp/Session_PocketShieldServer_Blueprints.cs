@@ -11,6 +11,7 @@ namespace PocketShield
 {
     public partial class Session_PocketShieldServer : MySessionComponentBase
     {
+        private Dictionary<string, float> m_CachedPrice = new Dictionary<string, float>();
 
         private void UpdateBlueprintData()
         {
@@ -83,13 +84,12 @@ namespace PocketShield
             #endregion
 
             #region Cache Prices
-            Dictionary<string, float> cachedPrice = new Dictionary<string, float>();
             MyDefinitionId id;
             foreach (var key in cachedStats.Keys)
             {
                 if (MyDefinitionId.TryParse("MyObjectBuilder_PhysicalObject/" + key, out id))
                 {
-                    cachedPrice[key] = CalculateItemMinimalPrice(id) * 0.5f;
+                    m_CachedPrice[key] = CalculateItemMinimalPrice(id) * 0.5f;
                 }
                 else
                 {
@@ -100,9 +100,9 @@ namespace PocketShield
                 }
             }
 
-            foreach (var key in cachedPrice.Keys)
+            foreach (var key in m_CachedPrice.Keys)
             {
-                ServerLogger.Log("Price for " + key + " is " + cachedPrice[key], 4);
+                ServerLogger.Log("Price for " + key + " is " + m_CachedPrice[key], 4);
             }
             #endregion
 
@@ -115,7 +115,7 @@ namespace PocketShield
                     {
                         def.DisplayNameString = def.DisplayNameString.Replace(key + "_DisplayName", cachedNames[key]);
                         def.ExtraInventoryTooltipLine = def.ExtraInventoryTooltipLine.Replace(key + "_Stat", cachedStats[key]);
-                        def.MinimalPricePerUnit = (int)cachedPrice[key];
+                        def.MinimalPricePerUnit = (int)m_CachedPrice[key];
                         break;
                     }
                 }

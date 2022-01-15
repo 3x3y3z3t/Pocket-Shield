@@ -153,8 +153,7 @@ namespace PocketShield
                 return;
             }
 
-            ServerLogger.Log("  Character [" + Utils.GetCharacterName(character) + "]: Hooking inventory.InventoryContentChanged..", 5);
-            inventory.InventoryContentChanged += Inventory_InventoryContentChanged;
+            ServerLogger.Log("  Character [" + Utils.GetCharacterName(character) + "]: Hooking inventory.ContentChanged..", 5);
             inventory.ContentsChanged += Inventory_ContentsChanged;
             //RefreshInventory(inventory);
         }
@@ -174,8 +173,9 @@ namespace PocketShield
             if (inventory == null)
                 return;
 
-            ServerLogger.Log("  Character [" + Utils.GetCharacterName(character) + "]: UnHooking inventory.InventoryContentChanged..", 5);
-            inventory.InventoryContentChanged -= Inventory_InventoryContentChanged;
+            ServerLogger.Log("  Character [" + Utils.GetCharacterName(character) + "]: UnHooking inventory.ContentChanged..", 5);
+            inventory.ContentsChanged -= Inventory_ContentsChanged;
+            
         }
 
         private void Character_CharacterDied(IMyCharacter _character)
@@ -186,35 +186,30 @@ namespace PocketShield
             if (playerUid == 0U)
             {
                 ServerLogger.Log("Character [" + Utils.GetCharacterName(_character) + "] died and their ShieldEmitter has been removed", 2);
+                
+                if (ConfigManager.ServerConfig.NpcInventoryOperationOnDeath == NpcInventoryOperation.NoTouch)
+                    return;
 
-                //if (!Constants.NPC_DROPS_SHIELD_ON_DEATH)
-                //{
-                //    MyInventory inventory = _character.GetInventory() as MyInventory;
-                //    if (inventory != null)
-                //    {
-                //        List<MyPhysicalInventoryItem> items = inventory.GetItems();
-                //        for (int i = items.Count - 1; i >= 0; --i)
-                //        {
-                //            if (items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_EMITTER_BAS) ||
-                //                items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_EMITTER_ADV) ||
-                //                items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_CAP) ||
-                //                items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_DEF_KI) ||
-                //                items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_DEF_EX) ||
-                //                items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_RES_KI) ||
-                //                items[i].Content.SubtypeId == MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_RES_EX))
-                //            {
-                //                inventory.RemoveItemsAt(i, 1, false);
-                //            }
-                //        }
+                MyInventory inventory = _character.GetInventory() as MyInventory;
+                if (inventory == null)
+                    return;
 
-                //        ServerLogger.Log("  Also all their Shield Emitters/Plugins have been removed", 2);
-                //    }
-                //}
+                ManipulateDeadCharacterInventory(inventory);
+                ServerLogger.Log("  Also all their Shield Emitters and/or Plugins have been removed", 2);
             }
             else
             {
                 m_ForceSyncPlayers.Add(playerUid);
                 ServerLogger.Log("Character [" + Utils.GetCharacterName(_character) + "] (Player <" + playerUid + ">) died and their ShieldEmitter has been removed", 2);
+
+                // NOTE: Debug;
+                //if (ConfigManager.ServerConfig.NpcInventoryOperationOnDeath == NpcInventoryOperation.NoTouch)
+                //    return;
+                //MyInventory inventory = _character.GetInventory() as MyInventory;
+                //if (inventory == null)
+                //    return;
+                //ManipulateDeadCharacterInventory(inventory);
+                //ServerLogger.Log("  Also all their Shield Emitters and/or Plugins have been removed", 2);
             }
         }
         

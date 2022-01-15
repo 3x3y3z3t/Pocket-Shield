@@ -5,6 +5,14 @@ using VRageMath;
 
 namespace PocketShield
 {
+        public enum NpcInventoryOperation
+        {
+            NoTouch = 1 << 0,
+            RemoveEmitterOnly = 1 << 1,
+            RemovePluginOnly = 1 << 2,
+            RemoveEmitterAndPlugin = RemoveEmitterOnly | RemovePluginOnly,
+        }
+        
     internal static class Constants
     {
         public const ulong MOD_ID = 2656470280UL;
@@ -13,7 +21,7 @@ namespace PocketShield
         #region Server/Client Default Config
         public const ushort MSG_HANDLER_ID_SYNC = 1351;
 
-        public const string SERVER_CONFIG_VERSION = "1";
+        public const string SERVER_CONFIG_VERSION = "2";
         public const int SERVER_LOG_LEVEL = 1;
         public const int SERVER_UPDATE_INTERVAL = 6; // Server will update 10ups;
         public const int SHIELD_UPDATE_INTERVAL = 3; // Shield will update 20ups;
@@ -66,27 +74,16 @@ namespace PocketShield
         //public const float PANEL_HEIGHT = 240.0f;
         //public const float PADDING = 6.0f;
         public const float MARGIN = 5.0f;
-        //public const int DISPLAY_ITEMS_COUNT = 5;
         public const float ITEM_SCALE = 1.0f;
+        
 
-        //public const int TEXTURE_CHARCTER = 1;
-        //public const int TEXTURE_SMALL_SHIP = 2;
-        //public const int TEXTURE_LARGE_SHIP = 3;
-        //public const int TEXTURE_GO_AWAY = 4;
-        //public const int TEXTURE_APPROACH = 5;
-        //public const int TEXTURE_STAY = 6;
-        //public const int TEXTURE_ANTENNA = 7;
-
-        /* 
-        BG: 80 92 103
-        FG: 187 233 246
-        AnimatedSegment: 212 251 254 0.7
-        */
         #endregion
 
-
         public const bool SUPPRESS_ALL_SHIELD_LOG = false;
-
+        public const NpcInventoryOperation NPC_DEATH_INVENTORY_OPERATION = NpcInventoryOperation.RemoveEmitterAndPlugin;
+        public const float NPC_DEATH_SHIELD_REFUND_RATIO = 0.1f;
+        
+        #region Internal Hud Config
         public const int HIT_EFFECT_TICKS = 20;
         public const double HIT_EFFECT_SYNC_DISTANCE = 2000.0;
         public const int TEXTURE_W = 4;
@@ -100,7 +97,14 @@ namespace PocketShield
         public const int TEXTURE_ICON_RES_KI = 3;
         public const int TEXTURE_ICON_DEF_EX = 6;
         public const int TEXTURE_ICON_RES_EX = 7;
+        /* 
+        BG: 80 92 103
+        FG: 187 233 246
+        AnimatedSegment: 212 251 254 0.7
+        */
+        #endregion
 
+        #region Strings
         public const string DAMAGETYPE_KI = "Bullet";
         public const string DAMAGETYPE_EX = "Explosion";
         public const string SUBTYPEID_EMITTER_BAS = "PocketShield_EmitterBasic";
@@ -110,48 +114,47 @@ namespace PocketShield
         public const string SUBTYPEID_PLUGIN_DEF_EX = "PocketShield_PluginDefExplosion";
         public const string SUBTYPEID_PLUGIN_RES_KI = "PocketShield_PluginResBullet";
         public const string SUBTYPEID_PLUGIN_RES_EX = "PocketShield_PluginResExplosion";
-
-
+        #endregion
+        
         public const string COLOR_TAG_DEFAULT_VALUE = "<color=128,128,128,72>";
         public const string COLOR_TAG_READONLY_VALUE= "<color=32,223,223,200>";
         public const string COLOR_TAG_NUMBER= "<color=223,223,32>";
         public const string COLOR_TAG_BOOL_TRUE= "<color=32,223,32>";
         public const string COLOR_TAG_BOOL_FALSE = "<color=223,32,32>";
-
     }
 
-    public static class ShieldConfig
-    {
-        public const float BasicMaxHealth = 1000.0f;
-        public const float BasicChargeRate = 10.0f;
-        public const float BasicDefense = 0.25f;
-        public const float BasicBulletResistance = 0.0f;
-        public const float BasicExplosionResistance = 0.0f;
-        public const float BasicPowerConsumption = 0.001f;
-        public const float BasicOverchargeDuration = 5.0f;
-        public const float BasicOverchargeDefenseBonus = 1.0f;
-        public const float BasicOverchargeResistanceBonus = 0.5f;
-        public const int BasicShieldMaxPlugins = 0;
+    //public static class ShieldConfig
+    //{
+    //    public const float BasicMaxHealth = 1000.0f;
+    //    public const float BasicChargeRate = 10.0f;
+    //    public const float BasicDefense = 0.25f;
+    //    public const float BasicBulletResistance = 0.0f;
+    //    public const float BasicExplosionResistance = 0.0f;
+    //    public const float BasicPowerConsumption = 0.001f;
+    //    public const float BasicOverchargeDuration = 5.0f;
+    //    public const float BasicOverchargeDefenseBonus = 1.0f;
+    //    public const float BasicOverchargeResistanceBonus = 0.5f;
+    //    public const int BasicShieldMaxPlugins = 0;
 
-        public const float AdvancedMaxHealth = 10000.0f;
-        public const float AdvancedChargeRate = 100.0f;
-        public const float AdvancedDefense = 0.75f;
-        public const float AdvancedBulletResistance = 0.0f;
-        public const float AdvancedExplosionResistance = 0.0f;
-        public const float AdvancedPowerConsumption = 0.005f;
-        public const float AdvancedOverchargeDuration = 3.0f;
-        public const float AdvancedOverchargeDefenseBonus = 0.5f;
-        public const float AdvancedOverchargeResistanceBonus = 0.5f;
-        public const int AdvancedShieldMaxPlugins = 8;
+    //    public const float AdvancedMaxHealth = 10000.0f;
+    //    public const float AdvancedChargeRate = 100.0f;
+    //    public const float AdvancedDefense = 0.75f;
+    //    public const float AdvancedBulletResistance = 0.0f;
+    //    public const float AdvancedExplosionResistance = 0.0f;
+    //    public const float AdvancedPowerConsumption = 0.005f;
+    //    public const float AdvancedOverchargeDuration = 3.0f;
+    //    public const float AdvancedOverchargeDefenseBonus = 0.5f;
+    //    public const float AdvancedOverchargeResistanceBonus = 0.5f;
+    //    public const int AdvancedShieldMaxPlugins = 8;
 
-        public const float PluginCapacityBonus = 0.1f;
-        public const float PluginDefenseBonus = 0.5f;
-        public const float PluginBulletResBonus = 0.1f;
-        public const float PluginExplosiveResBonus = 0.1f;
-        public const float PluginPowerConsumption = 1.2f;
+    //    public const float PluginCapacityBonus = 0.1f;
+    //    public const float PluginDefenseBonus = 0.5f;
+    //    public const float PluginBulletResBonus = 0.1f;
+    //    public const float PluginExplosiveResBonus = 0.1f;
+    //    public const float PluginPowerConsumption = 1.2f;
 
-        public const float ChargeDelay = 0.0f;
-    }
+    //    public const float ChargeDelay = 0.0f;
+    //}
 
     public class ConfigManager
     {
@@ -236,9 +239,11 @@ namespace PocketShield
         public float AdvancedOverchargeResBonus { get; set; }
         public double AdvancedPowerConsumption { get; set; }
         #endregion
-
-
+        
         public bool SuppressAllShieldLog { get; set; }
+        public NpcInventoryOperation NpcInventoryOperationOnDeath { get; set; }
+        public float NpcShieldItemToCreditRatio { get; set; }
+
 
         public ServerConfig()
         {
@@ -287,6 +292,8 @@ namespace PocketShield
             #endregion
             
             SuppressAllShieldLog = Constants.SUPPRESS_ALL_SHIELD_LOG;
+            NpcInventoryOperationOnDeath = Constants.NPC_DEATH_INVENTORY_OPERATION;
+            NpcShieldItemToCreditRatio = Constants.NPC_DEATH_SHIELD_REFUND_RATIO;
 
             return true;
         }
@@ -344,6 +351,8 @@ namespace PocketShield
             #endregion
 
             SuppressAllShieldLog = config.SuppressAllShieldLog;
+            NpcInventoryOperationOnDeath = config.NpcInventoryOperationOnDeath;
+            NpcShieldItemToCreditRatio = config.NpcShieldItemToCreditRatio;
             
             if (!versionMatch)
             {
