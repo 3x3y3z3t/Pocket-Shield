@@ -21,6 +21,9 @@ namespace PocketShield
         
         private int m_Ticks = 0;
 
+        /// <summary> [Debug] </summary>
+        private ulong m_SyncSaved = 0;
+
         private List<IMyPlayer> m_Players = null;
 
         private Dictionary<long, ShieldEmitter> m_PlayerShieldEmitters = null; // TODO: maybe use ulong;
@@ -40,7 +43,7 @@ namespace PocketShield
             CustomLogger.Suppressed = ConfigManager.ServerConfig.SuppressAllShieldLog;
             CustomLogger.LogLevel = ConfigManager.ServerConfig.LogLevel;
 
-            UpdateItemsDescription();
+            UpdateBlueprintData();
 
 
             MyAPIGateway.Utilities.MessageEntered += Utilities_MessageEntered;
@@ -82,6 +85,8 @@ namespace PocketShield
             m_PlayerShieldEmitters.Clear();
             m_NpcShieldEmitters.Clear();
 
+            ServerLogger.Log(">  < " + m_SyncSaved + " sync operations saved");
+
             CustomLogger.DeInit();
             ServerLogger.DeInit();
         }
@@ -114,6 +119,11 @@ namespace PocketShield
             if (m_Ticks % config.ShieldUpdateInterval == 0)
             {
                 UpdateShieldEmitters(config.ShieldUpdateInterval);
+            }
+
+            if (m_Ticks % 60000 == 0)
+            {
+                ServerLogger.Log(">  < " + m_SyncSaved + " sync operations saved");
             }
 
             // end of method;

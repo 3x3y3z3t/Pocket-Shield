@@ -68,7 +68,7 @@ namespace PocketShield
                     MyAPIGateway.Utilities.ShowNotification("[" + Constants.LOG_PREFIX + "] [Server] Config reloaded", 2000);
                     ServerLogger.Instance.LogLevel = ConfigManager.ServerConfig.LogLevel;
                     CustomLogger.Suppressed = ConfigManager.ServerConfig.SuppressAllShieldLog;
-                    UpdateItemsDescription();
+                    UpdateBlueprintData();
                 }
                 else
                 {

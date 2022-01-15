@@ -11,12 +11,12 @@
       <Icon>Textures\GUI\Icons\Items\MedKit.dds</Icon>
       <Prerequisites>
         <Item Amount="100" TypeId="Ingot" SubtypeId="Iron" />
-        <Item Amount="80" TypeId="Ingot" SubtypeId="Nickel" />
-        <Item Amount="50" TypeId="Ingot" SubtypeId="Silicon" />
-        <Item Amount="10" TypeId="Ingot" SubtypeId="Cobalt" />
+        <Item Amount="70" TypeId="Ingot" SubtypeId="Nickel" />
+        <Item Amount="80" TypeId="Ingot" SubtypeId="Silicon" />
+        <Item Amount="15" TypeId="Ingot" SubtypeId="Cobalt" />
       </Prerequisites>
       <Result Amount="1" TypeId="PhysicalObject" SubtypeId="PocketShield_EmitterBasic" />
-      <BaseProductionTimeInSeconds>30</BaseProductionTimeInSeconds>
+      <BaseProductionTimeInSeconds>40</BaseProductionTimeInSeconds>
       <IconSymbol>T1</IconSymbol>
     </Blueprint>
 
@@ -28,13 +28,13 @@
       <DisplayName>PocketShield_EmitterAdvanced_DisplayName</DisplayName>
       <Icon>Textures\GUI\Icons\Items\MedKit.dds</Icon>
       <Prerequisites>
-        <Item Amount="100" TypeId="Ingot" SubtypeId="Iron" />
-        <Item Amount="160" TypeId="Ingot" SubtypeId="Nickel" />
+        <Item Amount="120" TypeId="Ingot" SubtypeId="Iron" />
+        <Item Amount="80" TypeId="Ingot" SubtypeId="Nickel" />
         <Item Amount="100" TypeId="Ingot" SubtypeId="Silicon" />
-        <Item Amount="100" TypeId="Ingot" SubtypeId="Cobalt" />
-        <Item Amount="50" TypeId="Ingot" SubtypeId="Gold" />
-        <Item Amount="50" TypeId="Ingot" SubtypeId="Silver" />
-        <Item Amount="20" TypeId="Ingot" SubtypeId="Platinum" />
+        <Item Amount="40" TypeId="Ingot" SubtypeId="Cobalt" />
+        <Item Amount="15" TypeId="Ingot" SubtypeId="Gold" />
+        <Item Amount="15" TypeId="Ingot" SubtypeId="Silver" />
+        <Item Amount="10" TypeId="Ingot" SubtypeId="Platinum" />
       </Prerequisites>
       <Result Amount="1" TypeId="PhysicalObject" SubtypeId="PocketShield_EmitterAdvanced" />
       <BaseProductionTimeInSeconds>90</BaseProductionTimeInSeconds>
@@ -51,12 +51,12 @@
       <Prerequisites>
         <Item Amount="50" TypeId="Ingot" SubtypeId="Iron" />
         <Item Amount="10" TypeId="Ingot" SubtypeId="Nickel" />
-        <Item Amount="50" TypeId="Ingot" SubtypeId="Silicon" />
-        <Item Amount="10" TypeId="Ingot" SubtypeId="Gold" />
-        <Item Amount="5" TypeId="Ingot" SubtypeId="Platinum" />
+        <Item Amount="30" TypeId="Ingot" SubtypeId="Silicon" />
+        <Item Amount="5" TypeId="Ingot" SubtypeId="Gold" />
+        <Item Amount="1.5" TypeId="Ingot" SubtypeId="Platinum" />
       </Prerequisites>
       <Result Amount="1" TypeId="PhysicalObject" SubtypeId="PocketShield_PluginCap" />
-      <BaseProductionTimeInSeconds>60</BaseProductionTimeInSeconds>
+      <BaseProductionTimeInSeconds>20</BaseProductionTimeInSeconds>
       <IconSymbol>CAP</IconSymbol>
     </Blueprint>
 
@@ -70,12 +70,12 @@
       <Prerequisites>
         <Item Amount="50" TypeId="Ingot" SubtypeId="Iron" />
         <Item Amount="10" TypeId="Ingot" SubtypeId="Nickel" />
-        <Item Amount="50" TypeId="Ingot" SubtypeId="Silicon" />
-        <Item Amount="10" TypeId="Ingot" SubtypeId="Gold" />
-        <Item Amount="5" TypeId="Ingot" SubtypeId="Platinum" />
+        <Item Amount="30" TypeId="Ingot" SubtypeId="Silicon" />
+        <Item Amount="5" TypeId="Ingot" SubtypeId="Gold" />
+        <Item Amount="1.5" TypeId="Ingot" SubtypeId="Platinum" />
       </Prerequisites>
       <Result Amount="1" TypeId="PhysicalObject" SubtypeId="PocketShield_PluginDefBullet" />
-      <BaseProductionTimeInSeconds>60</BaseProductionTimeInSeconds>
+      <BaseProductionTimeInSeconds>20</BaseProductionTimeInSeconds>
       <IconSymbol>DEF_KI</IconSymbol>
     </Blueprint>
 
@@ -89,12 +89,12 @@
       <Prerequisites>
         <Item Amount="50" TypeId="Ingot" SubtypeId="Iron" />
         <Item Amount="10" TypeId="Ingot" SubtypeId="Nickel" />
-        <Item Amount="50" TypeId="Ingot" SubtypeId="Silicon" />
-        <Item Amount="10" TypeId="Ingot" SubtypeId="Gold" />
-        <Item Amount="5" TypeId="Ingot" SubtypeId="Platinum" />
+        <Item Amount="30" TypeId="Ingot" SubtypeId="Silicon" />
+        <Item Amount="5" TypeId="Ingot" SubtypeId="Gold" />
+        <Item Amount="1.5" TypeId="Ingot" SubtypeId="Platinum" />
       </Prerequisites>
       <Result Amount="1" TypeId="PhysicalObject" SubtypeId="PocketShield_PluginDefExplosion" />
-      <BaseProductionTimeInSeconds>60</BaseProductionTimeInSeconds>
+      <BaseProductionTimeInSeconds>20</BaseProductionTimeInSeconds>
       <IconSymbol>DEF_EX</IconSymbol>
     </Blueprint>
 
@@ -108,12 +108,12 @@
       <Prerequisites>
         <Item Amount="50" TypeId="Ingot" SubtypeId="Iron" />
         <Item Amount="10" TypeId="Ingot" SubtypeId="Nickel" />
-        <Item Amount="50" TypeId="Ingot" SubtypeId="Silicon" />
-        <Item Amount="10" TypeId="Ingot" SubtypeId="Gold" />
-        <Item Amount="5" TypeId="Ingot" SubtypeId="Platinum" />
+        <Item Amount="30" TypeId="Ingot" SubtypeId="Silicon" />
+        <Item Amount="5" TypeId="Ingot" SubtypeId="Gold" />
+        <Item Amount="1.5" TypeId="Ingot" SubtypeId="Platinum" />
       </Prerequisites>
       <Result Amount="1" TypeId="PhysicalObject" SubtypeId="PocketShield_PluginResBullet" />
-      <BaseProductionTimeInSeconds>60</BaseProductionTimeInSeconds>
+      <BaseProductionTimeInSeconds>20</BaseProductionTimeInSeconds>
       <IconSymbol>RES_KI</IconSymbol>
     </Blueprint>
 
@@ -127,12 +127,12 @@
       <Prerequisites>
         <Item Amount="50" TypeId="Ingot" SubtypeId="Iron" />
         <Item Amount="10" TypeId="Ingot" SubtypeId="Nickel" />
-        <Item Amount="50" TypeId="Ingot" SubtypeId="Silicon" />
-        <Item Amount="10" TypeId="Ingot" SubtypeId="Gold" />
-        <Item Amount="5" TypeId="Ingot" SubtypeId="Platinum" />
+        <Item Amount="30" TypeId="Ingot" SubtypeId="Silicon" />
+        <Item Amount="5" TypeId="Ingot" SubtypeId="Gold" />
+        <Item Amount="1.5" TypeId="Ingot" SubtypeId="Platinum" />
       </Prerequisites>
       <Result Amount="1" TypeId="PhysicalObject" SubtypeId="PocketShield_PluginResExplosion" />
-      <BaseProductionTimeInSeconds>60</BaseProductionTimeInSeconds>
+      <BaseProductionTimeInSeconds>20</BaseProductionTimeInSeconds>
       <IconSymbol>RES_EX</IconSymbol>
     </Blueprint>
 

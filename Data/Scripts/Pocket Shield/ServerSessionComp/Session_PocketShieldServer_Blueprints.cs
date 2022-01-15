@@ -1,11 +1,9 @@
 ﻿// ;
 using ExShared;
 using Sandbox.Definitions;
+using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VRage.Game;
 using VRage.Game.Components;
 
@@ -13,180 +11,171 @@ namespace PocketShield
 {
     public partial class Session_PocketShieldServer : MySessionComponentBase
     {
-        private Dictionary<string, string> m_CachedStats = null;
-        private Dictionary<string, string> m_CachedNames = null;
-        private Dictionary<string, string> m_CachedDescs = null;
 
-        private void InitCache()
-        {
-            if (m_CachedStats == null)
-            {
-                m_CachedStats = new Dictionary<string, string>();
-                m_CachedStats[Constants.SUBTYPEID_EMITTER_BAS] = "";
-                m_CachedStats[Constants.SUBTYPEID_EMITTER_ADV] = "";
-                m_CachedStats[Constants.SUBTYPEID_PLUGIN_CAP] = "";
-                m_CachedStats[Constants.SUBTYPEID_PLUGIN_DEF_KI] = "";
-                m_CachedStats[Constants.SUBTYPEID_PLUGIN_DEF_EX] = "";
-                m_CachedStats[Constants.SUBTYPEID_PLUGIN_RES_KI] = "";
-                m_CachedStats[Constants.SUBTYPEID_PLUGIN_RES_EX] = "";
-            }
-
-            if (m_CachedNames == null)
-            {
-                m_CachedNames = new Dictionary<string, string>();
-                m_CachedNames[Constants.SUBTYPEID_EMITTER_BAS] = "PocketShield Basic Emitter";
-                m_CachedNames[Constants.SUBTYPEID_EMITTER_ADV] = "PocketShield Advanced Emitter";
-                m_CachedNames[Constants.SUBTYPEID_PLUGIN_CAP] = "PocketShield Capacity Plugin";
-                m_CachedNames[Constants.SUBTYPEID_PLUGIN_DEF_KI] = "PocketShield Bullet Defense Plugin";
-                m_CachedNames[Constants.SUBTYPEID_PLUGIN_DEF_EX] = "PocketShield Explosion Defense Plugin";
-                m_CachedNames[Constants.SUBTYPEID_PLUGIN_RES_KI] = "PocketShield Bullet Resistance Plugin";
-                m_CachedNames[Constants.SUBTYPEID_PLUGIN_RES_EX] = "PocketShield Explosion Resistance Plugin";
-            }
-
-            if (m_CachedDescs == null)
-            {
-                m_CachedDescs = new Dictionary<string, string>();
-                m_CachedDescs[Constants.SUBTYPEID_EMITTER_BAS] = "Basic PocketShield Emitter that provides minimal protection.";
-                m_CachedDescs[Constants.SUBTYPEID_EMITTER_ADV] = "Advanced PocketShield Emitter that provides extra protection and modification capability.";
-                m_CachedDescs[Constants.SUBTYPEID_PLUGIN_CAP] = "PocketShield plugin that increase max Shield Capacity.";
-                m_CachedDescs[Constants.SUBTYPEID_PLUGIN_DEF_KI] = "PocketShield plugin that increase Defense against Bullet damage.";
-                m_CachedDescs[Constants.SUBTYPEID_PLUGIN_DEF_EX] = "PocketShield plugin that increase Defense against Explosion damage.";
-                m_CachedDescs[Constants.SUBTYPEID_PLUGIN_RES_KI] = "PocketShield plugin that increase Resistance against Bullet damage.";
-                m_CachedDescs[Constants.SUBTYPEID_PLUGIN_RES_EX] = "PocketShield plugin that increase Resistance against Explosion damage.";
-            }
-            
-        }
-
-        private void UpdateItemsDescription()
-        {
-            //ServerLogger.Log("MethodCalled");
-            InitCache();
-
-            UpdateInventoryTooltip();
-            UpdateAssemblerDescription();
-            
-        }
-        
-        private void UpdateInventoryTooltip()
+        private void UpdateBlueprintData()
         {
             ServerConfig config = ConfigManager.ServerConfig;
 
-            var definitions = MyDefinitionManager.Static.GetPhysicalItemDefinitions();
-
-            foreach (var definition in definitions)
+            #region Cache Stats
+            Dictionary<string, string> cachedStats = new Dictionary<string, string>();
+            // Basic Emitter;
             {
-                if (definition.Id.SubtypeName.Contains(Constants.SUBTYPEID_EMITTER_BAS))
+                string extraTooltip = "Stat:\n  Capacity: " + config.BasicShieldEnergy;
+                if (config.BasicDefense != 0.0f || config.BasicResistance != 0.0f)
                 {
-                    string extraTooltip = "Stat:\n  Capacity: " + config.BasicShieldEnergy;
-                    if (config.BasicDefense != 0.0f || config.BasicResistance != 0.0f)
-                    {
-                        extraTooltip += string.Format(
-                            "\n  Against Bullet: Defense {0:0.#}%, Resistance {1:0.#}%" +
-                            "\n  Against Explosion: Defense {0:0.#}%, Resistance {1:0.#}%",
-                            config.BasicDefense * 100.0f, config.BasicResistance * 100.0f);
-                    }
-                    if (config.PluginCapacityBonus > 0)
-                    {
-                        extraTooltip += "\n  Plugin slots: " + config.BasicMaxPluginsCount;
-                    }
-                    m_CachedStats[Constants.SUBTYPEID_EMITTER_BAS] = extraTooltip;
-
-                    definition.DisplayNameString = definition.DisplayNameString.Replace(Constants.SUBTYPEID_EMITTER_BAS + "_DisplayName", m_CachedNames[Constants.SUBTYPEID_EMITTER_BAS]);
-                    definition.ExtraInventoryTooltipLine.Replace(Constants.SUBTYPEID_EMITTER_BAS + "_Stat", extraTooltip);
+                    extraTooltip += string.Format(
+                        "\n  Against Bullet: Defense {0:0.#}%, Resistance {1:0.#}%" +
+                        "\n  Against Explosion: Defense {0:0.#}%, Resistance {1:0.#}%",
+                        config.BasicDefense * 100.0f, config.BasicResistance * 100.0f);
                 }
-                else if (definition.Id.SubtypeName.Contains(Constants.SUBTYPEID_EMITTER_ADV))
+                if (config.PluginCapacityBonus > 0)
+                    extraTooltip += "\n  Plugin slots: " + config.BasicMaxPluginsCount;
+
+                cachedStats[Constants.SUBTYPEID_EMITTER_BAS] = extraTooltip;
+            }
+
+            // Advanced Emitter;
+            {
+                string extraTooltip = "Stat:\n  Capacity: " + config.AdvancedShieldEnergy;
+                if (config.AdvancedDefense != 0.0f || config.AdvancedResistance != 0.0f)
                 {
-                    string extraTooltip = "Stat:\n  Capacity: " + config.AdvancedShieldEnergy;
-
-                    if (config.AdvancedDefense != 0.0f || config.AdvancedResistance != 0.0f)
-                    {
-                        extraTooltip += string.Format(
-                            "\n  Against Bullet: Defense {0:0.#}%, Resistance {1:0.#}%" +
-                            "\n  Against Explosion: Defense {0:0.#}%, Resistance {1:0.#}%",
-                            config.AdvancedDefense * 100.0f, config.AdvancedResistance * 100.0f);
-                    }
-                    if (config.PluginCapacityBonus > 0)
-                    {
-                        extraTooltip += "\n  Plugin slots: " + config.AdvancedMaxPluginsCount;
-                    }
-                    m_CachedStats[Constants.SUBTYPEID_EMITTER_ADV] = extraTooltip;
-
-                    definition.DisplayNameString = definition.DisplayNameString.Replace(Constants.SUBTYPEID_EMITTER_ADV + "_DisplayName", m_CachedNames[Constants.SUBTYPEID_EMITTER_ADV]);
-                    definition.ExtraInventoryTooltipLine.Replace(Constants.SUBTYPEID_EMITTER_ADV + "_Stat", extraTooltip);
+                    extraTooltip += string.Format(
+                        "\n  Against Bullet: Defense {0:0.#}%, Resistance {1:0.#}%" +
+                        "\n  Against Explosion: Defense {0:0.#}%, Resistance {1:0.#}%",
+                        config.AdvancedDefense * 100.0f, config.AdvancedResistance * 100.0f);
                 }
-                else if (definition.Id.SubtypeName.Contains(Constants.SUBTYPEID_PLUGIN_CAP))
-                {
-                    string extraTooltip = string.Format("Stat:\n  +{0:#.#}% Capacity", config.PluginCapacityBonus * 100.0f);
-                    m_CachedStats[Constants.SUBTYPEID_PLUGIN_CAP] = extraTooltip;
+                if (config.PluginCapacityBonus > 0)
+                    extraTooltip += "\n  Plugin slots: " + config.AdvancedMaxPluginsCount;
 
-                    definition.DisplayNameString = definition.DisplayNameString.Replace(Constants.SUBTYPEID_PLUGIN_CAP + "_DisplayName", m_CachedNames[Constants.SUBTYPEID_PLUGIN_CAP]);
-                    definition.ExtraInventoryTooltipLine.Replace(Constants.SUBTYPEID_PLUGIN_CAP + "_Stat", extraTooltip);
+                cachedStats[Constants.SUBTYPEID_EMITTER_ADV] = extraTooltip;
+            }
+
+            // Plugins;
+            {
+                cachedStats[Constants.SUBTYPEID_PLUGIN_CAP] = string.Format("Stat:\n  +{0:#.#}% Capacity", config.PluginCapacityBonus * 100.0f);
+                cachedStats[Constants.SUBTYPEID_PLUGIN_DEF_KI] = string.Format("Stat:\n  +{0:#.#}% Bullet Defense", config.PluginDefenseBonus * 100.0f);
+                cachedStats[Constants.SUBTYPEID_PLUGIN_DEF_EX] = string.Format("Stat:\n  +{0:#.#}% Explosive Defense", config.PluginDefenseBonus * 100.0f);
+                cachedStats[Constants.SUBTYPEID_PLUGIN_RES_KI] = string.Format("Stat:\n  +{0:#.#}% Bullet Resistance", config.PluginResistanceBonus * 100.0f);
+                cachedStats[Constants.SUBTYPEID_PLUGIN_RES_EX] = string.Format("Stat:\n  +{0:#.#}% Explosive Resistance", config.PluginResistanceBonus * 100.0f);
+            }
+            #endregion
+
+            #region Cache Names 
+            Dictionary<string, string> cachedNames = new Dictionary<string, string>();
+            cachedNames[Constants.SUBTYPEID_EMITTER_BAS] = "PocketShield Basic Emitter";
+            cachedNames[Constants.SUBTYPEID_EMITTER_ADV] = "PocketShield Advanced Emitter";
+            cachedNames[Constants.SUBTYPEID_PLUGIN_CAP] = "PocketShield Capacity Plugin";
+            cachedNames[Constants.SUBTYPEID_PLUGIN_DEF_KI] = "PocketShield Bullet Defense Plugin";
+            cachedNames[Constants.SUBTYPEID_PLUGIN_DEF_EX] = "PocketShield Explosion Defense Plugin";
+            cachedNames[Constants.SUBTYPEID_PLUGIN_RES_KI] = "PocketShield Bullet Resistance Plugin";
+            cachedNames[Constants.SUBTYPEID_PLUGIN_RES_EX] = "PocketShield Explosion Resistance Plugin";
+            #endregion
+
+            #region Cache Descriptions
+            Dictionary<string, string> cachedDescs = new Dictionary<string, string>();
+            cachedDescs[Constants.SUBTYPEID_EMITTER_BAS] = "Basic PocketShield Emitter that provides minimal protection.";
+            cachedDescs[Constants.SUBTYPEID_EMITTER_ADV] = "Advanced PocketShield Emitter that provides extra protection and modification capability.";
+            cachedDescs[Constants.SUBTYPEID_PLUGIN_CAP] = "PocketShield plugin that increase max Shield Capacity.";
+            cachedDescs[Constants.SUBTYPEID_PLUGIN_DEF_KI] = "PocketShield plugin that increase Defense against Bullet damage.";
+            cachedDescs[Constants.SUBTYPEID_PLUGIN_DEF_EX] = "PocketShield plugin that increase Defense against Explosion damage.";
+            cachedDescs[Constants.SUBTYPEID_PLUGIN_RES_KI] = "PocketShield plugin that increase Resistance against Bullet damage.";
+            cachedDescs[Constants.SUBTYPEID_PLUGIN_RES_EX] = "PocketShield plugin that increase Resistance against Explosion damage.";
+            #endregion
+
+            #region Cache Prices
+            Dictionary<string, float> cachedPrice = new Dictionary<string, float>();
+            MyDefinitionId id;
+            foreach (var key in cachedStats.Keys)
+            {
+                if (MyDefinitionId.TryParse("MyObjectBuilder_PhysicalObject/" + key, out id))
+                {
+                    cachedPrice[key] = CalculateItemMinimalPrice(id) * 0.5f;
                 }
-                else if (definition.Id.SubtypeName.Contains(Constants.SUBTYPEID_PLUGIN_DEF_KI))
+                else
                 {
-                    string extraTooltip = string.Format("Stat:\n  +{0:#.#}% Bullet Defense", config.PluginDefenseBonus * 100.0f);
-                    m_CachedStats[Constants.SUBTYPEID_PLUGIN_DEF_KI] = extraTooltip;
-
-                    definition.DisplayNameString = definition.DisplayNameString.Replace(Constants.SUBTYPEID_PLUGIN_DEF_KI + "_DisplayName", m_CachedNames[Constants.SUBTYPEID_PLUGIN_DEF_KI]);
-                    definition.ExtraInventoryTooltipLine.Replace(Constants.SUBTYPEID_PLUGIN_DEF_KI + "_Stat", extraTooltip);
-                }
-                else if (definition.Id.SubtypeName.Contains(Constants.SUBTYPEID_PLUGIN_DEF_EX))
-                {
-                    string extraTooltip = string.Format("Stat:\n  +{0:#.#}% Explosive Defense", config.PluginDefenseBonus * 100.0f);
-                    m_CachedStats[Constants.SUBTYPEID_PLUGIN_DEF_EX] = extraTooltip;
-
-                    definition.DisplayNameString = definition.DisplayNameString.Replace(Constants.SUBTYPEID_PLUGIN_DEF_EX + "_DisplayName", m_CachedNames[Constants.SUBTYPEID_PLUGIN_DEF_EX]);
-                    definition.ExtraInventoryTooltipLine.Replace(Constants.SUBTYPEID_PLUGIN_DEF_EX + "_Stat", extraTooltip);
-                }
-                else if (definition.Id.SubtypeName.Contains(Constants.SUBTYPEID_PLUGIN_RES_KI))
-                {
-                    string extraTooltip = string.Format("Stat:\n  +{0:#.#}% Bullet Resistance", config.PluginResistanceBonus * 100.0f);
-                    m_CachedStats[Constants.SUBTYPEID_PLUGIN_RES_KI] = extraTooltip;
-
-                    definition.DisplayNameString = definition.DisplayNameString.Replace(Constants.SUBTYPEID_PLUGIN_RES_KI + "_DisplayName", m_CachedNames[Constants.SUBTYPEID_PLUGIN_RES_KI]);
-                    definition.ExtraInventoryTooltipLine.Replace(Constants.SUBTYPEID_PLUGIN_RES_KI + "_Stat", extraTooltip);
-                }
-                else if (definition.Id.SubtypeName.Contains(Constants.SUBTYPEID_PLUGIN_RES_EX))
-                {
-                    string extraTooltip = string.Format("Stat:\n  +{0:#.#}% Explosive Resistance", config.PluginResistanceBonus * 100.0f);
-                    m_CachedStats[Constants.SUBTYPEID_PLUGIN_RES_EX] = extraTooltip;
-
-                    definition.DisplayNameString = definition.DisplayNameString.Replace(Constants.SUBTYPEID_PLUGIN_RES_EX + "_DisplayName", m_CachedNames[Constants.SUBTYPEID_PLUGIN_RES_EX]);
-                    definition.ExtraInventoryTooltipLine.Replace(Constants.SUBTYPEID_PLUGIN_RES_EX + "_Stat", extraTooltip);
+                    ServerLogger.Log("> ================================================== <");
+                    ServerLogger.Log(">   Could not parse DefID for                        <");
+                    ServerLogger.Log(string.Format(">   {0,-48} <", key));
+                    ServerLogger.Log("> ================================================== <");
                 }
             }
 
-
-        }
-
-        private void UpdateAssemblerDescription()
-        {
-            ServerConfig config = ConfigManager.ServerConfig;
-
-            var definitions = MyDefinitionManager.Static.GetBlueprintDefinitions();
-
-            foreach (var definition in definitions)
+            foreach (var key in cachedPrice.Keys)
             {
-                foreach (string key in m_CachedNames.Keys)
-                {
-                    if (definition.Id.SubtypeName.Contains(key))
-                    {
-                        string displayName =
-                            m_CachedNames[key] + "\n  " +
-                            m_CachedDescs[key] + "\n" +
-                            m_CachedStats[key];
+                ServerLogger.Log("Price for " + key + " is " + cachedPrice[key], 4);
+            }
+            #endregion
 
-                        definition.DisplayNameString = definition.DisplayNameString.Replace(key + "_DisplayName", displayName);
+            var physItemDef = MyDefinitionManager.Static.GetPhysicalItemDefinitions();
+            foreach (var def in physItemDef)
+            {
+                foreach (var key in cachedStats.Keys)
+                {
+                    if (def.Id.SubtypeName.Contains(key))
+                    {
+                        def.DisplayNameString = def.DisplayNameString.Replace(key + "_DisplayName", cachedNames[key]);
+                        def.ExtraInventoryTooltipLine = def.ExtraInventoryTooltipLine.Replace(key + "_Stat", cachedStats[key]);
+                        def.MinimalPricePerUnit = (int)cachedPrice[key];
                         break;
                     }
                 }
             }
 
-
+            var bpDef = MyDefinitionManager.Static.GetBlueprintDefinitions();
+            foreach (var def in bpDef)
+            {
+                foreach (string key in cachedStats.Keys)
+                {
+                    if (def.Id.SubtypeName.Contains(key))
+                    {
+                        string displayName = cachedNames[key] + "\n  " + cachedDescs[key] + "\n" + cachedStats[key];
+                        def.DisplayNameString = def.DisplayNameString.Replace(key + "_DisplayName", displayName);
+                        break;
+                    }
+                }
+            }
 
         }
 
+        // HACK: copied from Sandbox.Game.World.Generator.MyMinimalPriceCalculator.CalculateItemMinimalPrice(VRage.Game.MyDefinitionId, float, ref int);
+        private float CalculateItemMinimalPrice(MyDefinitionId _id)
+        {
+            MyPhysicalItemDefinition physItemDef = null;
+            if (MyDefinitionManager.Static.TryGetPhysicalItemDefinition(_id, out physItemDef) && physItemDef.MinimalPricePerUnit != -1)
+            {
+                return physItemDef.MinimalPricePerUnit;
+            }
 
+            MyBlueprintDefinitionBase bpDefBase = null;
+            if (!MyDefinitionManager.Static.TryGetBlueprintDefinitionByResultId(_id, out bpDefBase))
+            {
+                return 0.0f;
+            }
+
+            float price = 0.0f;
+            float efficiencyMod = physItemDef.IsIngot ? 1.0f : MyAPIGateway.Session.AssemblerEfficiencyMultiplier;
+            foreach (var item in bpDefBase.Prerequisites)
+            {
+                price += CalculateItemMinimalPrice(item.Id) * (float)item.Amount / efficiencyMod;
+            }
+
+            float speedMod = physItemDef.IsIngot ? MyAPIGateway.Session.RefinerySpeedMultiplier : MyAPIGateway.Session.AssemblerSpeedMultiplier;
+            for (int i = 0; i < bpDefBase.Results.Length; ++i)
+            {
+                var item = bpDefBase.Results[i];
+                if (item.Id == _id && (float)item.Amount > 0.0f)
+                {
+                    // this is the item we want to get;
+
+                    float number = 1.0f + (float)Math.Log(bpDefBase.BaseProductionTimeInSeconds + 1.0f) / speedMod;
+                    price *= (1.0f / (float)item.Amount) * number;
+                    return price;
+                }
+            }
+
+            return 0.0f;
+        }
+        
 
     }
 }

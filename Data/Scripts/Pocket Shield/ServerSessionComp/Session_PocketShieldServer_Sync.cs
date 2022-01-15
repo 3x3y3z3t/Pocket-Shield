@@ -21,6 +21,8 @@ namespace PocketShield
         {
             foreach (IMyPlayer player in m_Players)
             {
+                ++m_SyncSaved;
+
                 if (m_ForceSyncPlayers.Contains(player.SteamUserId))
                 {
                     m_ForceSyncPlayers.Remove(player.SteamUserId);
@@ -87,6 +89,7 @@ namespace PocketShield
             ServerLogger.Log("Sending sync data to player " + _player.SteamUserId, 5);
             MyAPIGateway.Multiplayer.SendMessageTo(Constants.MSG_HANDLER_ID_SYNC, Encoding.Unicode.GetBytes(data), _player.SteamUserId);
 
+            --m_SyncSaved;
             m_SyncObject.Clear();
             m_ShieldDamageEffects.Clear();
         }

@@ -20,9 +20,10 @@
       <Model>Models\Items\Medkit_Item.mwm</Model>
       <PhysicalMaterial>Metal</PhysicalMaterial>
 
-      <MinimalPricePerUnit>10000</MinimalPricePerUnit>
       <MinimumOfferAmount>1</MinimumOfferAmount>
-      <MaximumOfferAmount>1</MaximumOfferAmount>
+      <MaximumOfferAmount>3</MaximumOfferAmount>
+      <MinimumOrderAmount>1</MinimumOrderAmount>
+      <MaximumOrderAmount>1</MaximumOrderAmount>
 
       <IconSymbol>T1</IconSymbol>
       <MaxStackAmount>1</MaxStackAmount>
@@ -46,9 +47,10 @@
       <Model>Models\Items\Medkit_Item.mwm</Model>
       <PhysicalMaterial>Metal</PhysicalMaterial>
 
-      <MinimalPricePerUnit>500000</MinimalPricePerUnit>
       <MinimumOfferAmount>1</MinimumOfferAmount>
-      <MaximumOfferAmount>1</MaximumOfferAmount>
+      <MaximumOfferAmount>2</MaximumOfferAmount>
+      <MinimumOrderAmount>1</MinimumOrderAmount>
+      <MaximumOrderAmount>1</MaximumOrderAmount>
 
       <IconSymbol>T2</IconSymbol>
       <MaxStackAmount>1</MaxStackAmount>
@@ -72,9 +74,10 @@
       <Model>Models\Items\PowerKit.mwm</Model>
       <PhysicalMaterial>Metal</PhysicalMaterial>
 
-      <MinimalPricePerUnit>15000</MinimalPricePerUnit>
       <MinimumOfferAmount>1</MinimumOfferAmount>
       <MaximumOfferAmount>3</MaximumOfferAmount>
+      <MinimumOrderAmount>1</MinimumOrderAmount>
+      <MaximumOrderAmount>1</MaximumOrderAmount>
 
       <IconSymbol>CAP</IconSymbol>
       <MaxStackAmount>1</MaxStackAmount>
@@ -98,9 +101,10 @@
       <Model>Models\Items\PowerKit.mwm</Model>
       <PhysicalMaterial>Metal</PhysicalMaterial>
 
-      <MinimalPricePerUnit>15000</MinimalPricePerUnit>
       <MinimumOfferAmount>1</MinimumOfferAmount>
       <MaximumOfferAmount>3</MaximumOfferAmount>
+      <MinimumOrderAmount>1</MinimumOrderAmount>
+      <MaximumOrderAmount>1</MaximumOrderAmount>
 
       <IconSymbol>DEF_KI</IconSymbol>
       <MaxStackAmount>1</MaxStackAmount>
@@ -124,9 +128,10 @@
       <Model>Models\Items\PowerKit.mwm</Model>
       <PhysicalMaterial>Metal</PhysicalMaterial>
 
-      <MinimalPricePerUnit>15000</MinimalPricePerUnit>
       <MinimumOfferAmount>1</MinimumOfferAmount>
       <MaximumOfferAmount>3</MaximumOfferAmount>
+      <MinimumOrderAmount>1</MinimumOrderAmount>
+      <MaximumOrderAmount>1</MaximumOrderAmount>
 
       <IconSymbol>DEF_EX</IconSymbol>
       <MaxStackAmount>1</MaxStackAmount>
@@ -150,9 +155,10 @@
       <Model>Models\Items\PowerKit.mwm</Model>
       <PhysicalMaterial>Metal</PhysicalMaterial>
 
-      <MinimalPricePerUnit>15000</MinimalPricePerUnit>
       <MinimumOfferAmount>1</MinimumOfferAmount>
       <MaximumOfferAmount>3</MaximumOfferAmount>
+      <MinimumOrderAmount>1</MinimumOrderAmount>
+      <MaximumOrderAmount>1</MaximumOrderAmount>
 
       <IconSymbol>RES_KI</IconSymbol>
       <MaxStackAmount>1</MaxStackAmount>
@@ -176,9 +182,10 @@
       <Model>Models\Items\PowerKit.mwm</Model>
       <PhysicalMaterial>Metal</PhysicalMaterial>
 
-      <MinimalPricePerUnit>15000</MinimalPricePerUnit>
       <MinimumOfferAmount>1</MinimumOfferAmount>
       <MaximumOfferAmount>3</MaximumOfferAmount>
+      <MinimumOrderAmount>1</MinimumOrderAmount>
+      <MaximumOrderAmount>1</MaximumOrderAmount>
 
       <IconSymbol>RES_EX</IconSymbol>
       <MaxStackAmount>1</MaxStackAmount>
