@@ -7,6 +7,11 @@ namespace PocketShield
 {
     public partial class Session_PocketShieldClient
     {
+        private const string c_ColorTagDefaultValue = "<color=128,128,128,72>";
+        private const string c_ColorTagReadonlyValue = "<color=32,223,223,200>";
+        private const string c_ColorTagNumber = "<color=223,223,32>";
+        private const string c_ColorTagBoolTrue = "<color=32,223,32>";
+        private const string c_ColorTagBoolFalse = "<color=223,32,32>";
 
         public const float c_SensitivityClamp = 1.0f;
         public const float c_PanelWidthMaxClamp = 1024.0f;
@@ -21,7 +26,7 @@ namespace PocketShield
 
         internal string ConfigVersionString
         {
-            get { return "Config Version " + Constants.COLOR_TAG_READONLY_VALUE + ConfigManager.ClientConfig.ConfigVersion; }
+            get { return "Config Version " + c_ColorTagReadonlyValue + ConfigManager.ClientConfig.ConfigVersion; }
         }
 
         internal string LogLevelString
@@ -31,9 +36,9 @@ namespace PocketShield
                 ClientConfig config = ConfigManager.ClientConfig;
                 string s = "Log Level: ";
                 if (config.LogLevel < 0)
-                    s += (Constants.COLOR_TAG_BOOL_FALSE + "Off");
+                    s += (c_ColorTagBoolFalse + "Off");
                 else
-                    s += (Constants.COLOR_TAG_NUMBER + config.LogLevel);
+                    s += (c_ColorTagNumber + config.LogLevel);
                 AppendDefaultString(ref s, config.LogLevel, Constants.CLIENT_LOG_LEVEL);
 
                 return s;
@@ -44,20 +49,76 @@ namespace PocketShield
             get { return (ConfigManager.ClientConfig.LogLevel + 1.0f) / 6.0f; }
         }
 
-#if false
         internal string ClientUpdateIntervalString
         {
             get
             {
                 ClientConfig config = ConfigManager.ClientConfig;
                 float ups = 60.0f / config.ClientUpdateInterval;
-                string s = string.Format("Client Update Interval: {0:0}{1:0}<reset> ({2:0.#}<reset>ups)", c_NumberColorTag, config.ClientUpdateInterval, ups);
+                string s = string.Format("Client Update Interval: {0:0}{1:0}<reset> ({2:0.#}<reset>ups)", c_ColorTagNumber, config.ClientUpdateInterval, ups);
                 AppendDefaultString(ref s, config.ClientUpdateInterval, Constants.CLIENT_UPDATE_INTERVAL);
 
                 return s;
             }
         }
 
+        internal string ShowPanelString
+        {
+            get { return "Show Panel: " + FormatBoolString(ConfigManager.ClientConfig.ShowPanel); }
+        }
+
+        internal string ShowPanelBGString
+        {
+            get
+            {
+                ClientConfig config = ConfigManager.ClientConfig;
+                string s;
+                if (config.ShowPanel)
+                    s = "Show Panel Background: " + FormatBoolString(config.ShowPanelBackground);
+                else
+                    s = c_ColorTagDefaultValue + "Show Panel Background: " + config.ShowPanelBackground;
+                AppendDefaultString(ref s, config.ShowPanelBackground, Constants.SHOW_PANEL_BG);
+
+                return s;
+            }
+        }
+
+        internal string PanelPositionString
+        {
+            get
+            {
+                ClientConfig config = ConfigManager.ClientConfig;
+                string s;
+                if (config.ShowPanel)
+                    s = string.Format("Panel Position: ({0:0}{1:0}<reset>, {0:0}{2:0}<reset>)", c_ColorTagNumber, (int)config.PanelPosition.X, (int)config.PanelPosition.Y);
+                else
+                    s = c_ColorTagDefaultValue + "Panel Position: (" + (int)config.PanelPosition.X + ", " + (int)config.PanelPosition.Y + ")";
+                if (config.PanelPosition.X != Constants.PANEL_POS_X || config.PanelPosition.Y != Constants.PANEL_POS_Y)
+                    s += c_ColorTagDefaultValue + " default: (" + Constants.PANEL_POS_X + ", " + Constants.PANEL_POS_Y + ")";
+
+                return s;
+            }
+        }
+        internal Vector2D PanelPositionItemPos
+        {
+            get
+            {
+                return new Vector2D(
+                    +(ConfigManager.ClientConfig.PanelPosition.X - s_ViewportSize.X * 0.5) / (s_ViewportSize.X * 0.5),
+                    -(ConfigManager.ClientConfig.PanelPosition.Y - s_ViewportSize.Y * 0.5) / (s_ViewportSize.Y * 0.5) - (ShieldHudPanel.PanelSize.Y) / (s_ViewportSize.Y * 0.5));
+            }
+        }
+        internal Vector2D PanelPositionItemSize
+        {
+            get
+            {
+                return new Vector2D(
+                    +(ShieldHudPanel.PanelSize.X) / (s_ViewportSize.X * 0.5),
+                    +(ShieldHudPanel.PanelSize.Y) / (s_ViewportSize.Y * 0.5));
+            }
+        }
+
+#if false
         internal string ItemsCountString
         {
             get
@@ -103,27 +164,6 @@ namespace PocketShield
             get { return ConfigManager.ClientConfig.TrajectorySensitivity / c_SensitivityClamp; }
         }
 
-        internal string ShowPanelString
-        {
-            get { return "Show Panel: " + FormatBoolString(ConfigManager.ClientConfig.ShowPanel); }
-        }
-
-        internal string ShowPanelBGString
-        {
-            get
-            {
-                ClientConfig config = ConfigManager.ClientConfig;
-                string s;
-                if (config.ShowPanel)
-                    s = "Show Panel Background: " + FormatBoolString(config.ShowPanelBackground);
-                else
-                    s = c_DefaultValueColorTag + "Show Panel Background: " + config.ShowPanelBackground;
-                AppendDefaultString(ref s, config.ShowPanelBackground, Constants.SHOW_PANEL_BG);
-
-                return s;
-            }
-        }
-
         internal string ShowMaxRangeString
         {
             get
@@ -153,41 +193,6 @@ namespace PocketShield
                 AppendDefaultString(ref s, config.ShowSignalName, Constants.SHOW_SIGNAL_NAME);
 
                 return s;
-            }
-        }
-
-        internal string PanelPositionString
-        {
-            get
-            {
-                ClientConfig config = ConfigManager.ClientConfig;
-                string s;
-                if (config.ShowPanel)
-                    s = string.Format("Panel Position: ({0:0}{1:0}<reset>, {0:0}{2:0}<reset>)", c_NumberColorTag, (int)config.PanelPosition.X, (int)config.PanelPosition.Y);
-                else
-                    s = c_DefaultValueColorTag + "Panel Position: (" + (int)config.PanelPosition.X + ", " + (int)config.PanelPosition.X + ")";
-                if (config.PanelPosition.X != Constants.PANEL_POS_X || config.PanelPosition.Y != Constants.PANEL_POS_Y)
-                    s += c_DefaultValueColorTag + " default: (" + Constants.PANEL_POS_X + ", " + Constants.PANEL_POS_Y + ")";
-
-                return s;
-            }
-        }
-        internal Vector2D PanelPositionItemPos
-        {
-            get
-            {
-                return new Vector2D(
-                    +(ConfigManager.ClientConfig.PanelPosition.X - s_ViewportSize.X * 0.5) / (s_ViewportSize.X * 0.5),
-                    -(ConfigManager.ClientConfig.PanelPosition.Y - s_ViewportSize.Y * 0.5) / (s_ViewportSize.Y * 0.5) - (RadarPanel.PanelSize.Y) / (s_ViewportSize.Y * 0.5));
-            }
-        }
-        internal Vector2D PanelPositionItemSize
-        {
-            get
-            {
-                return new Vector2D(
-                    +(RadarPanel.PanelSize.X) / (s_ViewportSize.X * 0.5),
-                    +(RadarPanel.PanelSize.Y) / (s_ViewportSize.Y * 0.5));
             }
         }
 
@@ -278,19 +283,21 @@ namespace PocketShield
         
         private MenuItem m_ConfigVersionItem = null;
         private MenuSliderInput m_LogLevelItem = null;
-#if false
         private MenuTextInput m_ClientUpdateIntervalItem = null;
+
+        internal MenuItem m_ShowPanelItem = null;
+        internal MenuItem m_ShowPanelBGItem = null;
+        internal MenuScreenInput m_PanelPositionItem = null;
+
+#if false
         private MenuSliderInput m_ItemsCountItem = null;
         private MenuTextInput m_MaxRangeItem = null;
         private MenuSliderInput m_SensitivityItem = null;
 
         internal MenuSubCategory m_HudConfigSubCategory = null;
 
-        internal MenuItem m_ShowPanelItem = null;
-        internal MenuItem m_ShowPanelBGItem = null;
         internal MenuItem m_ShowMaxRangeItem = null;
         internal MenuItem m_ShowDisplayNameItem = null;
-        internal MenuScreenInput m_PanelPositionItem = null;
         internal MenuSliderInput m_PanelWidthItem = null;
         internal MenuSliderInput m_PaddingItem = null;
         internal MenuSliderInput m_MarginItem = null;
@@ -300,8 +307,8 @@ namespace PocketShield
         internal static float s_CachedPadding = ConfigManager.ClientConfig.Padding;
         internal static float s_CachedMargin = ConfigManager.ClientConfig.Margin;
         internal static float s_CachedScale = ConfigManager.ClientConfig.ItemScale;
-        internal static Vector2D s_CachedPanelPositionItemPos = ConfigManager.ClientConfig.PanelPosition;
 #endif
+        internal static Vector2D s_CachedPanelPositionItemPos = ConfigManager.ClientConfig.PanelPosition;
 
         private bool InitModSettingsMenu()
         {
@@ -309,19 +316,22 @@ namespace PocketShield
             m_RootCategory = new MenuRootCategory(RootItemString, MenuRootCategory.MenuFlag.PlayerMenu, Constants.LOG_PREFIX + " Settings");
             m_ConfigVersionItem = new MenuItem(ConfigVersionString, m_RootCategory, Interactable: false);
             m_LogLevelItem = new MenuSliderInput(LogLevelString, m_RootCategory, LogLevelInitialPercent, "Adjust Slider to modify Log Level", LogLevelOnSubmit, ConstructLogLevelHelperString);
-#if fasle
             m_ClientUpdateIntervalItem = new MenuTextInput(ClientUpdateIntervalString, m_RootCategory, "Enter an integer for Client Update Interval", ClientUpdateIntervalItemOnSubmit);
+
+            new MenuItem("", m_RootCategory, null, false);
+            m_ShowPanelItem = new MenuItem(ShowPanelString, m_RootCategory, ShowPanelOnClick);
+            m_ShowPanelBGItem = new MenuItem(ShowPanelBGString, m_RootCategory, ShowPanelBGOnClick);
+            m_PanelPositionItem = new MenuScreenInput(PanelPositionString, m_RootCategory, PanelPositionItemPos, PanelPositionItemSize, PanelPositionHelperString, PanelPositionOnSubmit, PanelPositionUpdate);
+
+#if fasle
             m_ItemsCountItem = new MenuSliderInput(ItemsCountString, m_RootCategory, ItemsCountInitialPercent, "Adjust Slider to modify Items Count", ItemsCountOnSubmit, ConstructItemsCountHelperString);
             m_MaxRangeItem = new MenuTextInput(MaxRangeString, m_RootCategory, "Enter a decimal for Max Range", MaxRangeOnSubmit);
             m_SensitivityItem = new MenuSliderInput(SensitivityString, m_RootCategory, SensitivityInitialPercent, "Adjust Slider to modify Sensitivity (long slider for better control)", SensitivityOnSubmit, ConstructSensitivityHelperString);
 
             m_HudConfigSubCategory = new MenuSubCategory("Hud " + c_ReadOnlyValueColorTag + ">>>", m_RootCategory, "Hud Settings");
 
-            m_ShowPanelItem = new MenuItem(ShowPanelString, m_HudConfigSubCategory, ShowPanelOnClick);
-            m_ShowPanelBGItem = new MenuItem(ShowPanelBGString, m_HudConfigSubCategory, ShowPanelBGOnClick);
             m_ShowMaxRangeItem = new MenuItem(ShowMaxRangeString, m_HudConfigSubCategory, ShowMaxRangeOnClick);
             m_ShowDisplayNameItem = new MenuItem(ShowDisplayNameString, m_HudConfigSubCategory, ShowDisplayNameOnClick);
-            m_PanelPositionItem = new MenuScreenInput(PanelPositionString, m_HudConfigSubCategory, PanelPositionItemPos, PanelPositionItemSize, PanelPositionHelperString, PanelPositionOnSubmit, PanelPositionUpdate);
             m_PanelWidthItem = new MenuSliderInput(PanelWidthString, m_HudConfigSubCategory, PanelWidthInitialPercent, "Adjust Slider to modify Panel Width", PanelWidthOnSubmit, ConstructPanelWidthHelperString, PanelWidthOnCancel);
             m_PaddingItem = new MenuSliderInput(PaddingString, m_HudConfigSubCategory, PaddingInitialPercent, "Adjust Slider to modify Padding", PaddingOnSubmit, ConstructPaddingHelperString, PaddingOnCancel);
             m_MarginItem = new MenuSliderInput(MarginString, m_HudConfigSubCategory, MarginInitialPercent, "Adjust Slider to modify Margin", MarginOnSubmit, ConstructMarginHelperString, MarginOnCancel);
@@ -344,9 +354,16 @@ namespace PocketShield
 
             m_LogLevelItem.Text = LogLevelString;
             m_LogLevelItem.InitialPercent = LogLevelInitialPercent;
-#if false
+
             m_ClientUpdateIntervalItem.Text = ClientUpdateIntervalString;
 
+            m_ShowPanelBGItem.Text = ShowPanelBGString;
+
+            m_PanelPositionItem.Text = PanelPositionString;
+            
+            RefreshHudSettingsInteractability();
+
+#if false
             m_ItemsCountItem.Text = ItemsCountString;
             m_ItemsCountItem.InitialPercent = ItemsCountInitialPercent;
 
@@ -356,16 +373,9 @@ namespace PocketShield
             m_SensitivityItem.InitialPercent = SensitivityInitialPercent;
 
             // HUD settings;
-            m_ShowPanelItem.Text = ShowPanelString;
-            RefreshHudSettingsInteractability();
-
-            m_ShowPanelBGItem.Text = ShowPanelBGString;
-
             m_ShowMaxRangeItem.Text = ShowMaxRangeString;
 
             m_ShowDisplayNameItem.Text = ShowDisplayNameString;
-
-            m_PanelPositionItem.Text = PanelPositionString;
 
             m_PanelWidthItem.Text = PanelWidthString;
             m_PanelWidthItem.InitialPercent = PanelWidthInitialPercent;
@@ -385,20 +395,23 @@ namespace PocketShield
         public void RefreshHudSettingsInteractability()
         {
             ClientConfig config = ConfigManager.ClientConfig;
+            // HACK! user will never get here when mod is disabled, so there is no need to check for .ModEnabled;
 
-#if false
-                // HACK! user will never get here when mod is disabled, so there is no need to check for .ModEnabled;
+            //m_ShowPanelItem.Interactable = config.ShowPanel;
+            m_ShowPanelItem.Text = ShowPanelString;
+
                 m_ShowPanelBGItem.Interactable = config.ShowPanel;
             m_ShowPanelBGItem.Text = ShowPanelBGString;
 
+            m_PanelPositionItem.Interactable = config.ShowPanel;
+            m_PanelPositionItem.Text = PanelPositionString;
+
+#if false
             m_ShowMaxRangeItem.Interactable = config.ShowPanel;
             m_ShowMaxRangeItem.Text = ShowMaxRangeString;
 
             m_ShowDisplayNameItem.Interactable = config.ShowPanel;
             m_ShowDisplayNameItem.Text = ShowDisplayNameString;
-
-            m_PanelPositionItem.Interactable = config.ShowPanel;
-            m_PanelPositionItem.Text = PanelPositionString;
 
             m_PanelWidthItem.Interactable = config.ShowPanel;
             m_PanelWidthItem.Text = PanelWidthString;
@@ -433,15 +446,14 @@ namespace PocketShield
             int intValue = MathHelper.RoundToInt(MathHelper.Lerp(-1.0f, 5.0f, _value));
             string s = "Log Level: ";
             if (intValue < 0)
-                s += string.Format("{0:0}Off", Constants.COLOR_TAG_BOOL_FALSE);
+                s += (c_ColorTagBoolFalse + "Off");
             else
-                s += string.Format("{0:0}{1:0}", Constants.COLOR_TAG_NUMBER, intValue);
+                s += (c_ColorTagNumber + intValue);
             //s += c_ReadOnlyValueColorTag + " Raw value: " + MathHelper.Lerp(-1.0f, 5.0f, _value);
 
             return s;
         }
 
-#if false
         internal void ClientUpdateIntervalItemOnSubmit(string _string)
         {
             int value = 0;
@@ -455,6 +467,52 @@ namespace PocketShield
             }
         }
 
+        internal void ShowPanelOnClick()
+        {
+            ConfigManager.ClientConfig.ShowPanel = !ConfigManager.ClientConfig.ShowPanel;
+            UpdateHudConfigs();
+
+            m_ShowPanelItem.Text = ShowPanelString;
+            RefreshHudSettingsInteractability();
+        }
+
+        internal void ShowPanelBGOnClick()
+        {
+            ConfigManager.ClientConfig.ShowPanelBackground = !ConfigManager.ClientConfig.ShowPanelBackground;
+            UpdateHudConfigs();
+            m_ShowPanelBGItem.Text = ShowPanelBGString;
+        }
+
+        private string PanelPositionHelperString
+        {
+            get
+            {
+                string s = string.Format("New Panel Position: ({0:0}{1:0}<reset>, {0:0}{2:0}<reset>) (Drag to reposition)",
+                    c_ColorTagNumber, s_CachedPanelPositionItemPos.X, s_CachedPanelPositionItemPos.Y);
+                return s;
+            }
+        }
+
+        private void PanelPositionOnSubmit(Vector2D _vector)
+        {
+            ConfigManager.ClientConfig.PanelPosition = s_CachedPanelPositionItemPos;
+            UpdateHudConfigs();
+
+            m_PanelPositionItem.Text = PanelPositionString;
+            m_PanelPositionItem.Origin = PanelPositionItemPos;
+        }
+
+        private void PanelPositionUpdate(Vector2D _vector)
+        {
+            s_CachedPanelPositionItemPos = new Vector2D(
+                (int)(+(_vector.X + 1.0) * s_ViewportSize.X * 0.5),
+                (int)(-(_vector.Y - 1.0) * s_ViewportSize.Y * 0.5 - ShieldHudPanel.PanelSize.Y));
+
+            m_PanelPositionItem.InputDialogTitle = PanelPositionHelperString;
+            //MyAPIGateway.Utilities.ShowNotification("Current pos = " + offsX, config.ClientUpdateInterval * (int)(100.0f / 6.0f));
+        }
+
+#if false
         internal void ItemsCountOnSubmit(float _value)
         {
             ClientConfig config = ConfigManager.ClientConfig;
@@ -503,22 +561,6 @@ namespace PocketShield
             return s;
         }
 
-        internal void ShowPanelOnClick()
-        {
-            ConfigManager.ClientConfig.ShowPanel = !ConfigManager.ClientConfig.ShowPanel;
-            UpdateHudConfigs();
-
-            m_ShowPanelItem.Text = ShowPanelString;
-            RefreshHudSettingsInteractability();
-        }
-
-        internal void ShowPanelBGOnClick()
-        {
-            ConfigManager.ClientConfig.ShowPanelBackground = !ConfigManager.ClientConfig.ShowPanelBackground;
-            UpdateHudConfigs();
-            m_ShowPanelBGItem.Text = ShowPanelBGString;
-        }
-
         internal void ShowMaxRangeOnClick()
         {
             ConfigManager.ClientConfig.ShowMaxRangeIcon = !ConfigManager.ClientConfig.ShowMaxRangeIcon;
@@ -531,35 +573,6 @@ namespace PocketShield
             ConfigManager.ClientConfig.ShowSignalName = !ConfigManager.ClientConfig.ShowSignalName;
             UpdateHudConfigs();
             m_ShowDisplayNameItem.Text = ShowDisplayNameString;
-        }
-
-        private string PanelPositionHelperString
-        {
-            get
-            {
-                string s = string.Format("New Panel Position: ({0:0}{1:0}<reset>, {0:0}{2:0}<reset>) (Drag to reposition)",
-                    c_NumberColorTag, s_CachedPanelPositionItemPos.X, s_CachedPanelPositionItemPos.Y);
-                return s;
-            }
-        }
-
-        private void PanelPositionOnSubmit(Vector2D _vector)
-        {
-            ConfigManager.ClientConfig.PanelPosition = s_CachedPanelPositionItemPos;
-            UpdateHudConfigs();
-
-            m_PanelPositionItem.Text = PanelPositionString;
-            m_PanelPositionItem.Origin = PanelPositionItemPos;
-        }
-
-        private void PanelPositionUpdate(Vector2D _vector)
-        {
-            s_CachedPanelPositionItemPos = new Vector2D(
-                (int)(+(_vector.X + 1.0) * s_ViewportSize.X * 0.5),
-                (int)(-(_vector.Y - 1.0) * s_ViewportSize.Y * 0.5 - RadarPanel.PanelSize.Y));
-
-            m_PanelPositionItem.InputDialogTitle = PanelPositionHelperString;
-            //MyAPIGateway.Utilities.ShowNotification("Current pos = " + offsX, config.ClientUpdateInterval * (int)(100.0f / 6.0f));
         }
 
         internal void PanelWidthOnSubmit(float _value)
@@ -679,29 +692,29 @@ namespace PocketShield
         }
 #endif
         #endregion
-        
+
         #region Helper Methods
         internal static string FormatBoolString(bool _value)
         {
-            return (_value ? Constants.COLOR_TAG_BOOL_TRUE : Constants.COLOR_TAG_BOOL_FALSE) + _value;
+            return (_value ? c_ColorTagBoolTrue : c_ColorTagBoolFalse) + _value;
         }
 
         internal static void AppendDefaultString(ref string _string, bool _value, bool _defaultValue)
         {
             if (_value != _defaultValue)
-                _string += (Constants.COLOR_TAG_DEFAULT_VALUE + " default: " + _defaultValue);
+                _string += (c_ColorTagDefaultValue + " default: " + _defaultValue);
         }
 
         internal static void AppendDefaultString(ref string _string, int _value, int _defaultValue)
         {
             if (_value != _defaultValue)
-                _string += (Constants.COLOR_TAG_DEFAULT_VALUE + " default: " + _defaultValue);
+                _string += (c_ColorTagDefaultValue + " default: " + _defaultValue);
         }
 
         internal static void AppendDefaultString(ref string _string, float _value, float _defaultValue)
         {
             if (_value != _defaultValue)
-                _string += (Constants.COLOR_TAG_DEFAULT_VALUE + " default: " + _defaultValue);
+                _string += (c_ColorTagDefaultValue + " default: " + _defaultValue);
         }
 #endregion
         

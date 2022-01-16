@@ -33,7 +33,7 @@ namespace PocketShield
         //private Vector2D SubstatPanelPos { get { return ConfigManager.ClientConfig.PanelPosition + new Vector2D(0.0, 55.0); } }
         private static Vector2D SubstatPanelOffset { get { return new Vector2D(0.0, 55.0 * ConfigManager.ClientConfig.ItemScale); } }
 
-        private static Vector2 PanelSize
+        public static Vector2 PanelSize
         {
             get
             {

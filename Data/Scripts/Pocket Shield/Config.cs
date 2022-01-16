@@ -116,11 +116,6 @@ namespace PocketShield
         public const string SUBTYPEID_PLUGIN_RES_EX = "PocketShield_PluginResExplosion";
         #endregion
         
-        public const string COLOR_TAG_DEFAULT_VALUE = "<color=128,128,128,72>";
-        public const string COLOR_TAG_READONLY_VALUE= "<color=32,223,223,200>";
-        public const string COLOR_TAG_NUMBER= "<color=223,223,32>";
-        public const string COLOR_TAG_BOOL_TRUE= "<color=32,223,32>";
-        public const string COLOR_TAG_BOOL_FALSE = "<color=223,32,32>";
     }
 
     //public static class ShieldConfig
