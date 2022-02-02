@@ -4,6 +4,7 @@ Stats.sbc
 
 *.lnk
 *.psd
+*.png
 *.bat
 *.sln
 *.csproj

@@ -64,8 +64,8 @@ namespace PocketShield
         #endregion
 
         #region Texture
-        public const int ICON_ATLAS_W = 4;
-        public const int ICON_ATLAS_H = 4;
+        public const int ICON_ATLAS_W = 3;
+        public const int ICON_ATLAS_H = 3;
 
         public const float ICONS_ATLAS_UV_SIZE_X = 1.0f / ICON_ATLAS_W;
         public const float ICONS_ATLAS_UV_SIZE_Y = 1.0f / ICON_ATLAS_H;
@@ -326,7 +326,7 @@ namespace PocketShield
                 writer.Close();
                 return true;
             }
-            catch (Exception _e)
+            catch (Exception)
             {
                 Logger.Log("    Fallback method failed...");
             }

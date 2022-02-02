@@ -83,7 +83,7 @@ namespace ExShared
 
             try
             {
-                m_TextWriter.WriteLine("[" + DateTime.Now.ToString("yy.MM.dd HH:mm:ss.ff") + "][" + _level + "]: " + _message);
+                m_TextWriter.WriteLine("[" + DateTime.Now.ToString("yy.MM.dd HH:mm:ss.fff") + "][" + _level + "]: " + _message);
                 m_TextWriter.Flush();
             }
             catch (Exception _e)

@@ -80,7 +80,8 @@ namespace PocketShield
 
             if (_returnSide == PocketShieldAPI.ReturnSide.Client)
             {
-                Vector2 uvSize = new Vector2(Constants.ICONS_ATLAS_UV_SIZE_X, Constants.ICONS_ATLAS_UV_SIZE_Y);
+                Vector2 uvSizeShieldIcon = new Vector2(Constants.ICONS_ATLAS_UV_SIZE_X, Constants.ICONS_ATLAS_UV_SIZE_Y);
+                Vector2 uvSizeStatIcon = new Vector2(2.0f * Constants.ICONS_ATLAS_UV_SIZE_X, Constants.ICONS_ATLAS_UV_SIZE_Y);
 
                 /* FOR HUD DISPLAY!
                  * You can register custom icon for your shield that will be drawn on HUD Panel.
@@ -92,16 +93,16 @@ namespace PocketShield
                     Material = MyStringId.GetOrCompute("PocketShieldV3_ShieldIcons"),
                     SubtypeId = MyStringHash.GetOrCompute(Constants.SUBTYPEID_EMITTER_BAS),
                     UvEnabled = true,
-                    UvSize = uvSize,
-                    UvOffset = new Vector2(0.0f * Constants.ICONS_ATLAS_UV_SIZE_X, 0.0f * Constants.ICONS_ATLAS_UV_SIZE_Y)
+                    UvSize = uvSizeShieldIcon,
+                    UvOffset = new Vector2(1.0f * Constants.ICONS_ATLAS_UV_SIZE_X, 0.0f * Constants.ICONS_ATLAS_UV_SIZE_Y)
                 });
                 PocketShieldAPI.RegisterShieldIcon(new PocketShieldAPI.ShieldIconDrawInfo(null)
                 {
                     Material = MyStringId.GetOrCompute("PocketShieldV3_ShieldIcons"),
                     SubtypeId = MyStringHash.GetOrCompute(Constants.SUBTYPEID_EMITTER_ADV),
                     UvEnabled = true,
-                    UvSize = uvSize,
-                    UvOffset = new Vector2(1.0f * Constants.ICONS_ATLAS_UV_SIZE_X, 0.0f * Constants.ICONS_ATLAS_UV_SIZE_Y)
+                    UvSize = uvSizeShieldIcon,
+                    UvOffset = new Vector2(2.0f * Constants.ICONS_ATLAS_UV_SIZE_X, 0.0f * Constants.ICONS_ATLAS_UV_SIZE_Y)
                 });
 
                 /* FOR HUD DISPLAY!
@@ -114,7 +115,7 @@ namespace PocketShield
                     Material = MyStringId.GetOrCompute("PocketShieldV3_ShieldIcons"),
                     DamageType = MyStringHash.GetOrCompute(Constants.DAMAGETYPE_KI),
                     UvEnabled = true,
-                    UvSize = uvSize,
+                    UvSize = uvSizeStatIcon,
                     UvOffset = new Vector2(0.0f * Constants.ICONS_ATLAS_UV_SIZE_X, 1.0f * Constants.ICONS_ATLAS_UV_SIZE_Y),
                 });
                 PocketShieldAPI.RegisterStatIcons(new PocketShieldAPI.ItemCardDrawInfo(null)
@@ -122,7 +123,7 @@ namespace PocketShield
                     Material = MyStringId.GetOrCompute("PocketShieldV3_ShieldIcons"),
                     DamageType = MyStringHash.GetOrCompute(Constants.DAMAGETYPE_EX),
                     UvEnabled = true,
-                    UvSize = uvSize,
+                    UvSize = uvSizeStatIcon,
                     UvOffset = new Vector2(0.0f * Constants.ICONS_ATLAS_UV_SIZE_X, 2.0f * Constants.ICONS_ATLAS_UV_SIZE_Y),
                 });
 
