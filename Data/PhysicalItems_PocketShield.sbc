@@ -80,7 +80,7 @@
       <MaximumOrderAmount>1</MaximumOrderAmount>
 
       <IconSymbol>CAP</IconSymbol>
-      <MaxStackAmount>1</MaxStackAmount>
+      <MaxStackAmount>1000</MaxStackAmount>
     </PhysicalItem>
 
     <PhysicalItem>
@@ -107,7 +107,7 @@
       <MaximumOrderAmount>1</MaximumOrderAmount>
 
       <IconSymbol>DEF_KI</IconSymbol>
-      <MaxStackAmount>1</MaxStackAmount>
+      <MaxStackAmount>1000</MaxStackAmount>
     </PhysicalItem>
 
     <PhysicalItem>
@@ -134,7 +134,7 @@
       <MaximumOrderAmount>1</MaximumOrderAmount>
 
       <IconSymbol>DEF_EX</IconSymbol>
-      <MaxStackAmount>1</MaxStackAmount>
+      <MaxStackAmount>1000</MaxStackAmount>
     </PhysicalItem>
 
     <PhysicalItem>
@@ -161,7 +161,7 @@
       <MaximumOrderAmount>1</MaximumOrderAmount>
 
       <IconSymbol>RES_KI</IconSymbol>
-      <MaxStackAmount>1</MaxStackAmount>
+      <MaxStackAmount>1000</MaxStackAmount>
     </PhysicalItem>
 
     <PhysicalItem>
@@ -188,7 +188,7 @@
       <MaximumOrderAmount>1</MaximumOrderAmount>
 
       <IconSymbol>RES_EX</IconSymbol>
-      <MaxStackAmount>1</MaxStackAmount>
+      <MaxStackAmount>1000</MaxStackAmount>
     </PhysicalItem>
 
   </PhysicalItems>

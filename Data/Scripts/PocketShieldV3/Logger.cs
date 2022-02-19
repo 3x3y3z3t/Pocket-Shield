@@ -1,7 +1,6 @@
 ﻿// ;
 using Sandbox.ModAPI;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using VRage.Utils;
 
@@ -9,30 +8,26 @@ namespace ExShared
 {
     public class Logger
     {
-        private const string LOG_FILENAME = "debug.log";
-
         public const string c_LogPrefix = "[" + PocketShield.Constants.LOG_PREFIX + "]";
-        
-        public static Logger Static { get { return s_Instance; } }
 
-        public static bool Suppressed
+        public bool Suppressed
         {
-            get { return Static.m_Suppressed; }
+            get { return m_Suppressed; }
             set
             {
-                if (value == Static.m_Suppressed)
+                if (value == m_Suppressed)
                     return;
 
                 if (value)
                 {
-                    Static.m_Suppressed = false;
-                    Static.LogInternal(">> Log Suppressed <<");
-                    Static.m_Suppressed = true;
+                    m_Suppressed = false;
+                    WriteLine(">> Log Suppressed <<");
+                    m_Suppressed = true;
                 }
                 else
                 {
-                    Static.m_Suppressed = false;
-                    Static.LogInternal(">> Log Unsuppressed <<");
+                    m_Suppressed = false;
+                    WriteLine(">> Log Unsuppressed <<");
                 }
             }
         }
@@ -41,44 +36,53 @@ namespace ExShared
         private bool m_Suppressed = false;
         private TextWriter m_TextWriter = null;
 
-        private static readonly Logger s_Instance = new Logger();
-        
-        public Logger()
+        public Logger(string _name)
         {
             LogLevel = 5;
-            
+
+            string filename = "debug_" + _name;
             try
             {
-                m_TextWriter = MyAPIGateway.Utilities.WriteFileInWorldStorage(LOG_FILENAME, typeof(Logger));
+                m_TextWriter = MyAPIGateway.Utilities.WriteFileInWorldStorage(filename + ".log", typeof(Logger));
             }
             catch (Exception _e)
             {
-                MyLog.Default.WriteLine(c_LogPrefix + " > Exception < Problem encountered while initializing logger '" + LOG_FILENAME + "': " + _e.Message);
+                MyLog.Default.WriteLine(c_LogPrefix + " > Exception < Problem encountered while initializing logger '" + filename + "': " + _e.Message);
             }
 
-            LogInternal(">> Log Begin <<");
+            WriteLine(">> Log Begin <<");
         }
-        
-        public static void DeInit()
+
+        public void Close()
         {
-            if (Static.m_TextWriter != null)
+            if (m_TextWriter != null)
             {
-                Static.m_Suppressed = false;
-                Static.LogInternal(">> Log End <<");
-                Static.m_TextWriter.Close();
+                m_Suppressed = false;
+                WriteLine(">> Log End <<");
+                m_TextWriter.Close();
             }
         }
 
-        public static void Log(string _message, int _level = 0)
+        public void Write(string _message, int _level = 0)
         {
-            Static.LogInternal(_message, _level);
+            if (m_Suppressed || _level > LogLevel)
+                return;
+
+            try
+            {
+                m_TextWriter.Write("[" + DateTime.Now.ToString("yy.MM.dd HH:mm:ss.fff") + "][" + _level + "]: " + _message);
+                m_TextWriter.Flush();
+            }
+            catch (Exception _e)
+            {
+                MyLog.Default.WriteLine(c_LogPrefix + " > Exception < Problem encountered while logging: " + _e.Message);
+                MyLog.Default.WriteLine(c_LogPrefix + "   Msg: " + _message);
+            }
         }
 
-        public void LogInternal(string _message, int _level = 0)
+        public void WriteLine(string _message, int _level = 0)
         {
-            if (m_Suppressed)
-                return;
-            if (_level > LogLevel)
+            if (m_Suppressed || _level > LogLevel)
                 return;
 
             try
@@ -92,6 +96,50 @@ namespace ExShared
                 MyLog.Default.WriteLine(c_LogPrefix + "   Msg: " + _message);
             }
         }
-        
+
+        public void WriteInline(string _message, int _level = 0, bool _breakNow = false)
+        {
+            if (m_Suppressed || _level > LogLevel)
+                return;
+
+            try
+            {
+                if (_breakNow)
+                    m_TextWriter.WriteLine(_message);
+                else
+                    m_TextWriter.Write(_message);
+                m_TextWriter.Flush();
+            }
+            catch (Exception _e)
+            {
+                MyLog.Default.WriteLine(c_LogPrefix + " > Exception < Problem encountered while logging: " + _e.Message);
+                MyLog.Default.WriteLine(c_LogPrefix + "   Msg: " + _message);
+            }
+        }
+
+        public void WriteCRLF(int _level = 0)
+        {
+            if (m_Suppressed || _level > LogLevel)
+                return;
+
+            try
+            {
+                m_TextWriter.WriteLine();
+                m_TextWriter.Flush();
+            }
+            catch (Exception _e)
+            {
+                MyLog.Default.WriteLine(c_LogPrefix + " > Exception < Problem encountered while logging: " + _e.Message);
+                MyLog.Default.WriteLine(c_LogPrefix + "   Msg: \\n");
+            }
+        }
+
+        private string GetDateTimeAsString()
+        {
+            DateTime datetime = DateTime.Now;
+            //DateTime datetime = DateTime.UtcNow + m_LocalUtcOffset.TimeSpan;
+            return datetime.ToString("yy.MM.dd HH:mm:ss.fff");
+        }
+
     }
 }
