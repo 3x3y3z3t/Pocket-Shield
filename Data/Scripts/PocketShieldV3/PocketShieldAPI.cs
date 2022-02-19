@@ -416,8 +416,8 @@ namespace PocketShieldCore
         public static string LastErrorMessage { get; private set; }
 
         private static PocketShieldAPI s_Instance = null;
+        private static string s_ModInfo = "";
 
-        private string m_ModInfo = "";
         private bool m_IsServerReady = false;
         private bool m_IsClientReady = false;
 
@@ -468,13 +468,15 @@ namespace PocketShieldCore
 
             }
 
-            MyAPIGateway.Utilities.SendModMessage(MOD_ID, STR_UNREGISTER_MOD + "=" + s_Instance.m_ModInfo);
+            MyAPIGateway.Utilities.SendModMessage(MOD_ID, STR_UNREGISTER_MOD + "=" + s_ModInfo);
             MyAPIGateway.Utilities.UnregisterMessageHandler(MOD_ID, PocketShieldAPI_ModRegisterReturnHandle);
 
-            s_Instance.m_IsServerReady = false;
-            s_Instance.m_IsClientReady = false;
-
-            s_Instance = null;
+            if (s_Instance != null)
+            {
+                s_Instance.m_IsServerReady = false;
+                s_Instance.m_IsClientReady = false;
+                s_Instance = null;
+            }
 
             return true;
         }
@@ -577,7 +579,7 @@ namespace PocketShieldCore
             ClientBackendVersion = "";
             LastErrorMessage = "";
 
-            m_ModInfo = _modInfo;
+            s_ModInfo = _modInfo;
             m_RegisterFinishedCallback = _registerFinishedCallback;
         }
 
