@@ -2,10 +2,7 @@
 using ExShared;
 using PocketShieldCore;
 using Sandbox.Definitions;
-using Sandbox.ModAPI;
-using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using VRage.Game.Components;
 using VRage.Utils;
 using VRageMath;
@@ -15,7 +12,6 @@ namespace PocketShield
     [MySessionComponentDescriptor(MyUpdateOrder.NoUpdate)]
     public partial class Session_PocketShield : MySessionComponentBase
     {
-        private PocketShieldAPI.ShieldEmitterProperties m_CachedProperties = new PocketShieldAPI.ShieldEmitterProperties(null);
 
         Logger m_Logger = null;
 
@@ -28,11 +24,11 @@ namespace PocketShield
         protected override void UnloadData()
         {
             /* REQUIRED!
-             * You need to call PocketShieldAPI.Close() when you are done using it (typically on mod unload).
+             * You need to call PocketShieldAPIV2.Close() when you are done using it (typically on mod unload).
              * You can check core mod (PocketShieldCore)'s log for information on which mod forgot to Close.
              */
-            PocketShieldAPI.Close();
-            
+            PocketShieldAPIV2.Close();
+
             m_Logger.Close();
         }
 
@@ -40,174 +36,165 @@ namespace PocketShield
         {
             string modInfo = ModContext.ModId + "." + ModContext.ModName;
             m_Logger.WriteLine("ModInfo: " + modInfo);
-            
+
             /* REQUIRED!
-             * You need to call PocketShieldAPI.Init() and pass in a unique string to identify your mod.
+             * You need to call PocketShieldAPIV2.Init() and pass in an unique string to identify your mod.
              * Wait until PocketShieldAPI.Ready == true, or pass in a callback.
              * Do not use the API when it is not Ready, or the callback has not been called.
              */
-            PocketShieldAPI.Init(modInfo, RegisterFinishedCallback);
+            PocketShieldAPIV2.Init(modInfo, RegisterFinishedCallback, Logger_WriteLine);
         }
 
-        private void RegisterFinishedCallback(PocketShieldAPI.ReturnSide _returnSide)
+        private void RegisterFinishedCallback(PocketShieldAPIV2.ReturnSide _returnSide)
         {
-            if (_returnSide == PocketShieldAPI.ReturnSide.Server)
+            if (_returnSide == PocketShieldAPIV2.ReturnSide.Server)
             {
-                /* You can register callbacks to compile data for ShieldEmitter construction.
-                 * When a ShieldEmitter item is found in inventory, it will go through these callbacks
-                 * to get ShieldEmitterProperties data to construct a ShieldEmitter.
-                 * An Emitter will be constructed or not depends on the data these callbacks return.
+                #region Local Variable
+                PocketShieldAPIV2.ShieldEmitterProperties basicEmitterProp = new PocketShieldAPIV2.ShieldEmitterProperties(null)
+                {
+                    SubtypeId = MyStringHash.GetOrCompute(Constants.SUBTYPEID_EMITTER_BAS),
+                    IsManual = true,
+
+                    BaseMaxEnergy = Constants.SHIELD_BAS_MAX_ENERGY,
+                    BaseChargeRate = Constants.SHIELD_BAS_CHARGE_RATE,
+                    BaseChargeDelay = Constants.SHIELD_BAS_CHARGE_DELAY,
+                    BaseOverchargeDuration = Constants.SHIELD_BAS_OVERCHARGE_TIME,
+                    BaseOverchargeDefBonus = Constants.SHIELD_BAS_OVERCHARGE_DEF_BONUS,
+                    BaseOverchargeResBonus = Constants.SHIELD_BAS_OVERCHARGE_RES_BONUS,
+                    BasePowerConsumption = Constants.SHIELD_BAS_POWER_CONSUMPTION,
+                    MaxPluginsCount = Constants.SHIELD_BAS_MAX_PLUGINS
+                };
+                basicEmitterProp.BaseDef[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_KI)] = Constants.SHIELD_BAS_DEF;
+                basicEmitterProp.BaseDef[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_EX)] = Constants.SHIELD_BAS_DEF;
+                basicEmitterProp.BaseRes[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_KI)] = Constants.SHIELD_BAS_RES;
+                basicEmitterProp.BaseRes[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_EX)] = Constants.SHIELD_BAS_RES;
+                PocketShieldAPIV2.ShieldEmitterProperties advancedEmitterProp = new PocketShieldAPIV2.ShieldEmitterProperties(null)
+                {
+                    SubtypeId = MyStringHash.GetOrCompute(Constants.SUBTYPEID_EMITTER_ADV),
+                    IsManual = false,
+
+                    MaxPluginsCount = Constants.SHIELD_ADV_MAX_PLUGINS,
+                    BaseMaxEnergy = Constants.SHIELD_ADV_MAX_ENERGY,
+                    BaseChargeRate = Constants.SHIELD_ADV_CHARGE_RATE,
+                    BaseChargeDelay = Constants.SHIELD_ADV_CHARGE_DELAY,
+                    BaseOverchargeDuration = Constants.SHIELD_ADV_OVERCHARGE_TIME,
+                    BaseOverchargeDefBonus = Constants.SHIELD_ADV_OVERCHARGE_DEF_BONUS,
+                    BaseOverchargeResBonus = Constants.SHIELD_ADV_OVERCHARGE_RES_BONUS,
+                    BasePowerConsumption = Constants.SHIELD_ADV_POWER_CONSUMPTION
+                };
+                advancedEmitterProp.BaseDef[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_KI)] = Constants.SHIELD_ADV_DEF;
+                advancedEmitterProp.BaseDef[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_EX)] = Constants.SHIELD_ADV_DEF;
+                advancedEmitterProp.BaseRes[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_KI)] = Constants.SHIELD_ADV_RES;
+                advancedEmitterProp.BaseRes[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_EX)] = Constants.SHIELD_ADV_RES;
+                #endregion
+                
+                /* You can submit properties for your ShieldEmitter.
+                 * These data will be used when creating a ShieldEmitter. If no data is submit (for a certain SubtypeID),
+                 * that Emitter will not be created.
                  */
-                PocketShieldAPI.RegisterCompileEmitterPropertiesCallback(CompileBasicEmitterProperties);
-                PocketShieldAPI.RegisterCompileEmitterPropertiesCallback(CompileAdvancedEmitterProperties);
+                PocketShieldAPIV2.Server_RegisterEmitter(MyStringHash.GetOrCompute(Constants.SUBTYPEID_EMITTER_BAS), basicEmitterProp);
+                PocketShieldAPIV2.Server_RegisterEmitter(MyStringHash.GetOrCompute(Constants.SUBTYPEID_EMITTER_ADV), advancedEmitterProp);
 
                 /* You can set a Plugin's bonus value.
                  * You can even override a Plugin's bonus value with your value.
                  */
-                PocketShieldAPI.SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_CAP), Constants.PLUGIN_CAP_BONUS);
-                PocketShieldAPI.SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_DEF_KI), Constants.PLUGIN_DEF_BONUS);
-                PocketShieldAPI.SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_DEF_EX), Constants.PLUGIN_DEF_BONUS);
-                PocketShieldAPI.SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_RES_KI), Constants.PLUGIN_RES_BONUS);
-                PocketShieldAPI.SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_RES_EX), Constants.PLUGIN_RES_BONUS);
+                PocketShieldAPIV2.Server_SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_CAP), Constants.PLUGIN_CAP_BONUS);
+                PocketShieldAPIV2.Server_SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_DEF_KI), Constants.PLUGIN_DEF_BONUS);
+                PocketShieldAPIV2.Server_SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_DEF_EX), Constants.PLUGIN_DEF_BONUS);
+                PocketShieldAPIV2.Server_SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_RES_KI), Constants.PLUGIN_RES_BONUS);
+                PocketShieldAPIV2.Server_SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_RES_EX), Constants.PLUGIN_RES_BONUS);
 
                 UpdateBlueprintData();
 
                 m_Logger.WriteLine("PocketShield registered with Server");
             }
 
-            if (_returnSide == PocketShieldAPI.ReturnSide.Client)
+            if (_returnSide == PocketShieldAPIV2.ReturnSide.Client)
             {
+                #region Local Variable
                 Vector2 uvSizeShieldIcon = new Vector2(Constants.ICONS_ATLAS_UV_SIZE_X, Constants.ICONS_ATLAS_UV_SIZE_Y);
                 Vector2 uvSizeStatIcon = new Vector2(2.0f * Constants.ICONS_ATLAS_UV_SIZE_X, Constants.ICONS_ATLAS_UV_SIZE_Y);
 
-                /* FOR HUD DISPLAY!
-                 * You can register custom icon for your shield that will be drawn on HUD Panel.
-                 * This is not required. If you don't register one, a default icon will be drawn.
-                 * You can register a whole texture, or a texture atlas and supply uv information.
-                 */
-                PocketShieldAPI.RegisterShieldIcon(new PocketShieldAPI.ShieldIconDrawInfo(null)
+                PocketShieldAPIV2.ShieldIconDrawInfo basicEmitterShieldIcon = new PocketShieldAPIV2.ShieldIconDrawInfo(null)
                 {
                     Material = MyStringId.GetOrCompute("PocketShieldV3_ShieldIcons"),
                     SubtypeId = MyStringHash.GetOrCompute(Constants.SUBTYPEID_EMITTER_BAS),
                     UvEnabled = true,
                     UvSize = uvSizeShieldIcon,
                     UvOffset = new Vector2(1.0f * Constants.ICONS_ATLAS_UV_SIZE_X, 0.0f * Constants.ICONS_ATLAS_UV_SIZE_Y)
-                });
-                PocketShieldAPI.RegisterShieldIcon(new PocketShieldAPI.ShieldIconDrawInfo(null)
+                };
+                PocketShieldAPIV2.ShieldIconDrawInfo advancedEmitterShieldIcon = new PocketShieldAPIV2.ShieldIconDrawInfo(null)
                 {
                     Material = MyStringId.GetOrCompute("PocketShieldV3_ShieldIcons"),
                     SubtypeId = MyStringHash.GetOrCompute(Constants.SUBTYPEID_EMITTER_ADV),
                     UvEnabled = true,
                     UvSize = uvSizeShieldIcon,
                     UvOffset = new Vector2(2.0f * Constants.ICONS_ATLAS_UV_SIZE_X, 0.0f * Constants.ICONS_ATLAS_UV_SIZE_Y)
-                });
+                };
 
-                /* FOR HUD DISPLAY!
-                 * You can register your custom icons for Defense and Resistance stat that will be drawn on HUD Panel.
-                 * This is not required. If you don't register one, nothing will be drawn there.
-                 * You can register a whole texture, or a texture atlas and supply uv information.
-                 */
-                PocketShieldAPI.RegisterStatIcons(new PocketShieldAPI.ItemCardDrawInfo(null)
+                PocketShieldAPIV2.StatIconDrawInfo basicEmitterStatIcon = new PocketShieldAPIV2.StatIconDrawInfo(null)
                 {
                     Material = MyStringId.GetOrCompute("PocketShieldV3_ShieldIcons"),
                     DamageType = MyStringHash.GetOrCompute(Constants.DAMAGETYPE_KI),
                     UvEnabled = true,
                     UvSize = uvSizeStatIcon,
                     UvOffset = new Vector2(0.0f * Constants.ICONS_ATLAS_UV_SIZE_X, 1.0f * Constants.ICONS_ATLAS_UV_SIZE_Y),
-                });
-                PocketShieldAPI.RegisterStatIcons(new PocketShieldAPI.ItemCardDrawInfo(null)
+                };
+                PocketShieldAPIV2.StatIconDrawInfo advancedEmitterStatIcon = new PocketShieldAPIV2.StatIconDrawInfo(null)
                 {
                     Material = MyStringId.GetOrCompute("PocketShieldV3_ShieldIcons"),
                     DamageType = MyStringHash.GetOrCompute(Constants.DAMAGETYPE_EX),
                     UvEnabled = true,
                     UvSize = uvSizeStatIcon,
                     UvOffset = new Vector2(0.0f * Constants.ICONS_ATLAS_UV_SIZE_X, 2.0f * Constants.ICONS_ATLAS_UV_SIZE_Y),
-                });
+                };
+                #endregion
+
+                /* FOR HUD DISPLAY!
+                 * You can register custom icon for your shield that will be drawn on HUD Panel.
+                 * This is not required. If you don't register one, a default icon will be drawn.
+                 * You can register a whole texture, or a texture atlas and supply uv information.
+                 */
+                PocketShieldAPIV2.Client_RegisterShieldIcon(basicEmitterShieldIcon);
+                PocketShieldAPIV2.Client_RegisterShieldIcon(advancedEmitterShieldIcon);
+
+                /* FOR HUD DISPLAY!
+                 * You can register your custom icons for Defense and Resistance stat that will be drawn on HUD Panel.
+                 * This is not required. If you don't register one, nothing will be drawn there.
+                 * You can register a whole texture, or a texture atlas and supply uv information.
+                 */
+                PocketShieldAPIV2.Client_RegisterStatIcon(basicEmitterStatIcon);
+                PocketShieldAPIV2.Client_RegisterStatIcon(advancedEmitterStatIcon);
 
                 m_Logger.WriteLine("PocketShield registered with Client");
             }
 
-            m_Logger.WriteLine("Status: Server = " + PocketShieldAPI.ServerReady + ", Client = " + PocketShieldAPI.ClientReady);
+            m_Logger.WriteLine("Status: Server = " + PocketShieldAPIV2.ServerReady + ", Client = " + PocketShieldAPIV2.ClientReady);
         }
 
-        /// <summary>
-        /// Compiles ShieldEmitterProperties used to create a ShieldEmitter. 
-        /// PocketShield will pass in current item's SubtypeId so you can know which item to create.
-        /// </summary>
-        /// <param name="_subtypeId">The SubtypeId of current inventory item to check</param>
-        /// <returns>ShieldEmitterProperties used to create a ShieldEmitter, or null to not creating anything</returns>
-        public ImmutableList<object> CompileBasicEmitterProperties(MyStringHash _subtypeId)
-        {
-            if (_subtypeId != MyStringHash.GetOrCompute(Constants.SUBTYPEID_EMITTER_BAS))
-                return null;
 
-            m_CachedProperties.Clear();
 
-            m_CachedProperties.SubtypeId = _subtypeId;
 
-            m_CachedProperties.MaxPluginsCount = Constants.SHIELD_BAS_MAX_PLUGINS;
-            m_CachedProperties.BaseMaxEnergy = Constants.SHIELD_BAS_MAX_ENERGY;
-            m_CachedProperties.BaseChargeRate = Constants.SHIELD_BAS_CHARGE_RATE;
-            m_CachedProperties.BaseChargeDelay = Constants.SHIELD_BAS_CHARGE_DELAY;
-            m_CachedProperties.BaseOverchargeDuration = Constants.SHIELD_BAS_OVERCHARGE_TIME;
-            m_CachedProperties.BaseOverchargeDefBonus = Constants.SHIELD_BAS_OVERCHARGE_DEF_BONUS;
-            m_CachedProperties.BaseOverchargeResBonus = Constants.SHIELD_BAS_OVERCHARGE_RES_BONUS;
-            m_CachedProperties.BasePowerConsumption = Constants.SHIELD_BAS_POWER_CONSUMPTION;
 
-            m_CachedProperties.BaseDef[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_KI)] = Constants.SHIELD_BAS_DEF;
-            m_CachedProperties.BaseDef[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_EX)] = Constants.SHIELD_BAS_DEF;
-            m_CachedProperties.BaseRes[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_KI)] = Constants.SHIELD_BAS_RES;
-            m_CachedProperties.BaseRes[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_EX)] = Constants.SHIELD_BAS_RES;
 
-            return m_CachedProperties.Data;
-        }
 
-        /// <summary>
-        /// Compiles ShieldEmitterProperties used to create a ShieldEmitter. 
-        /// PocketShield will pass in current item's SubtypeId so you can know which item to create.
-        /// </summary>
-        /// <param name="_subtypeId">The SubtypeId of current inventory item to check</param>
-        /// <returns>ShieldEmitterProperties used to create a ShieldEmitter, or null to not creating anything</returns>
-        public ImmutableList<object> CompileAdvancedEmitterProperties(MyStringHash _subtypeId)
-        {
-            if (_subtypeId != MyStringHash.GetOrCompute(Constants.SUBTYPEID_EMITTER_ADV))
-                return null;
 
-            m_CachedProperties.Clear();
 
-            m_CachedProperties.SubtypeId = _subtypeId;
-
-            m_CachedProperties.MaxPluginsCount = Constants.SHIELD_ADV_MAX_PLUGINS;
-            m_CachedProperties.BaseMaxEnergy = Constants.SHIELD_ADV_MAX_ENERGY;
-            m_CachedProperties.BaseChargeRate = Constants.SHIELD_ADV_CHARGE_RATE;
-            m_CachedProperties.BaseChargeDelay = Constants.SHIELD_ADV_CHARGE_DELAY;
-            m_CachedProperties.BaseOverchargeDuration = Constants.SHIELD_ADV_OVERCHARGE_TIME;
-            m_CachedProperties.BaseOverchargeDefBonus = Constants.SHIELD_ADV_OVERCHARGE_DEF_BONUS;
-            m_CachedProperties.BaseOverchargeResBonus = Constants.SHIELD_ADV_OVERCHARGE_RES_BONUS;
-            m_CachedProperties.BasePowerConsumption = Constants.SHIELD_ADV_POWER_CONSUMPTION;
-
-            m_CachedProperties.BaseDef[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_KI)] = Constants.SHIELD_ADV_DEF;
-            m_CachedProperties.BaseDef[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_EX)] = Constants.SHIELD_ADV_DEF;
-            m_CachedProperties.BaseRes[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_KI)] = Constants.SHIELD_ADV_RES;
-            m_CachedProperties.BaseRes[MyStringHash.GetOrCompute(Constants.DAMAGETYPE_EX)] = Constants.SHIELD_ADV_RES;
-
-            return m_CachedProperties.Data;
-        }
 
         // ================================================================================;
         // All Methods below are not required.
-        // Because of that, they are written as short as possible and hard to read.
+        // Because of that, they are written as short as possible and may be hard to read.
         // 
         // You can keep them, or create one that suits your needs.
         // ================================================================================;
 
-
-
-
-
-
-
         #region Non-important Stuff
+        /// <summary> A wrapper for Logger's WriteLine method, used for passing to API. </summary>
+        private void Logger_WriteLine(string _message)
+        {
+            m_Logger.WriteLine(_message);
+        }
+
         /// <summary>
         /// Update Items and Blueprints data to show item's stat dynamically.
         /// </summary>
@@ -235,7 +222,7 @@ namespace PocketShield
             {
                 string extraTooltip = "Stat:\n  Capacity: " + Constants.SHIELD_ADV_MAX_ENERGY;
                 if (Constants.SHIELD_ADV_DEF != 0.0f || Constants.SHIELD_ADV_RES != 0.0f)
-                { 
+                {
                     extraTooltip += string.Format(
                         "\n  Against Bullet: Defense {0:0.#}%, Resistance {1:0.#}%" +
                         "\n  Against Explosion: Defense {0:0.#}%, Resistance {1:0.#}%",
