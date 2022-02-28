@@ -5,18 +5,18 @@
     <PhysicalItem>
       <Id>
         <TypeId>PhysicalObject</TypeId>
-        <SubtypeId>PocketShield_EmitterBasic</SubtypeId>
+        <SubtypeId>PocketShield_EmitterCreature</SubtypeId>
       </Id>
-      <DisplayName>PocketShield_EmitterBasic_DisplayName</DisplayName>
-      <ExtraInventoryTooltipLine>PocketShield_EmitterBasic_Stat</ExtraInventoryTooltipLine>
-      <Icon>Textures\GUI\Icons\Items\MedKit.dds</Icon>
+      <DisplayName>PocketShield_EmitterCreature_DisplayName</DisplayName>
+      <ExtraInventoryTooltipLine>PocketShield_EmitterCreature_Stat</ExtraInventoryTooltipLine>
+      <Icon>Textures\Icons\ShieldCreature.dds</Icon>
       <Size>
         <X>0.24</X>
         <Y>0.24</Y>
         <Z>0.24</Z>
       </Size>
       <Mass>2</Mass>
-      <Volume>15</Volume>
+      <Volume>10</Volume>
       <Model>Models\Items\Medkit_Item.mwm</Model>
       <PhysicalMaterial>Metal</PhysicalMaterial>
 
@@ -25,25 +25,24 @@
       <MinimumOrderAmount>1</MinimumOrderAmount>
       <MaximumOrderAmount>1</MaximumOrderAmount>
 
-      <IconSymbol>T1</IconSymbol>
       <MaxStackAmount>1</MaxStackAmount>
     </PhysicalItem>
 
     <PhysicalItem>
       <Id>
-        <TypeId>PhysicalObject</TypeId>
-        <SubtypeId>PocketShield_EmitterAdvanced</SubtypeId>
+        <TypeId>ConsumableItem</TypeId>
+        <SubtypeId>PocketShield_EmitterProjectile</SubtypeId>
       </Id>
-      <DisplayName>PocketShield_EmitterAdvanced_DisplayName</DisplayName>
-      <ExtraInventoryTooltipLine>PocketShield_EmitterAdvanced_Stat</ExtraInventoryTooltipLine>
-      <Icon>Textures\GUI\Icons\Items\MedKit.dds</Icon>
+      <DisplayName>PocketShield_EmitterProjectile_DisplayName</DisplayName>
+      <ExtraInventoryTooltipLine>PocketShield_EmitterProjectile_Stat</ExtraInventoryTooltipLine>
+      <Icon>Textures\Icons\ShieldBullet.dds</Icon>
       <Size>
         <X>0.5</X>
         <Y>0.5</Y>
         <Z>0.5</Z>
       </Size>
-      <Mass>5</Mass>
-      <Volume>100</Volume>
+      <Mass>3</Mass>
+      <Volume>15</Volume>
       <Model>Models\Items\Medkit_Item.mwm</Model>
       <PhysicalMaterial>Metal</PhysicalMaterial>
 
@@ -52,7 +51,32 @@
       <MinimumOrderAmount>1</MinimumOrderAmount>
       <MaximumOrderAmount>1</MaximumOrderAmount>
 
-      <IconSymbol>T2</IconSymbol>
+      <MaxStackAmount>1</MaxStackAmount>
+    </PhysicalItem>
+
+    <PhysicalItem>
+      <Id>
+        <TypeId>ConsumableItem</TypeId>
+        <SubtypeId>PocketShield_EmitterExplosion</SubtypeId>
+      </Id>
+      <DisplayName>PocketShield_EmitterExplosion_DisplayName</DisplayName>
+      <ExtraInventoryTooltipLine>PocketShield_EmitterExplosion_Stat</ExtraInventoryTooltipLine>
+      <Icon>Textures\Icons\ShieldExplosion.dds</Icon>
+      <Size>
+        <X>0.5</X>
+        <Y>0.5</Y>
+        <Z>0.5</Z>
+      </Size>
+      <Mass>3</Mass>
+      <Volume>15</Volume>
+      <Model>Models\Items\Medkit_Item.mwm</Model>
+      <PhysicalMaterial>Metal</PhysicalMaterial>
+
+      <MinimumOfferAmount>1</MinimumOfferAmount>
+      <MaximumOfferAmount>2</MaximumOfferAmount>
+      <MinimumOrderAmount>1</MinimumOrderAmount>
+      <MaximumOrderAmount>1</MaximumOrderAmount>
+
       <MaxStackAmount>1</MaxStackAmount>
     </PhysicalItem>
 
@@ -63,14 +87,14 @@
       </Id>
       <DisplayName>PocketShield_PluginCap_DisplayName</DisplayName>
       <ExtraInventoryTooltipLine>PocketShield_PluginCap_Stat</ExtraInventoryTooltipLine>
-      <Icon>Textures\GUI\Icons\Items\PowerKit.dds</Icon>
+      <Icon>Textures\Icons\ShieldPluginCap.dds</Icon>
       <Size>
         <X>0.1</X>
         <Y>0.2</Y>
         <Z>0.1</Z>
       </Size>
-      <Mass>0.75</Mass>
-      <Volume>1</Volume>
+      <Mass>0.1</Mass>
+      <Volume>0.2</Volume>
       <Model>Models\Items\PowerKit.mwm</Model>
       <PhysicalMaterial>Metal</PhysicalMaterial>
 
@@ -79,7 +103,6 @@
       <MinimumOrderAmount>1</MinimumOrderAmount>
       <MaximumOrderAmount>1</MaximumOrderAmount>
 
-      <IconSymbol>CAP</IconSymbol>
       <MaxStackAmount>1000</MaxStackAmount>
     </PhysicalItem>
 
@@ -90,14 +113,14 @@
       </Id>
       <DisplayName>PocketShield_PluginDefBullet_DisplayName</DisplayName>
       <ExtraInventoryTooltipLine>PocketShield_PluginDefBullet_Stat</ExtraInventoryTooltipLine>
-      <Icon>Textures\GUI\Icons\Items\PowerKit.dds</Icon>
+      <Icon>Textures\Icons\ShieldPluginDef.dds</Icon>
       <Size>
         <X>0.1</X>
         <Y>0.2</Y>
         <Z>0.1</Z>
       </Size>
-      <Mass>0.75</Mass>
-      <Volume>1</Volume>
+      <Mass>0.1</Mass>
+      <Volume>0.2</Volume>
       <Model>Models\Items\PowerKit.mwm</Model>
       <PhysicalMaterial>Metal</PhysicalMaterial>
 
@@ -106,7 +129,7 @@
       <MinimumOrderAmount>1</MinimumOrderAmount>
       <MaximumOrderAmount>1</MaximumOrderAmount>
 
-      <IconSymbol>DEF_KI</IconSymbol>
+      <IconSymbol>KI</IconSymbol>
       <MaxStackAmount>1000</MaxStackAmount>
     </PhysicalItem>
 
@@ -115,16 +138,16 @@
         <TypeId>PhysicalObject</TypeId>
         <SubtypeId>PocketShield_PluginDefExplosion</SubtypeId>
       </Id>
-      <DisplayName>PocketShield_PluginDefExplosion_DisplaNname</DisplayName>
+      <DisplayName>PocketShield_PluginDefExplosion_DisplayName</DisplayName>
       <ExtraInventoryTooltipLine>PocketShield_PluginDefExplosion_Stat</ExtraInventoryTooltipLine>
-      <Icon>Textures\GUI\Icons\Items\PowerKit.dds</Icon>
+      <Icon>Textures\Icons\ShieldPluginDef.dds</Icon>
       <Size>
         <X>0.1</X>
         <Y>0.2</Y>
         <Z>0.1</Z>
       </Size>
-      <Mass>0.75</Mass>
-      <Volume>1</Volume>
+      <Mass>0.1</Mass>
+      <Volume>0.2</Volume>
       <Model>Models\Items\PowerKit.mwm</Model>
       <PhysicalMaterial>Metal</PhysicalMaterial>
 
@@ -133,7 +156,7 @@
       <MinimumOrderAmount>1</MinimumOrderAmount>
       <MaximumOrderAmount>1</MaximumOrderAmount>
 
-      <IconSymbol>DEF_EX</IconSymbol>
+      <IconSymbol>EX</IconSymbol>
       <MaxStackAmount>1000</MaxStackAmount>
     </PhysicalItem>
 
@@ -144,14 +167,14 @@
       </Id>
       <DisplayName>PocketShield_PluginResBullet_DisplayName</DisplayName>
       <ExtraInventoryTooltipLine>PocketShield_PluginResBullet_Stat</ExtraInventoryTooltipLine>
-      <Icon>Textures\GUI\Icons\Items\PowerKit.dds</Icon>
+      <Icon>Textures\Icons\ShieldPluginRes.dds</Icon>
       <Size>
         <X>0.1</X>
         <Y>0.2</Y>
         <Z>0.1</Z>
       </Size>
-      <Mass>0.75</Mass>
-      <Volume>1</Volume>
+      <Mass>0.1</Mass>
+      <Volume>0.2</Volume>
       <Model>Models\Items\PowerKit.mwm</Model>
       <PhysicalMaterial>Metal</PhysicalMaterial>
 
@@ -160,7 +183,7 @@
       <MinimumOrderAmount>1</MinimumOrderAmount>
       <MaximumOrderAmount>1</MaximumOrderAmount>
 
-      <IconSymbol>RES_KI</IconSymbol>
+      <IconSymbol>KI</IconSymbol>
       <MaxStackAmount>1000</MaxStackAmount>
     </PhysicalItem>
 
@@ -171,14 +194,14 @@
       </Id>
       <DisplayName>PocketShield_PluginResExplosion_DisplayName</DisplayName>
       <ExtraInventoryTooltipLine>PocketShield_PluginResExplosion_Stat</ExtraInventoryTooltipLine>
-      <Icon>Textures\GUI\Icons\Items\PowerKit.dds</Icon>
+      <Icon>Textures\Icons\ShieldPluginRes.dds</Icon>
       <Size>
         <X>0.1</X>
         <Y>0.2</Y>
         <Z>0.1</Z>
       </Size>
-      <Mass>0.75</Mass>
-      <Volume>1</Volume>
+      <Mass>0.1</Mass>
+      <Volume>0.2</Volume>
       <Model>Models\Items\PowerKit.mwm</Model>
       <PhysicalMaterial>Metal</PhysicalMaterial>
 
@@ -187,7 +210,7 @@
       <MinimumOrderAmount>1</MinimumOrderAmount>
       <MaximumOrderAmount>1</MaximumOrderAmount>
 
-      <IconSymbol>RES_EX</IconSymbol>
+      <IconSymbol>EX</IconSymbol>
       <MaxStackAmount>1000</MaxStackAmount>
     </PhysicalItem>
 

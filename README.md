@@ -15,4 +15,4 @@ Link to mod: [Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=2656
 - **This mod may break your server**. I don't play MP so I can not test for bugs on MP/DS. Many thanks if you sacrifice your server and report me MP/DS bugs (I may not be able to fix them though).
 
 # Version
-Current version: v3.1.1
+Current version: v3.2.1
