@@ -67,8 +67,12 @@ namespace PocketShield
                 };
                 creatureEmitterProp.BaseDef[MyDamageType.Wolf] = m_Config.CreatureShieldConfig.Def;
                 creatureEmitterProp.BaseDef[MyDamageType.Spider] = m_Config.CreatureShieldConfig.Def;
+                creatureEmitterProp.BaseDef[MyDamageType.Fall] = 0.75f;
+                creatureEmitterProp.BaseDef[MyDamageType.Environment] = 0.75f;
                 creatureEmitterProp.BaseRes[MyDamageType.Wolf] = m_Config.CreatureShieldConfig.Res;
                 creatureEmitterProp.BaseRes[MyDamageType.Spider] = m_Config.CreatureShieldConfig.Res;
+                creatureEmitterProp.BaseRes[MyDamageType.Fall] = 0.25f;
+                creatureEmitterProp.BaseRes[MyDamageType.Environment] = 0.25f;
                 
                 PocketShieldAPIV2.ShieldEmitterProperties kiEmitterProp = new PocketShieldAPIV2.ShieldEmitterProperties(null)
                 {
@@ -85,8 +89,12 @@ namespace PocketShield
                 };
                 kiEmitterProp.BaseDef[MyDamageType.Bullet] = m_Config.KineticShieldConfig.Def;
                 kiEmitterProp.BaseDef[MyDamageType.Explosion] = m_Config.KineticShieldConfig.NonDef;
+                kiEmitterProp.BaseDef[MyDamageType.Fall] = 0.75f;
+                kiEmitterProp.BaseDef[MyDamageType.Environment] = 0.75f;
                 kiEmitterProp.BaseRes[MyDamageType.Bullet] = m_Config.KineticShieldConfig.Res;
                 kiEmitterProp.BaseRes[MyDamageType.Explosion] = m_Config.KineticShieldConfig.NonRes;
+                kiEmitterProp.BaseRes[MyDamageType.Fall] = 0.25f;
+                kiEmitterProp.BaseRes[MyDamageType.Environment] = 0.25f;
 
                 PocketShieldAPIV2.ShieldEmitterProperties exEmitterProp = new PocketShieldAPIV2.ShieldEmitterProperties(null)
                 {
@@ -103,8 +111,12 @@ namespace PocketShield
                 };
                 exEmitterProp.BaseDef[MyDamageType.Bullet] = m_Config.ExplosionShieldConfig.NonDef;
                 exEmitterProp.BaseDef[MyDamageType.Explosion] = m_Config.ExplosionShieldConfig.Def;
+                exEmitterProp.BaseDef[MyDamageType.Fall] = 0.75f;
+                exEmitterProp.BaseDef[MyDamageType.Environment] = 0.75f;
                 exEmitterProp.BaseRes[MyDamageType.Bullet] = m_Config.ExplosionShieldConfig.NonRes;
                 exEmitterProp.BaseRes[MyDamageType.Explosion] = m_Config.ExplosionShieldConfig.Res;
+                exEmitterProp.BaseRes[MyDamageType.Fall] = 0.25f;
+                exEmitterProp.BaseRes[MyDamageType.Environment] = 0.25f;
                 #endregion
 
                 /* You can submit properties for your ShieldEmitter.
@@ -118,11 +130,11 @@ namespace PocketShield
                 /* You can set a Plugin's bonus value.
                  * You can even override a Plugin's bonus value with your value.
                  */
-                PocketShieldAPIV2.Server_SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_CAP), Constants.PLUGIN_CAP_BONUS);
-                PocketShieldAPIV2.Server_SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_DEF_KI), Constants.PLUGIN_DEF_BONUS);
-                PocketShieldAPIV2.Server_SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_DEF_EX), Constants.PLUGIN_DEF_BONUS);
-                PocketShieldAPIV2.Server_SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_RES_KI), Constants.PLUGIN_RES_BONUS);
-                PocketShieldAPIV2.Server_SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_RES_EX), Constants.PLUGIN_RES_BONUS);
+                PocketShieldAPIV2.Server_SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_CAP), PocketShieldAPIV2.PluginModType.Capacity, Constants.PLUGIN_CAP_BONUS);
+                PocketShieldAPIV2.Server_SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_DEF_KI), PocketShieldAPIV2.PluginModType.DefBullet, Constants.PLUGIN_DEF_BONUS);
+                PocketShieldAPIV2.Server_SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_RES_KI), PocketShieldAPIV2.PluginModType.ResBullet, Constants.PLUGIN_RES_BONUS);
+                PocketShieldAPIV2.Server_SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_DEF_EX), PocketShieldAPIV2.PluginModType.DefExplosion, Constants.PLUGIN_DEF_BONUS);
+                PocketShieldAPIV2.Server_SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_RES_EX), PocketShieldAPIV2.PluginModType.ResExplosion, Constants.PLUGIN_RES_BONUS);
                 //PocketShieldAPIV2.Server_SetPluginModifier(MyStringHash.GetOrCompute(Constants.SUBTYPEID_PLUGIN_DEF_RES_ENV), Constants.PLUGIN_ENV_BONUS);
 
                 UpdateBlueprintData();

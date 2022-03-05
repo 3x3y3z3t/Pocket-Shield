@@ -1,4 +1,51 @@
-﻿// ;
+﻿/** Pocket Shield Core API v1
+ * 
+ * ==============================
+ * Quick Modding Guide
+ * ==============================
+ * 
+ * To register your mod with Pocket Shield Core, follow these steps:
+ * 
+ * 1. Grab one of the API files and put it in your mod (you are looking at one of those).
+ * 2. Call API init somewhere in your Session Component:
+ * 
+ *                  PocketShieldAPI.Init("Your Mod Name");
+ * 
+ * 3. Call API shutdown in UnloadData:
+ * 
+ *                  PocketShieldAPI.Close();
+ * 
+ * 
+ * ==============================
+ * Optional
+ * ==============================
+ * 
+ * 1. Call          PocketShieldAPI.RegisterCompileEmitterPropertiesCallback(callback);
+ * 
+ * to register a callback for using when creating Shield Emitter item. 
+ * Your callback will be called, and a Shield Emitter item will be created or not 
+ * depends on what your callback will return. Remember to UnRegister it when mod unload.
+ * 
+ * 2. Call          PocketShieldAPI.SetPluginModifier(pluginSubtypeId, modAmount);
+ * 
+ * to set modifier amount for a Plugin item. Value can be overwritten.
+ * 
+ * 3. Call          PocketShieldAPI.RegisterShieldIcon(ShieldIconDrawInfo);
+ * 
+ * to set custom *shield* icon on HUD Panel. Texture atlas supported.
+ * 
+ * 4. Call          PocketShieldAPI.RegisterStatIcons(ItemCardDrawInfo);
+ * 
+ * to set custom pair of *defense-resistance stat* icons on HUD Panel. 
+ * I call it a *DefRes Pair*, they always comes in pair of two icons 
+ * (Def on the left, Res on the right). Texture atlas supported.
+ * 
+ * 
+ * You can take a look at full documentation here:
+ * 
+ */
+
+
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
@@ -7,8 +54,7 @@ using VRageMath;
 
 using ServerData = VRage.MyTuple<
     string,
-    System.Collections.Generic.Dictionary<VRage.Utils.MyStringHash, System.Collections.Generic.List<object>>,
-    System.Collections.Generic.Dictionary<VRage.Utils.MyStringHash, float>,
+    System.Collections.Generic.Dictionary<VRage.Utils.MyStringHash, System.Collections.Generic.Dictionary<VRage.Utils.MyStringHash, float>>,
     System.Collections.Generic.List<System.Delegate>>;
 
 using ClientData = VRage.MyTuple<
@@ -22,7 +68,21 @@ namespace PocketShieldCore
     {
         /// <summary> Determines which side returned for a specific request. </summary>
         public enum ReturnSide { Server = 1 << 0, Client = 1 << 1 }
-        
+
+        public static class PluginModType
+        {
+            public static MyStringHash Capacity = MyStringHash.GetOrCompute("Capacity");
+
+            public static MyStringHash DefBullet = MyStringHash.GetOrCompute("DefBullet");
+            public static MyStringHash ResBullet = MyStringHash.GetOrCompute("ResBullet");
+
+            public static MyStringHash DefExplosion = MyStringHash.GetOrCompute("DefExplosion");
+            public static MyStringHash ResExplosion = MyStringHash.GetOrCompute("ResExplosion");
+
+            public static MyStringHash DefEnvironment = MyStringHash.GetOrCompute("DefEnvironment");
+            public static MyStringHash ResEnvironment = MyStringHash.GetOrCompute("ResEnvironment");
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -128,7 +188,7 @@ namespace PocketShieldCore
             /// <param name="_data"> Data to be copied </param>
             public ShieldEmitterProperties(List<object> _data)
             {
-                if (_data != null)
+                if (_data != null && _data.Count == RawData.Count)
                 {
                     for (int i = 0; i < m_Data.Count && i < _data.Count; ++i)
                     {
@@ -262,7 +322,7 @@ namespace PocketShieldCore
                 Vector2.Zero                /* UvOffset */
             };
             #endregion
-            
+
         }
 
         /// <summary>
@@ -331,12 +391,12 @@ namespace PocketShieldCore
                 Vector2.Zero                /* UvOffset */
             };
             #endregion
-            
+
         }
 
         public const long MOD_ID = 2739353433L; // Core mod's ID;
 
-        public const string SERVER_BACKEND_VERSION = "2.0";
+        public const string SERVER_BACKEND_VERSION = "2.1";
         public const string CLIENT_BACKEND_VERSION = "2.0";
         public const string STR_API_VERSION = "Ver2";
 
@@ -351,7 +411,7 @@ namespace PocketShieldCore
 
         /// <summary> Backend API version. </summary>
         private static string ClientBackendVersion = "";
-        
+
 
         /// <summary>
         /// Initialize PocketShieldAPI and register with Core mod.
@@ -380,7 +440,7 @@ namespace PocketShieldCore
             s_LogFunc?.Invoke(STR_LOG_PREFIX + "PocketShield API is shutting down");
             if (ServerReady)
             {
-                
+
             }
 
             if (ClientReady)
@@ -412,11 +472,31 @@ namespace PocketShieldCore
             if (_properties == null)
                 return false;
 
-            s_Instance.m_Ref_EmitterConstructionData[_subtypeId] = _properties.RawData;
+            bool success = ((Func<List<object>, bool>)s_Instance.m_Ref_ExposedFunctions[2]).Invoke(_properties.RawData);
+            if (!success)
+            {
+                s_LogFunc?.Invoke(STR_LOG_PREFIX + "Could not register emitter " + _properties.SubtypeId);
+                return false;
+            }
+
             return true;
         }
 
-        public static float Server_GetPluginModifier(MyStringHash _subtypeId)
+        public static Dictionary<MyStringHash, float> Server_GetPluginModifiers(MyStringHash _subtypeId)
+        {
+            if (!ServerReady)
+            {
+                s_LogFunc?.Invoke(STR_LOG_PREFIX + "PocketShield API (server) is not initialized");
+                return null;
+            }
+
+            if (s_Instance.m_Ref_PluginBonusModifiers.ContainsKey(_subtypeId))
+                return s_Instance.m_Ref_PluginBonusModifiers[_subtypeId];
+
+            return null;
+        }
+
+        public static float Server_GetPluginModifier(MyStringHash _subtypeId, MyStringHash _modifierType)
         {
             if (!ServerReady)
             {
@@ -424,13 +504,13 @@ namespace PocketShieldCore
                 return 0.0f;
             }
 
-            if (s_Instance.m_Ref_PluginBonusModifiers.ContainsKey(_subtypeId))
-                return s_Instance.m_Ref_PluginBonusModifiers[_subtypeId];
+            if (s_Instance.m_Ref_PluginBonusModifiers.ContainsKey(_subtypeId) && s_Instance.m_Ref_PluginBonusModifiers[_subtypeId].ContainsKey(_modifierType))
+                return s_Instance.m_Ref_PluginBonusModifiers[_subtypeId][_modifierType];
 
             return 0.0f;
         }
 
-        public static bool Server_SetPluginModifier(MyStringHash _subtypeId, float _value)
+        public static bool Server_SetPluginModifiers(MyStringHash _subtypeId, Dictionary<MyStringHash, float> _modifiers)
         {
             if (!ServerReady)
             {
@@ -438,7 +518,22 @@ namespace PocketShieldCore
                 return false;
             }
 
-            s_Instance.m_Ref_PluginBonusModifiers[_subtypeId] = _value;
+            s_Instance.m_Ref_PluginBonusModifiers[_subtypeId] = _modifiers;
+            return true;
+        }
+
+        public static bool Server_SetPluginModifier(MyStringHash _subtypeId, MyStringHash _modifierType, float _modifierValue)
+        {
+            if (!ServerReady)
+            {
+                s_LogFunc?.Invoke(STR_LOG_PREFIX + "PocketShield API (server) is not initialized");
+                return false;
+            }
+
+            if (!s_Instance.m_Ref_PluginBonusModifiers.ContainsKey(_subtypeId))
+                s_Instance.m_Ref_PluginBonusModifiers[_subtypeId] = new Dictionary<MyStringHash, float>(MyStringHash.Comparer);
+
+            s_Instance.m_Ref_PluginBonusModifiers[_subtypeId][_modifierType] = _modifierValue;
             return true;
         }
 
@@ -519,8 +614,7 @@ namespace PocketShieldCore
 
         private Action<ReturnSide> m_RegisterFinishedCallback = null;
 
-        private Dictionary<MyStringHash, List<object>> m_Ref_EmitterConstructionData = null;
-        private Dictionary<MyStringHash, float> m_Ref_PluginBonusModifiers = null;
+        Dictionary<MyStringHash, Dictionary<MyStringHash, float>> m_Ref_PluginBonusModifiers = null;
         private List<List<object>> m_Ref_ShieldIconList = null;
         private List<List<object>> m_Ref_StatIconList = null;
         private List<Delegate> m_Ref_ExposedFunctions = null;
@@ -553,7 +647,7 @@ namespace PocketShieldCore
                 }
 
                 var data = (ServerData)_payload;
-                if (!data.Item1.StartsWith("Server") || data.Item2 == null || data.Item3 == null || data.Item4 == null)
+                if (!data.Item1.StartsWith("Server") || data.Item2 == null || data.Item3 == null)
                 {
                     s_LogFunc?.Invoke(STR_LOG_PREFIX + "Data received from Server APIBackend, but it seems to be corrupted");
                     return;
@@ -563,16 +657,15 @@ namespace PocketShieldCore
                 if (ServerBackendVersion != SERVER_BACKEND_VERSION)
                     s_LogFunc?.Invoke(STR_LOG_PREFIX + "API Version mismatch (current: " + SERVER_BACKEND_VERSION + ", latest: " + ServerBackendVersion + "), you should update your PocketShieldAPI.cs file, or things may break");
 
-                s_Instance.m_Ref_EmitterConstructionData = data.Item2;
-                s_Instance.m_Ref_PluginBonusModifiers = data.Item3;
-                s_Instance.m_Ref_ExposedFunctions = data.Item4;
+                s_Instance.m_Ref_PluginBonusModifiers = data.Item2;
+                s_Instance.m_Ref_ExposedFunctions = data.Item3;
                 s_Instance.m_IsServerReady = true;
 
                 s_Instance.m_RegisterFinishedCallback?.Invoke(ReturnSide.Server);
 
                 return;
             }
-            
+
             if (_payload is ClientData)
             {
                 if (ClientReady)
