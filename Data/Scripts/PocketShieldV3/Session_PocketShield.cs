@@ -2,6 +2,8 @@
 using ExShared;
 using PocketShieldCore;
 using Sandbox.Definitions;
+using SpaceEngineers.Game.Entities.Blocks;
+using SpaceEngineers.Game.World;
 using System.Collections.Generic;
 using VRage.Game;
 using VRage.Game.Components;

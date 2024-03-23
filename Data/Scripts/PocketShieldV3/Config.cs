@@ -28,7 +28,7 @@ namespace PocketShield
         public const float PLUGIN_CAP_BONUS = 0.15f;
         public const float PLUGIN_DEF_BONUS = 0.5f;
         public const float PLUGIN_RES_BONUS = 0.5f;
-        
+
         // Creature Shield;
         public const float SHIELD_CRE_MAX_ENERGY = 100.0f;
         public const float SHIELD_CRE_DEF = 0.80f;
@@ -114,25 +114,25 @@ namespace PocketShield
 
     public class ServerConfig : Config
     {
-        protected string c_SectionPlugins = "Plugins";
-        protected string c_SectionShieldCreature = "Creature Shield (Protect against Spider/Wolf)";
-        protected string c_SectionShieldBullet = "Projectile Shield (Protect against Projectiles)";
-        protected string c_SectionShieldExplosion = "Explosion Shield (Protect against Explosion)";
+        protected const string c_SectionPlugins = "Plugins";
+        protected const string c_SectionShieldCreature = "Creature Shield (Protect against Spider/Wolf)";
+        protected const string c_SectionShieldBullet = "Projectile Shield (Protect against Projectiles)";
+        protected const string c_SectionShieldExplosion = "Explosion Shield (Protect against Explosion)";
 
-        protected string c_NamePluginCap = "Plugin Capacity Bonus";
-        protected string c_NamePluginDef = "Plugin Defense Bonus";
-        protected string c_NamePluginRes = "Plugin Resistance Bonus";
+        protected const string c_NamePluginCap = "Plugin Capacity Bonus";
+        protected const string c_NamePluginDef = "Plugin Defense Bonus";
+        protected const string c_NamePluginRes = "Plugin Resistance Bonus";
 
-        protected string c_NameShieldEnergy = "Max Energy";
-        protected string c_NameShieldDef = "Defense";
-        protected string c_NameShieldRes = "Resistance";
-        protected string c_NameShieldChargeRate = "Charge Rate";
-        protected string c_NameShieldChargeDelay = "Charge Delay";
-        protected string c_NameShieldOverTime = "Overcharge Duration";
-        protected string c_NameShieldOverDef = "Overcharge Defense Bonus";
-        protected string c_NameShieldOverRes = "Overcharge Resistance Bonus";
-        protected string c_NameShieldPowerCost = "Power Consumption";
-        protected string c_NameShieldMaxPlugins = "Max Plugins Accepts";
+        protected const string c_NameShieldEnergy = "Max Energy";
+        protected const string c_NameShieldDef = "Defense";
+        protected const string c_NameShieldRes = "Resistance";
+        protected const string c_NameShieldChargeRate = "Charge Rate";
+        protected const string c_NameShieldChargeDelay = "Charge Delay";
+        protected const string c_NameShieldOverTime = "Overcharge Duration";
+        protected const string c_NameShieldOverDef = "Overcharge Defense Bonus";
+        protected const string c_NameShieldOverRes = "Overcharge Resistance Bonus";
+        protected const string c_NameShieldPowerCost = "Power Consumption";
+        protected const string c_NameShieldMaxPlugins = "Max Plugins Accepts";
 
         public ShieldConfig CreatureShieldConfig { get; set; } = new ShieldConfig();
         public ShieldConfig KineticShieldConfig { get; set; } = new ShieldConfig();
@@ -141,7 +141,7 @@ namespace PocketShield
         public float PluginCapBonus { get; set; } = 0.0f;
         public float PluginDefBonus { get; set; } = 0.0f;
         public float PluginResBonus { get; set; } = 0.0f;
-        
+
         public ServerConfig(string _filename, Logger _logger) : base(_filename, _logger)
         {
 
@@ -155,7 +155,7 @@ namespace PocketShield
             PluginCapBonus = (float)_iniData.Get(c_SectionPlugins, c_NamePluginCap).ToDouble(Constants.PLUGIN_CAP_BONUS);
             PluginDefBonus = (float)_iniData.Get(c_SectionPlugins, c_NamePluginDef).ToDouble(Constants.PLUGIN_DEF_BONUS);
             PluginResBonus = (float)_iniData.Get(c_SectionPlugins, c_NamePluginRes).ToDouble(Constants.PLUGIN_RES_BONUS);
-            
+
             CreatureShieldConfig.MaxEnergy = (float)_iniData.Get(c_SectionShieldCreature, c_NameShieldEnergy).ToDouble(Constants.SHIELD_CRE_MAX_ENERGY);
             CreatureShieldConfig.Def = (float)_iniData.Get(c_SectionShieldCreature, c_NameShieldDef).ToDouble(Constants.SHIELD_CRE_DEF);
             CreatureShieldConfig.Res = (float)_iniData.Get(c_SectionShieldCreature, c_NameShieldRes).ToDouble(Constants.SHIELD_CRE_RES);
@@ -187,12 +187,12 @@ namespace PocketShield
             ExplosionShieldConfig.NonRes = Constants.SHIELD_EX_NON_RES;
             ExplosionShieldConfig.ChargeRate = (float)_iniData.Get(c_SectionShieldExplosion, c_NameShieldChargeRate).ToDouble(Constants.SHIELD_EX_CHARGE_RATE);
             ExplosionShieldConfig.ChargeDelay = (float)_iniData.Get(c_SectionShieldExplosion, c_NameShieldChargeDelay).ToDouble(Constants.SHIELD_EX_CHARGE_DELAY);
-            ExplosionShieldConfig.OverchargeTime = (float)_iniData.Get(c_SectionShieldExplosion, c_NameShieldOverTime).ToDouble(0.0);
-            ExplosionShieldConfig.OverchargeDef = (float)_iniData.Get(c_SectionShieldExplosion, c_NameShieldOverDef).ToDouble(0.0);
-            ExplosionShieldConfig.OverchargeRes = (float)_iniData.Get(c_SectionShieldExplosion, c_NameShieldOverRes).ToDouble(0.0);
+            ExplosionShieldConfig.OverchargeTime = (float)_iniData.Get(c_SectionShieldExplosion, c_NameShieldOverTime).ToDouble(Constants.SHIELD_EX_OVERCHARGE_TIME);
+            ExplosionShieldConfig.OverchargeDef = (float)_iniData.Get(c_SectionShieldExplosion, c_NameShieldOverDef).ToDouble(Constants.SHIELD_EX_OVERCHARGE_DEF_BONUS);
+            ExplosionShieldConfig.OverchargeRes = (float)_iniData.Get(c_SectionShieldExplosion, c_NameShieldOverRes).ToDouble(Constants.SHIELD_EX_OVERCHARGE_RES_BONUS);
             ExplosionShieldConfig.PowerCost = _iniData.Get(c_SectionShieldExplosion, c_NameShieldPowerCost).ToDouble(Constants.SHIELD_EX_POWER_CONSUMPTION);
-            ExplosionShieldConfig.MaxPlugins = _iniData.Get(c_SectionShieldExplosion, c_NameShieldMaxPlugins).ToInt32(0);
-            
+            ExplosionShieldConfig.MaxPlugins = _iniData.Get(c_SectionShieldExplosion, c_NameShieldMaxPlugins).ToInt32(Constants.SHIELD_EX_MAX_PLUGINS);
+
             if (ConfigVersion != Constants.CONFIG_VERSION)
             {
                 m_Logger.WriteLine("  Config version mismatch: read " + ConfigVersion + ", newest version " + Constants.CONFIG_VERSION);
@@ -245,7 +245,7 @@ namespace PocketShield
             _iniData.Set(c_SectionShieldExplosion, c_NameShieldMaxPlugins, ExplosionShieldConfig.MaxPlugins);
 
 
-            
+
         }
 
     }
